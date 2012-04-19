@@ -8,6 +8,17 @@ DiffTests::DiffTests(QWidget *parent) :
     ui(new Ui::DiffTests)
 {
     ui->setupUi(this);
+    
+    //hide-Buttons
+    connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
+    connect( ui->textBrowseButton, SIGNAL( clicked() ), this, SLOT( choseText() ) );
+    connect( ui->hideButton, SIGNAL( clicked() ), this, SLOT( hide() ) );
+    connect( ui->keyBrowseButton, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
+
+    //find-Buttons
+    connect( ui->picBrowseButton_2, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
+    connect( ui->findButton, SIGNAL( clicked() ), this, SLOT( find() ) );
+    connect( ui->keyBrowseButton_2, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
 }
 
 DiffTests::~DiffTests()
@@ -15,6 +26,84 @@ DiffTests::~DiffTests()
     delete ui;
 }
 
+void BildProgramm::chosePicture()
+{
+    QString path;
+    path = QFileDialog::getOpenFileName(
+                this,
+                "Choose a file",
+                QDir::current().path(),
+                "JPEG Files(*.jpg *.png)");  //JPEG files (*.jpg *.png);; Gif files (*.gif)
+    ui->picPathTextField->setText( path );
+    ui->picPathTextField_2->setText( path );
+}
+
+void BildProgramm::choseText()
+{
+    QString path;
+    path = QFileDialog::getOpenFileName(
+                this,
+                "Choose a file",
+                QString::null,
+                "Text Files(*.txt)");
+    ui->textPathTextField->setText( path );
+}
+
+void BildProgramm::hide()
+{
+    QString picPath = ui->picPathTextField->toPlainText();
+    Steganography stego(picPath);
+
+    QString plain;
+    if(ui->textFromDocRadio->isChecked()) plain = ui->textPathTextField->toPlainText();
+    else plain = ui->textEdit->toPlainText();  //if(textFromFieldRadio)
+
+    stego.insertText(plain);
+
+    QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), picPath, tr("*.png *.jpg"));
+
+    Steganography newPic(newPath);
+    //neue Datei wird nicht erstellt
+    ui->textEdit->setText(newPic.getText());
+   // QImage i = stego.image;  //nicht möglich, da image private
+    //i.save(newPath,"");
+    /*
+    QFile f( newPath );
+    f.open(QIODevice::WriteOnly);
+    f.close();*/
+    qDebug("Fertig!");
+}
+
+void BildProgramm::find()
+{
+
+}
+
+void BildProgramm::browseOneTimePad()
+{
+    QString path;
+    path = QFileDialog::getOpenFileName(
+                this,
+                "Choose a file",
+                QString::null,
+                "Text Files(*.txt)");
+    ui->keyTextField->setText( path );
+    ui->keyTextField_2->setText( path );
+}
+
+void BildProgramm::decrypt()
+{
+
+}
+
+void BildProgramm::encrypt()
+{
+
+}
+
+
+
+/*
 void DiffTests::on_pushButton_clicked()
 {
     QString t = ui->textEdit->document()->toPlainText();
@@ -42,7 +131,7 @@ void DiffTests::on_pushButton_clicked()
 
 
     //Test, ob es funktioniert
-    qDebug("Vor einfuegen");
+ /*   qDebug("Vor einfuegen");
     QString x = s.insertText(ui->textEdit->document()->toPlainText());
     qDebug("Einfuegen");
     qDebug(x.toLatin1());
@@ -60,5 +149,5 @@ void DiffTests::on_pushButton_clicked()
 
 
 
-}
+}*/
 
