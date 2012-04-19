@@ -215,7 +215,6 @@ QString Steganography::getText(){
         QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
 
         int pos = (pixelindex % width);
-
                 if(currentColor == RED){
                     color = qRed(pixel[pos]) % 2;
                     currentColor = GREEN;
@@ -251,19 +250,15 @@ QString Steganography::getText(){
   Beispiel: "bitStreamToText("1000000110000010") => "AB", da "10000001" = 65 = "A", da 10000010 = 66 = "B"
   */
 QString Steganography::bitStreamToText(QString bitstream){
+    qDebug(bitstream.toLatin1());
     if(bitstream.size() % BITS_PER_LETTER != 0){
-        QString result = "Fehler: \n";
-        int i = 0;
-        while(bitstream.size() - i >= 16){
-            result.append((QChar(BitChanger::toIntVal(bitstream.mid(i,BITS_PER_LETTER)))));
-            i+= BITS_PER_LETTER;
-        }
-        return result;
+        qDebug("Fehler im Bitstream");
+
     }
 
-    int size = bitstream.size() - BITS_PER_LETTER-1;
+
     QString result = "";
-    for(int i = 0; i < size; i+=BITS_PER_LETTER){
+    for(int i = 0; i < bitstream.size(); i+=BITS_PER_LETTER){
         result.append(QChar(BitChanger::toIntVal(bitstream.mid(i,BITS_PER_LETTER))));
     }
     return result;
@@ -274,7 +269,7 @@ bool Steganography::imageIsNull(){
 }
 
 bool Steganography::saveImage(QString file){
-    return image.save(file.append(".png"), "PNG");
+    return image.save(file, "PNG");
 }
 
 
