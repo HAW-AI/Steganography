@@ -26,7 +26,7 @@ DiffTests::~DiffTests()
     delete ui;
 }
 
-void BildProgramm::chosePicture()
+void DiffTests::chosePicture()
 {
     QString path;
     path = QFileDialog::getOpenFileName(
@@ -38,7 +38,7 @@ void BildProgramm::chosePicture()
     ui->picPathTextField_2->setText( path );
 }
 
-void BildProgramm::choseText()
+void DiffTests::choseText()
 {
     QString path;
     path = QFileDialog::getOpenFileName(
@@ -49,7 +49,7 @@ void BildProgramm::choseText()
     ui->textPathTextField->setText( path );
 }
 
-void BildProgramm::hide()
+void DiffTests::hide()
 {
     QString picPath = ui->picPathTextField->toPlainText();
     Steganography stego(picPath);
@@ -74,12 +74,12 @@ void BildProgramm::hide()
     qDebug("Fertig!");
 }
 
-void BildProgramm::find()
+void DiffTests::find()
 {
 
 }
 
-void BildProgramm::browseOneTimePad()
+void DiffTests::browseOneTimePad()
 {
     QString path;
     path = QFileDialog::getOpenFileName(
@@ -91,12 +91,12 @@ void BildProgramm::browseOneTimePad()
     ui->keyTextField_2->setText( path );
 }
 
-void BildProgramm::decrypt()
+void DiffTests::decrypt()
 {
 
 }
 
-void BildProgramm::encrypt()
+void DiffTests::encrypt()
 {
 
 }
