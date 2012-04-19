@@ -1,7 +1,13 @@
 #include "difftests.h"
 #include "ui_difftests.h"
-#include "steganography.h"
 #include "QTime"
+#include "bitChanger.h"
+#include "steganography.h"
+#include "stringiterator.h"
+#include "iostream"
+#include "QImage"
+
+#include <QtGui>
 
 DiffTests::DiffTests(QWidget *parent) :
     QMainWindow(parent),
