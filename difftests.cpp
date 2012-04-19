@@ -68,21 +68,17 @@ void DiffTests::hide()
 
     QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), picPath, tr("*.png *.jpg"));
 
-    Steganography newPic(newPath);
-    //neue Datei wird nicht erstellt
-    ui->textEdit->setText(newPic.getText());
-   // QImage i = stego.image;  //nicht möglich, da image private
-    //i.save(newPath,"");
-    /*
-    QFile f( newPath );
-    f.open(QIODevice::WriteOnly);
-    f.close();*/
+    stego.saveImage(newPath);
     qDebug("Fertig!");
 }
 
 void DiffTests::find()
 {
+    QString picPath = ui->picPathTextField_2->toPlainText();
+    Steganography stego(picPath);
 
+    QString plain = stego.getText();
+    ui->textEdit_2->setText(plain);
 }
 
 void DiffTests::browseOneTimePad()
