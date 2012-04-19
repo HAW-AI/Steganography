@@ -16,7 +16,13 @@ public:
     ~DiffTests();
     
 private slots:
-    void on_pushButton_clicked();
+    void chosePicture();
+    void choseText();
+    void hide();
+    void find();
+    void browseOneTimePad();
+    void decrypt();
+    void encrypt();
 
 private:
     Ui::DiffTests *ui;
