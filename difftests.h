@@ -24,6 +24,15 @@ private slots:
     void decrypt();
     void encrypt();
 
+    void showCryptFrame(bool);
+    void showCryptFrame_2(bool);
+    void showCryptCheckFrame_2(bool);
+    void showAttackFrame(bool);
+    void showButtonHide();
+    void showFindButton();
+
+    bool isPath(QString);
+
 private:
     Ui::DiffTests *ui;
 };

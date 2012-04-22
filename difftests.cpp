@@ -25,11 +25,64 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->picBrowseButton_2, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
     connect( ui->findButton, SIGNAL( clicked() ), this, SLOT( find() ) );
     connect( ui->keyBrowseButton_2, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
+
+    ui->hideButton->setEnabled(false);
+    ui->findButton->setEnabled(false);
+
+    ui->cryptFrame->hide();
+    ui->cryptFrame_2->hide();
+    ui->knowledgeKeyFrame->hide();
+    ui->attackFrame->hide();
+
+    connect( ui->encryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showCryptFrame(bool)) );
+    connect( ui->encryptCheckBox_2, SIGNAL(toggled(bool)), this, SLOT(showCryptCheckFrame_2(bool)) );
+    connect( ui->knownKeyRadio, SIGNAL(toggled(bool)), this, SLOT(showCryptFrame_2(bool)) );
+    connect( ui->unknownKeyRadio, SIGNAL(toggled(bool)), this, SLOT(showAttackFrame(bool)) );
+
+    connect( ui->picPathTextField, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
+    connect( ui->textPathTextField, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
+    connect( ui->textEdit, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
+    connect( ui->textFromDocRadio, SIGNAL(toggled(bool)), this, SLOT(showButtonHide()) );
+    connect( ui->textFromFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showButtonHide()) );
+
+    connect( ui->picPathTextField_2, SIGNAL(textChanged()), this, SLOT(showButtonFind()) );
 }
 
 DiffTests::~DiffTests()
 {
     delete ui;
+}
+
+void DiffTests::showCryptCheckFrame_2(bool show){
+    if(show){
+        ui->knowledgeKeyFrame->show();
+    }else{
+        ui->knowledgeKeyFrame->hide();
+    }
+}
+
+void DiffTests::showCryptFrame_2(bool show){
+    if(show){
+        ui->cryptFrame_2->show();
+    }else{
+        ui->cryptFrame_2->hide();
+    }
+}
+
+void DiffTests::showAttackFrame(bool show){
+    if(show){
+        ui->attackFrame->show();
+    }else{
+        ui->attackFrame->hide();
+    }
+}
+
+void DiffTests::showCryptFrame(bool show){
+    if(show){
+        ui->cryptFrame->show();
+    }else{
+        ui->cryptFrame->hide();
+    }
 }
 
 void DiffTests::chosePicture()
@@ -39,7 +92,7 @@ void DiffTests::chosePicture()
                 this,
                 "Choose a file",
                 QDir::current().path(),
-                "JPEG Files(*.jpg *.png)");  //JPEG files (*.jpg *.png);; Gif files (*.gif)
+                "PNG Files(*.png)");  //JPEG files (*.jpg *.png);; Gif files (*.gif)
     ui->picPathTextField->setText( path );
     ui->picPathTextField_2->setText( path );
 }
@@ -53,6 +106,29 @@ void DiffTests::choseText()
                 QString::null,
                 "Text Files(*.txt)");
     ui->textPathTextField->setText( path );
+}
+
+void DiffTests::showButtonHide(){
+    if(ui->textFromDocRadio && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText())){
+            ui->hideButton->setEnabled(true);
+    }else if(ui->textFromFieldRadio && !(ui->textEdit->toPlainText().isEmpty())&& isPath(ui->picPathTextField->toPlainText())){
+            ui->hideButton->setEnabled(true);
+    }else{
+            ui->hideButton->setEnabled(false);
+        }
+}
+
+void DiffTests::showFindButton(){
+    if(isPath(ui->picPathTextField_2->toPlainText())){
+        ui->findButton->setEnabled(true);
+    }else{
+        ui->findButton->setEnabled(false);
+    }
+}
+
+bool DiffTests::isPath(QString path){
+    //TODO: implement this method
+    return !(path.isEmpty());
 }
 
 void DiffTests::hide()
@@ -102,54 +178,3 @@ void DiffTests::encrypt()
 {
 
 }
-
-
-
-/*
-void DiffTests::on_pushButton_clicked()
-{
-    QString t = ui->textEdit->document()->toPlainText();
-    qDebug(t.toLatin1());
-   Steganography s("C:\\Users\\Sebastian\\Desktop\\Testbild.png");
-    qDebug("Bild geladen");
-    QTime time;
-
-    /*
-    int needTime = 0;
-    for(int i = 0; i < 20; i++){
-        time.start();
-        s.insertText(t);
-        needTime += time.elapsed();
-    }
-    qDebug("Durchschnittlich %d ms bei alle pixel",needTime/20);
-    needTime = 0;
-    for(int i = 0; i < 20; i++){
-        time.start();
-        s.insertText2(t);
-        needTime += time.elapsed();
-    }
-    qDebug("Durchschnittlich %d ms bei besondere pixel", needTime / 20);
-    */
-
-
-    //Test, ob es funktioniert
- /*   qDebug("Vor einfuegen");
-    QString x = s.insertText(ui->textEdit->document()->toPlainText());
-    qDebug("Einfuegen");
-    qDebug(x.toLatin1());
-
-
-    qDebug("nach einfuegen");
-    s.saveImage("C:\\Users\\Sebastian\\Desktop\\Versteckt");
-    qDebug("gespeichert");
-    Steganography s1("C:\\Users\\Sebastian\\Desktop\\Versteckt.png");
-    QString ausgabe = "Ausgabe: ";
-
-    ausgabe.append(s1.getText());
-    ui->textEdit->setText(ausgabe);
-
-
-
-
-}*/
-

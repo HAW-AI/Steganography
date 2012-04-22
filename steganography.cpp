@@ -15,6 +15,67 @@ Steganography::Steganography(QString filename)
 {
     image = QImage(filename);
 }
+
+QString Steganography::insertBitStream(QString *bitstream){
+    int inkrement = (width * (height-1)) / text.size() / BITS_PER_LETTER;
+    qDebug("Inkrement einfuegen: %i",inkrement);
+
+    if(inkrement >= 1){
+        insertHeader(text.size());
+
+        Stringiterator bitIterator(*bitstream); //iteriert ueber den zu versteckenden texts
+        int currentColor = RED;
+        int line = -1;
+
+
+
+        for(int pixelindex = inkrement-1; pixelindex < text.size()*BITS_PER_LETTER * inkrement; pixelindex += inkrement){
+            if((pixelindex / width) + 1 != line){
+                line = (pixelindex / width) +1;
+            }
+            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
+
+            int pos = (pixelindex % width);
+
+
+            if(bitIterator.hasNext()){
+
+                int red = qRed(pixel[pos]);
+                int green = qGreen(pixel[pos]);
+                int blue = qBlue(pixel[pos]);
+
+                QChar aktBit = bitIterator.next();
+                if(currentColor == RED){
+                    red = BitChanger::changeLastBit(red,aktBit);
+                    currentColor = GREEN;
+                }else if(currentColor == GREEN){
+                    green = BitChanger::changeLastBit(green,aktBit);
+                    currentColor = BLUE;
+                }else if(currentColor == BLUE){
+                    blue = BitChanger::changeLastBit(blue,aktBit);
+                    currentColor = RED;
+                }else{
+                    return "Fehler bei der Farbauswahl";
+                }
+
+                pixel[pos] = qRgb(red, green, blue);
+            }
+        }
+
+
+        return "Alles supi";
+    }else{
+        return "Inkrement falsch";
+   }
+}
+
+
+QString Steganography::toBitStream(QString *text){
+    Stringiterator textIterator(*text);
+    while(textIterator.hasNext()){
+
+    }
+}
  /*
   fuegt den Text in das Image ein.
   Um den Text gleichmaessig einzufuegen wird berechnet in welchen Abstaenden ein Bit des Textes in einen Pixel einzufuegen ist:

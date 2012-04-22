@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>697</height>
+    <width>509</width>
+    <height>741</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="hideTab">
      <attribute name="title">
@@ -505,109 +505,6 @@
        </property>
       </widget>
      </widget>
-     <widget class="QFrame" name="cryptFrame_2">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>360</y>
-        <width>501</width>
-        <height>111</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <widget class="QLabel" name="techniqueLabel_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>61</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Technique</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="keywordLabel_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>60</y>
-         <width>53</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Keyword</string>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="techniqueComboBox_2">
-       <property name="geometry">
-        <rect>
-         <x>80</x>
-         <y>10</y>
-         <width>191</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <item>
-        <property name="text">
-         <string>Caesar</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Vigenère</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Vernam / One-Time-Pad</string>
-        </property>
-       </item>
-      </widget>
-      <widget class="QPushButton" name="keyBrowseButton_2">
-       <property name="geometry">
-        <rect>
-         <x>380</x>
-         <y>50</y>
-         <width>93</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Browse</string>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="keyTextField_2">
-       <property name="geometry">
-        <rect>
-         <x>80</x>
-         <y>50</y>
-         <width>281</width>
-         <height>31</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="keyTipLabel_2">
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>90</y>
-         <width>141</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Number / Word / Textfile</string>
-       </property>
-      </widget>
-     </widget>
      <widget class="QFrame" name="findFrame">
       <property name="geometry">
        <rect>
@@ -656,7 +553,7 @@
         <x>0</x>
         <y>320</y>
         <width>501</width>
-        <height>41</height>
+        <height>231</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -691,83 +588,186 @@
         <string>Unknown Keyword</string>
        </property>
       </widget>
-     </widget>
-     <widget class="QFrame" name="attackFrame">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>470</y>
-        <width>501</width>
-        <height>81</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <widget class="QLabel" name="techniqueLabel_3">
+      <widget class="QFrame" name="cryptFrame_2">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>61</width>
-         <height>16</height>
+         <x>0</x>
+         <y>40</y>
+         <width>501</width>
+         <height>111</height>
         </rect>
        </property>
-       <property name="text">
-        <string>Technique</string>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
        </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QLabel" name="techniqueLabel_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Technique</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="keywordLabel_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>53</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Keyword</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="techniqueComboBox_2">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>10</y>
+          <width>191</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string>Caesar</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Vigenère</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Vernam / One-Time-Pad</string>
+         </property>
+        </item>
+       </widget>
+       <widget class="QPushButton" name="keyBrowseButton_2">
+        <property name="geometry">
+         <rect>
+          <x>380</x>
+          <y>50</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="keyTextField_2">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>50</y>
+          <width>281</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="keyTipLabel_2">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>90</y>
+          <width>141</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Number / Word / Textfile</string>
+        </property>
+       </widget>
       </widget>
-      <widget class="QCheckBox" name="caesarCheck">
+      <widget class="QFrame" name="attackFrame">
        <property name="geometry">
         <rect>
-         <x>80</x>
-         <y>20</y>
-         <width>81</width>
-         <height>20</height>
+         <x>0</x>
+         <y>150</y>
+         <width>501</width>
+         <height>81</height>
         </rect>
        </property>
-       <property name="text">
-        <string>Caesar</string>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
        </property>
-      </widget>
-      <widget class="QCheckBox" name="vigenereCheck">
-       <property name="geometry">
-        <rect>
-         <x>80</x>
-         <y>50</y>
-         <width>81</width>
-         <height>20</height>
-        </rect>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
        </property>
-       <property name="text">
-        <string>Vigenère</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="keyLengthLabel">
-       <property name="geometry">
-        <rect>
-         <x>280</x>
-         <y>50</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Keyword-Length upto</string>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="keywordLengthSpin">
-       <property name="geometry">
-        <rect>
-         <x>420</x>
-         <y>50</y>
-         <width>51</width>
-         <height>22</height>
-        </rect>
-       </property>
+       <widget class="QLabel" name="techniqueLabel_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Technique</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="caesarCheck">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>20</y>
+          <width>81</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Caesar</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="vigenereCheck">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>50</y>
+          <width>81</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Vigenère</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="keyLengthLabel">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>50</y>
+          <width>131</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Keyword-Length upto</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="keywordLengthSpin">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>50</y>
+          <width>51</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
       </widget>
      </widget>
     </widget>
@@ -778,7 +778,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>504</width>
+     <width>509</width>
      <height>26</height>
     </rect>
    </property>
