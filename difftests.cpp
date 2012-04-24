@@ -20,32 +20,29 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->textBrowseButton, SIGNAL( clicked() ), this, SLOT( choseText() ) );
     connect( ui->hideButton, SIGNAL( clicked() ), this, SLOT( hide() ) );
     connect( ui->keyBrowseButton, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
-
-    //find-Buttons
-    connect( ui->picBrowseButton_2, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
-    connect( ui->findButton, SIGNAL( clicked() ), this, SLOT( find() ) );
-    connect( ui->keyBrowseButton_2, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
-
     ui->hideButton->setEnabled(false);
-    ui->findButton->setEnabled(false);
-
     ui->cryptFrame->hide();
-    ui->cryptFrame_2->hide();
-    ui->knowledgeKeyFrame->hide();
-    ui->attackFrame->hide();
-
     connect( ui->encryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showCryptFrame(bool)) );
-    connect( ui->encryptCheckBox_2, SIGNAL(toggled(bool)), this, SLOT(showCryptCheckFrame_2(bool)) );
-    connect( ui->knownKeyRadio, SIGNAL(toggled(bool)), this, SLOT(showCryptFrame_2(bool)) );
-    connect( ui->unknownKeyRadio, SIGNAL(toggled(bool)), this, SLOT(showAttackFrame(bool)) );
-
     connect( ui->picPathTextField, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
     connect( ui->textPathTextField, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
     connect( ui->textEdit, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
     connect( ui->textFromDocRadio, SIGNAL(toggled(bool)), this, SLOT(showButtonHide()) );
     connect( ui->textFromFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showButtonHide()) );
 
+    //find-Buttons
+    connect( ui->picBrowseButton_2, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
+    connect( ui->findButton, SIGNAL( clicked() ), this, SLOT( find() ) );
+    connect( ui->keyBrowseButton_2, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
+   // ui->findButton->setEnabled(false); //TODO: run clicked RadioButtons
+    ui->cryptFrame_2->hide();
+    ui->knowledgeKeyFrame->hide();
+    ui->attackFrame->hide();
+    connect( ui->encryptCheckBox_2, SIGNAL(toggled(bool)), this, SLOT(showCryptCheckFrame_2(bool)) );
+    connect( ui->knownKeyRadio, SIGNAL(clicked()), this, SLOT(showCryptFrame_2(bool)) );
+    connect( ui->unknownKeyRadio, SIGNAL(clicked()), this, SLOT(showAttackFrame(bool)) );
     connect( ui->picPathTextField_2, SIGNAL(textChanged()), this, SLOT(showButtonFind()) );
+    connect( ui->textToDocRadio, SIGNAL(clicked()), this, SLOT(showButtonFind()) );
+    connect( ui->textToFieldRadio, SIGNAL(clicked()), this, SLOT(showButtonFind()) );
 }
 
 DiffTests::~DiffTests()
@@ -85,6 +82,29 @@ void DiffTests::showCryptFrame(bool show){
     }
 }
 
+void DiffTests::showButtonHide(){
+    if(ui->textFromDocRadio && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText())){
+            ui->hideButton->setEnabled(true);
+    }else if(ui->textFromFieldRadio && !(ui->textEdit->toPlainText().isEmpty())&& isPath(ui->picPathTextField->toPlainText())){
+            ui->hideButton->setEnabled(true);
+    }else{
+            ui->hideButton->setEnabled(false);
+        }
+}
+
+void DiffTests::showFindButton(){
+    if(isPath(ui->picPathTextField_2->toPlainText()) && (ui->textToDocRadio->isChecked() || ui->textToFieldRadio->isChecked())){
+        ui->findButton->setEnabled(true);
+    }else{
+        ui->findButton->setEnabled(false);
+    }
+}
+
+bool DiffTests::isPath(QString path){
+    //TODO: implement this method
+    return !(path.isEmpty());
+}
+
 void DiffTests::chosePicture()
 {
     QString path;
@@ -106,29 +126,6 @@ void DiffTests::choseText()
                 QString::null,
                 "Text Files(*.txt)");
     ui->textPathTextField->setText( path );
-}
-
-void DiffTests::showButtonHide(){
-    if(ui->textFromDocRadio && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText())){
-            ui->hideButton->setEnabled(true);
-    }else if(ui->textFromFieldRadio && !(ui->textEdit->toPlainText().isEmpty())&& isPath(ui->picPathTextField->toPlainText())){
-            ui->hideButton->setEnabled(true);
-    }else{
-            ui->hideButton->setEnabled(false);
-        }
-}
-
-void DiffTests::showFindButton(){
-    if(isPath(ui->picPathTextField_2->toPlainText())){
-        ui->findButton->setEnabled(true);
-    }else{
-        ui->findButton->setEnabled(false);
-    }
-}
-
-bool DiffTests::isPath(QString path){
-    //TODO: implement this method
-    return !(path.isEmpty());
 }
 
 void DiffTests::hide()
