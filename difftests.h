@@ -25,9 +25,9 @@ private slots:
     void encrypt();
 
     void showCryptFrame(bool);
-    void showCryptFrame_2(bool);
+    void showCryptFrame_2();
     void showCryptCheckFrame_2(bool);
-    void showAttackFrame(bool);
+    void showAttackFrame();
     void showButtonHide();
     void showFindButton();
 

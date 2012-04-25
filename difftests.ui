@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="hideTab">
      <attribute name="title">
@@ -218,6 +218,9 @@
       </widget>
      </widget>
      <widget class="QFrame" name="cryptCheckFrame">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -477,6 +480,9 @@
       </widget>
      </widget>
      <widget class="QFrame" name="cryptCheckFrame_2">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>0</x>
