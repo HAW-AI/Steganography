@@ -6,7 +6,7 @@ class Steganography
 {
 public:
     Steganography(QString file);
-    QString insertText(QString*,int);
+    int insertText(QString*,int);
     bool imageIsNull();
     QString* getHiddenText();
     bool saveImage(QString file);
