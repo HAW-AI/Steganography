@@ -3,7 +3,6 @@
 #include "stringiterator.h"
 #include "iterator"
 
-#define BITS_PER_LETTER 16
 #define UNICODE 16
 #define ASCII 8
 

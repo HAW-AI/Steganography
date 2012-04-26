@@ -4,13 +4,13 @@
 #include "QString"
 #include "QChar"
 
-#define BITS_PER_LETTER 16
+
 
 class BitChanger
 {
 public:
     BitChanger();
-    static QString* toBits(int i, int size = BITS_PER_LETTER);
+    static QString* toBits(int i, int size = 16);
     static uint toIntVal(QString*);
     static int redVal(int value,QString c);
     static int blueVal(int value, QString c);
