@@ -38,8 +38,19 @@ QString BitChanger::toBits(int i,int size){
     return result;
 }
 
+
+/*
+   berechnet das Bitmuster eines Textes. Dabei werden ASCII-Werte benutzt
+   Eingabe: QString* s -> Pointer auf den String, der umgewandelt werden soll
+
+   Ausgabe: QString* -> Pointer auf den Bitstream
+   Bsp: QString str = "A";
+        QString* pointer = textToBits_8Bit(&str)
+        *pointer -> "01000001"
+
+ */
 QString* BitChanger::textToBits_8Bit(QString* s){
-    QString::iterator i = s->begin();
+    QString::const_iterator i = s->begin();
     QString* result = new QString();
     while(i != s->end()){
         result->append(BitChanger::toBits((*i).toAscii(),8));
@@ -48,9 +59,19 @@ QString* BitChanger::textToBits_8Bit(QString* s){
     return result;
 }
 
+/*
+   berechnet das Bitmuster eines Textes. Dabei werden Unicode-Werte benutzt
+   Eingabe: QString* s -> Pointer auf den String, der umgewandelt werden soll
+
+   Ausgabe: QString* -> Pointer auf den Bitstream
+   Bsp: QString str = "A";
+        QString* pointer = textToBits_16Bit(&str)
+        *pointer -> "0000000001000001"
+
+ */
 QString* BitChanger::textToBits_16Bit(QString* s){
     QString* result = new QString();
-    QString::iterator i = s->begin();
+    QString::const_iterator i = s->begin();
     while(i != s->end()){
         result->append(BitChanger::toBits((*i).unicode()));
         i++;
@@ -67,8 +88,6 @@ QString* BitChanger::textToBits_16Bit(QString* s){
 	 toIntVal("000")   => 0
  
  */
-
-
 uint BitChanger::toIntVal(QString s){
     int result = 0;
     int faktor = 1;
@@ -95,8 +114,6 @@ uint BitChanger::toIntVal(QString s){
     Bsp.:  00001111 = 15
     changeLastBits(15,10101010,4,7) ->  10, weil Bitmuster == 00001010
 */
-
-
 int BitChanger::changeLastBits(int val,QString c, int start, int end){
     QString bits = c.remove(0,start-1).remove(end-start+1,BITS_PER_LETTER -end);
     QString valBits = BitChanger::toBits(val);

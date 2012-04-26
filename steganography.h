@@ -1,5 +1,5 @@
-#ifndef VERARBEITUNG_H
-#define VERARBEITUNG_H
+#ifndef STEGANOGRAPHY_H
+#define STEGANOGRAPHY_H
 
 #include "qimage.h"
 class Steganography
@@ -18,4 +18,4 @@ private:
     QImage image;
 };
 
-#endif // VERARBEITUNG_H
+#endif // STEGANOGRAPHY_H

@@ -113,7 +113,7 @@ int Steganography::insertBitstream(QString* s){
     if(inkrement >= 1){
 
 
-        QString::iterator bitIterator = s->begin();    //iteriert ueber die uebergebenen Bits
+        QString::const_iterator bitIterator = s->begin();    //iteriert ueber die uebergebenen Bits
 
         int currentColor = RED;
         int line = -1;
