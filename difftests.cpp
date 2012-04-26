@@ -8,6 +8,8 @@
 #include "QImage"
 
 #include <QtGui>
+#define UNICODE 1
+#define ASCII 0
 
 DiffTests::DiffTests(QWidget *parent) :
     QMainWindow(parent),
@@ -137,7 +139,7 @@ void DiffTests::hide()
     if(ui->textFromDocRadio->isChecked()) plain = ui->textPathTextField->toPlainText();
     else plain = ui->textEdit->toPlainText();  //if(textFromFieldRadio)
 
-    stego.insertText(plain);
+    stego.insertText(&plain, UNICODE);
 
     QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), picPath, tr("*.png *.jpg"));
 
@@ -150,8 +152,8 @@ void DiffTests::find()
     QString picPath = ui->picPathTextField_2->toPlainText();
     Steganography stego(picPath);
 
-    QString plain = stego.getText();
-    ui->textEdit_2->setText(plain);
+    QString* plain = stego.getHiddenText();
+    ui->textEdit_2->setText(*plain);
 }
 
 void DiffTests::browseOneTimePad()

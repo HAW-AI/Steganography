@@ -1,5 +1,8 @@
 #include <QtGui/QApplication>
 #include "difftests.h"
+#include "qstring.h"
+#include "bitChanger.h"
+#include "steganography.h"
 
 int main(int argc, char *argv[])
 {
