@@ -17,6 +17,8 @@ public:
     static int greenVal(int value, QString c);
     static int changeLastBits(int value, QString bits, int start, int end);
     static int changeLastBit(int value, QChar bit);
+    static QString* textToBits_8Bit(QString*);
+    static QString* textToBits_16Bit(QString*);
 };
 
 #endif // bitChanger_H

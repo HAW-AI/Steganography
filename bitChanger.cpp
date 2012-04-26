@@ -1,5 +1,7 @@
 #include "bitChanger.h"
 #include "QString"
+#include "stringiterator.h"
+#include "iterator"
 
 #define BITS_PER_LETTER 16
 
@@ -32,6 +34,26 @@ QString BitChanger::toBits(int i,int size){
 
     while(result.size() < size){
         result.prepend("0");
+    }
+    return result;
+}
+
+QString* BitChanger::textToBits_8Bit(QString* s){
+    QString::iterator i = s->begin();
+    QString* result = new QString();
+    while(i != s->end()){
+        result->append(BitChanger::toBits((*i).toAscii(),8));
+        i++;
+    }
+    return result;
+}
+
+QString* BitChanger::textToBits_16Bit(QString* s){
+    QString* result = new QString();
+    QString::iterator i = s->begin();
+    while(i != s->end()){
+        result->append(BitChanger::toBits((*i).unicode()));
+        i++;
     }
     return result;
 }

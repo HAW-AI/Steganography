@@ -29,6 +29,8 @@ Steganography::Steganography(QString filename)
   Eingabe: QString text -> zu versteckender Text
   Ausgabe: "Image" (das veraenderte Bild wird an einer gewuenschten Stelle gespeichert)
  */
+
+
 QString Steganography::insertText(QString text){
     insertHeader(text.size());
 
@@ -99,6 +101,71 @@ QString Steganography::insertText(QString text){
         return "Inkrement falsch";
    }
 }
+
+
+
+int Steganography::insertBitstream(QString* s){
+    int width = image.width();
+    int height = image.height();
+
+    int inkrement = (width * (height-1)) / s->size();
+
+    if(inkrement >= 1){
+
+
+        QString::iterator bitIterator = s->begin();    //iteriert ueber die uebergebenen Bits
+
+        int currentColor = RED;
+        int line = -1;
+
+
+
+        for(int pixelindex = inkrement-1; pixelindex < s->size()*BITS_PER_LETTER * inkrement; pixelindex += inkrement){
+            if((pixelindex / width) + 1 != line){
+                line = (pixelindex / width) +1;
+            }
+            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
+
+            int pos = (pixelindex % width);
+
+
+            if(bitIterator != s->end()){
+                int red = qRed(pixel[pos]);
+                int green = qGreen(pixel[pos]);
+                int blue = qBlue(pixel[pos]);
+
+                if(currentColor == RED){
+                    red = BitChanger::changeLastBit(red,(*bitIterator));
+                    currentColor = GREEN;
+                }else if(currentColor == GREEN){
+                    green = BitChanger::changeLastBit(green,(*bitIterator));
+                    currentColor = BLUE;
+                }else if(currentColor == BLUE){
+                    blue = BitChanger::changeLastBit(blue,(*bitIterator));
+                    currentColor = RED;
+                }else{
+                    return -1;   //Fehler bei der Farbauswahl
+                }
+
+                pixel[pos] = qRgb(red, green, blue);
+            }else{
+                return -2; // Fehler bei der Laenge; inkrement falsch berechnet
+            }
+            bitIterator++;
+        }
+
+
+
+
+
+
+        return 1; //Alles ok
+    }else{
+        return -3; //Text zu lang
+   }
+}
+
+
 
 /*
   fuegt die Headerdatei in das image ein. In der Headerdatei steht die laenge des versteckten Textes (Zeichenzahl),

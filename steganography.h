@@ -13,6 +13,7 @@ public:
     static QString bitStreamToText(QString);
     QString getText();
     bool saveImage(QString file);
+    int insertBitstream(QString*);
 private:
     QImage image;
 };
