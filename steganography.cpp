@@ -12,6 +12,7 @@
 #define BITS_PER_LETTER 16
 #define ASCII 0
 #define UNICODE 1
+#define MAX_UINT 4294967294
 
 Steganography::Steganography(QString filename)
 {
@@ -33,7 +34,8 @@ Steganography::Steganography(QString filename)
   Ausgabe: Integer
             1 -> alles ok
             -1 -> es wurde ein unbekanntes Texformat angegeben
-            .2 -> der text ist zu lang fuer das Bild und die Versteck_methode
+            -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
+            -3 -> Laenge des Texts kann nicht im Header abgespeichert werden
 
  */
 int Steganography::insertText(QString* text, int format){
@@ -45,6 +47,10 @@ int Steganography::insertText(QString* text, int format){
     }else{
         return -1; //unbekanntes Textformat uebergeben
     }
+    if(bitsToInsert->size() > MAX_UINT){
+        return -3; // TextGroesse zu gross, um in den Header eingetragen zu werden
+    }
+
     insertTextHeader(bitsToInsert->size(), format);
 
     int width = image.width();
@@ -54,7 +60,10 @@ int Steganography::insertText(QString* text, int format){
 
     if(inkrement >=1){
 
-        insertBitstream(bitsToInsert);
+        int errorCode = insertBitstream(bitsToInsert);
+        if(errorCode != 1){
+            return errorCode;
+        }
 
         return 1; //ok
     }else{
@@ -71,7 +80,7 @@ int Steganography::insertText(QString* text, int format){
            1 -> alles ok
            -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
            -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
-           -3 ->
+
 
 */
 int Steganography::insertBitstream(QString* s){
@@ -124,11 +133,6 @@ int Steganography::insertBitstream(QString* s){
             bitIterator++;
 
         }
-
-
-
-
-
 
         return 1; //Alles ok
     }else{
@@ -216,6 +220,7 @@ int Steganography::getSecondAttributeFromHeader(){
   Unicode Zeichen handelt. Es darf aber kein Bild uebergeben, in dem ein Bild versteckt ist
   Eingabe: /
   Ausgabe: QString* -> der extrahierte Text
+            im Fehlerfall den leeren String;
   */
 QString* Steganography::getHiddenText(){
     QString* bitStream = getBitStream();
@@ -224,9 +229,7 @@ QString* Steganography::getHiddenText(){
     }else if(getFirstAttributeFromHeader() == UNICODE ){
         return BitChanger::bitStreamToText_16Bit(bitStream);
     }else{
-        /*
-          to be implemented : error
-          */
+        return new QString();
     }
 }
 
@@ -240,7 +243,7 @@ QString* Steganography::getHiddenText(){
 int Steganography::insertTextHeader(int bits, int format){
     if(image.width() < 97) return -1; //Bild zu klein
 
-    insertSizeInHeader(bits);
+    insertSizeInHeader(bits); //Anzahl_Bits-Feld
 
     //in pixel 32 eintragen, dass Text versteckt
     QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(0));
@@ -248,11 +251,9 @@ int Steganography::insertTextHeader(int bits, int format){
     red = BitChanger::changeLastBit(red,'1');
     pixel[32] = qRgb(red,qGreen(pixel[32]),qBlue(pixel[32]));
 
-    insertFirstAttribute(format);
-
+    insertFirstAttribute(format); //ASCII oder Unicode eintragen
 
     return 1; //alles gut
-    qDebug("Fertig!!!");
 }
 
 
@@ -261,18 +262,18 @@ int Steganography::insertTextHeader(int bits, int format){
   auf "Bild" gesetzt wird
   Eingabe: int bits -> die Anzahl der zu versteckenden Bits; int height -> die Hoehe des versteckten Bildes
             int width -> die Breite des versteckten Bildes
-  Ausgabe: -2 -> Fehler
+  Ausgabe: -1 -> Fehler
             1 -> ok
   */
 int Steganography::insertPictureHeader(int bits, int height, int width){
-    if(insertSizeInHeader(bits) != 1) return -2; //Fehler
+    if(insertSizeInHeader(bits) != 1) return -1; //Fehler
     //in pixel 32 eintragen, dass Bild versteckt
     QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(0));
     int red = qRed(pixel[32]);
     red = BitChanger::changeLastBit(red,'0');
     pixel[32] = qRgb(red,qGreen(pixel[32]),qBlue(pixel[32]));
-    if(insertFirstAttribute(height)!= 1) return -2; //Fehler
-    if(insertSecondAttribute(width)!= 1) return -2;
+    if(insertFirstAttribute(height)!= 1) return -1; //Fehler
+    if(insertSecondAttribute(width)!= 1) return -1;
     return 1;
 }
 
@@ -301,6 +302,8 @@ int Steganography::insertSecondAttribute(int i){
   Eingabe: int i -> der einzutragende Wert
            int from -> der Index des ersten Pixels, das fuer den Eintrag verwendet werden soll
            int to -> der Index des letzten Pixels, das fuer den Eintrag verwendet werden soll
+  Ausgabe: int -> 1 alles ok
+               -> -1 Fehler
   */
 int Steganography::insertIntInHeader(int i, int from, int to){
     QString* bits = new QString();
@@ -328,7 +331,7 @@ int Steganography::insertIntInHeader(int i, int from, int to){
             blue = BitChanger::changeLastBit(blue,(*bitIterator));
             currentColor = RED;
         }else{
-            return -2; //Fehler bei der Farbauswahl
+            return -1; //Fehler
         }
 
         pixel[pos] = qRgb(red, green, blue);
@@ -342,10 +345,10 @@ int Steganography::insertIntInHeader(int i, int from, int to){
 /*
   fuegt den uebergebenen Wert in das Anzahl_Bits Feld des Headers ein
   Eingabe: size -> die Anzahl der Bits, die im Treagerbild versteckt werden soll
-  Ausgabe: int -> 1 == ok; Rest bedeutet Fehler
+  Ausgabe: int -> 1 == ok; -1 bedeutet Fehler
   */
 int Steganography::insertSizeInHeader(int size){
-    insertIntInHeader(size,0,31);
+    return insertIntInHeader(size,0,31);
 }
 
 /*
