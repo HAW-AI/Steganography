@@ -103,8 +103,8 @@ void DiffTests::showFindButton(){
 }
 
 bool DiffTests::isPath(QString path){
-    //TODO: implement this method
-    return !(path.isEmpty());
+    QFileInfo file= path;
+    return file.exists();
 }
 
 void DiffTests::chosePicture()
@@ -136,8 +136,14 @@ void DiffTests::hide()
     Steganography stego(picPath);
 
     QString plain;
-    if(ui->textFromDocRadio->isChecked()) plain = ui->textPathTextField->toPlainText();
-    else plain = ui->textEdit->toPlainText();  //if(textFromFieldRadio)
+    if(ui->textFromDocRadio->isChecked()){
+        QString plainPath = ui->textPathTextField->toPlainText();
+        QFile file(plainPath);
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream in(&file);
+        plain = in.readAll();
+        file.close();
+    }else if(ui->textFromFieldRadio->isChecked()) plain = ui->textEdit->toPlainText(); //if(textFromFieldRadio)
 
     stego.insertText(&plain, UNICODE);
 
@@ -152,8 +158,25 @@ void DiffTests::find()
     QString picPath = ui->picPathTextField_2->toPlainText();
     Steganography stego(picPath);
 
+    QString plain = stego.getText();
+    if(ui->textToFieldRadio->isChecked()){
+        ui->textEdit_2->setText(plain);
+    }else if(ui->textToDocRadio->isChecked()){
+        QString newPath = QFileDialog::getSaveFileName(
+                    this,
+                    "Save Textfile",
+                    QString::null,
+                    "Text Files(*.txt)");
+        QFile file(newPath);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+        out << plain;
+        file.close();
+    }
+
     QString* plain = stego.getHiddenText();
     ui->textEdit_2->setText(*plain);
+
 }
 
 void DiffTests::browseOneTimePad()

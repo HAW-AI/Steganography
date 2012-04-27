@@ -15,7 +15,7 @@ public:
     static int redVal(int value,QString c);
     static int blueVal(int value, QString c);
     static int greenVal(int value, QString c);
-    static int changeLastBits(int value, QString bits, int start, int end);
+   // static int changeLastBits(int, QString,int, int);
     static int changeLastBit(int value, QChar bit);
     static QString* textToBits_8Bit(QString*);
     static QString* textToBits_16Bit(QString*);

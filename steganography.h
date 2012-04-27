@@ -12,11 +12,11 @@ public:
     bool saveImage(QString file);
     int insertBitstream(QString*);
     int getFormatFromHeader();
-    int getIntFromHeader(int from, int to);
+    int getIntFromHeader(int from);
     int insertFirstAttribute(int);
     int insertSecondAttribute(int);
     int insertSizeInHeader(int);
-    int insertIntInHeader(int, int, int);
+    int insertIntInHeader(int, int);
     int insertPictureHeader(int, int, int);
     int insertTextHeader(int, int);
     int getFirstAttributeFromHeader();
