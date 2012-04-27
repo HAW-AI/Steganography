@@ -159,15 +159,16 @@ uint BitChanger::toIntVal(QString* s){
     Rueuckgabe: int -> der geaenderte Wert von val
     Bsp.:  00001111 = 15
     changeLastBits(15,10101010,4,7) ->  10, weil Bitmuster == 00001010
-*/
+
 int BitChanger::changeLastBits(int val,QString c, int start, int end){
-    QString bits = c.remove(0,start-1).remove(end-start+1,BITS_PER_LETTER -end);
+    QString bits = c.remove(0,start-1).remove(end-start+1,bitsPerLetter -end);
     QString* valBits = BitChanger::toBits(val);
     //anzahl der zu aendernden bits = end- start +1
-    QString str = valBits->replace(BITS_PER_LETTER-(end-start+1),end-start+1,bits);
+    QString str = valBits->replace(bitsPerLetter-(end-start+1),end-start+1,bits);
     return BitChanger::toIntVal(&str);
 
 }
+*/
 
 /*
   ersetzt das letzte Bit von value durch das angegebenen bit
@@ -177,7 +178,7 @@ int BitChanger::changeLastBits(int val,QString c, int start, int end){
   */
 int BitChanger::changeLastBit(int value, QChar bit){
     QString *valBits = BitChanger::toBits(value);
-    QString str = valBits->replace(BITS_PER_LETTER-1,1,bit);
+    QString str = valBits->replace(valBits->size()-1,1,bit);
     return BitChanger::toIntVal(&str);
 }
 
