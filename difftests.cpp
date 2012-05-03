@@ -158,9 +158,9 @@ void DiffTests::find()
     QString picPath = ui->picPathTextField_2->toPlainText();
     Steganography stego(picPath);
 
-    QString plain = stego.getText();
+    QString* plain = stego.getHiddenText();
     if(ui->textToFieldRadio->isChecked()){
-        ui->textEdit_2->setText(plain);
+        ui->textEdit_2->setText(*plain);
     }else if(ui->textToDocRadio->isChecked()){
         QString newPath = QFileDialog::getSaveFileName(
                     this,
@@ -173,10 +173,7 @@ void DiffTests::find()
         out << plain;
         file.close();
     }
-
-    QString* plain = stego.getHiddenText();
     ui->textEdit_2->setText(*plain);
-
 }
 
 void DiffTests::browseOneTimePad()
