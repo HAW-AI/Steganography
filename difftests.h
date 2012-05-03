@@ -22,7 +22,7 @@ private slots:
     void find();
     void browseOneTimePad();
     void decrypt();
-    void encrypt();
+    void encrypt(QString*);
 
     void showCryptFrame(bool);
     void showCryptFrame_2();

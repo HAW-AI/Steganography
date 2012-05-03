@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="hideTab">
      <attribute name="title">
@@ -235,7 +235,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QCheckBox" name="encryptCheckBox">
+      <widget class="QCheckBox" name="decryptCheckBox">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -498,7 +498,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QCheckBox" name="encryptCheckBox_2">
+      <widget class="QCheckBox" name="encryptCheckBox">
        <property name="enabled">
         <bool>false</bool>
        </property>

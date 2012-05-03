@@ -24,7 +24,7 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->keyBrowseButton, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
     ui->hideButton->setEnabled(false);
     ui->cryptFrame->hide();
-    connect( ui->encryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showCryptFrame(bool)) );
+    connect( ui->decryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showCryptFrame(bool)) );
     connect( ui->picPathTextField, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
     connect( ui->textPathTextField, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
     connect( ui->textEdit, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
@@ -39,7 +39,7 @@ DiffTests::DiffTests(QWidget *parent) :
     ui->cryptFrame_2->hide();
     ui->knowledgeKeyFrame->hide();
     ui->attackFrame->hide();
-    connect( ui->encryptCheckBox_2, SIGNAL(toggled(bool)), this, SLOT(showCryptCheckFrame_2(bool)) );
+    connect( ui->encryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showCryptCheckFrame_2(bool)) );
     connect( ui->knownKeyRadio, SIGNAL(toggled(bool)), this, SLOT(showCryptFrame_2) );
     connect( ui->unknownKeyRadio, SIGNAL(toggled(bool)), this, SLOT(showAttackFrame) );
     connect( ui->picPathTextField_2, SIGNAL(textChanged()), this, SLOT(showFindButton()) );
@@ -145,6 +145,11 @@ void DiffTests::hide()
         file.close();
     }else if(ui->textFromFieldRadio->isChecked()) plain = ui->textEdit->toPlainText(); //if(textFromFieldRadio)
 
+    //decrypt
+    if(ui->decryptCheckBox->isChecked()){
+        decrypt();
+    }
+
     stego.insertText(&plain, UNICODE);
 
     QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), picPath, tr("*.png *.jpg"));
@@ -159,6 +164,12 @@ void DiffTests::find()
     Steganography stego(picPath);
 
     QString* plain = stego.getHiddenText();
+
+    //encrypt
+    if(ui->encryptCheckBox->isChecked()){
+        encrypt(plain);
+    }
+
     if(ui->textToFieldRadio->isChecked()){
         ui->textEdit_2->setText(*plain);
     }else if(ui->textToDocRadio->isChecked()){
@@ -193,7 +204,7 @@ void DiffTests::decrypt()
 
 }
 
-void DiffTests::encrypt()
+void DiffTests::encrypt(QString* cipher)
 {
 
 }
