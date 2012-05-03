@@ -219,7 +219,7 @@
      </widget>
      <widget class="QFrame" name="cryptCheckFrame">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="geometry">
        <rect>
@@ -236,6 +236,9 @@
        <enum>QFrame::Raised</enum>
       </property>
       <widget class="QCheckBox" name="encryptCheckBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -306,16 +309,14 @@
        </item>
        <item>
         <property name="text">
-         <string>Vigenère</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Vernam / One-Time-Pad</string>
+         <string>AES</string>
         </property>
        </item>
       </widget>
       <widget class="QPushButton" name="keyBrowseButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>380</x>
@@ -498,6 +499,9 @@
        <enum>QFrame::Raised</enum>
       </property>
       <widget class="QCheckBox" name="encryptCheckBox_2">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>20</x>
