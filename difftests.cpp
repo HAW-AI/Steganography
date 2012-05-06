@@ -130,7 +130,7 @@ void DiffTests::hide()
         plain = encrypt(plain);
     }
 
-    stego.insertText(&plain, UNICODE);
+    stego.insertText_1BitPerPixel(&plain, UNICODE);
 
     QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), picPath, tr("*.png *.jpg"));
 
