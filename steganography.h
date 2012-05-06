@@ -6,22 +6,47 @@ class Steganography
 {
 public:
     Steganography(QString file);
-    int insertText(QString*,int);
+
+    int insertText_1BitPerPixel(QString*,int);
+
     bool imageIsNull();
+
     QString* getHiddenText();
+
     bool saveImage(QString file);
+
     int insertBitstream(QString*);
-    int getFormatFromHeader();
+    int insertBitstream_3BitsPerPixel(QString* s);
+
+    QString* getBitStream();
+    QString* getBitstream_3BitsPerPixel();
+
     int getIntFromHeader(int from);
-    int insertFirstAttribute(int);
-    int insertSecondAttribute(int);
-    int insertSizeInHeader(int);
-    int insertIntInHeader(int, int);
-    int insertPictureHeader(int, int, int);
-    int insertTextHeader(int, int);
+
+    int getSizeFromHeader();
+    int getFormatFromHeader();
     int getFirstAttributeFromHeader();
     int getSecondAttributeFromHeader();
-    QString* getBitStream();
+    int getBitsPerPixelFromHeader();
+    int getSequenceNoFromHeader();
+
+    int insertIntInHeader(int, int);
+
+    int insertSizeInHeader(int);
+    int insertTBFieldInHeader(int format);
+    int insertFirstAttribute(int);
+    int insertSecondAttribute(int);
+    int insertBitsPerPixelInHeader(int bitsPerPixel);
+    int insertSequenceNoInHeader(int sequenceNo);
+
+
+    int insertPictureHeader(int, int, int); // rausnehmen??
+    int insertTextHeader(int, int);         // rausnehmen??
+
+    QChar lastBit(int i);
+
+    int calcInkrement(int pixels, int bits, int bitsPerPixel);
+
 
 
 
