@@ -23,8 +23,8 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->hideButton, SIGNAL( clicked() ), this, SLOT( hide() ) );
     connect( ui->keyBrowseButton, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
     ui->hideButton->setEnabled(false);
-    ui->cryptFrame->hide();
-    connect( ui->decryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showCryptFrame(bool)) );
+    ui->encryptFrame->hide();
+    connect( ui->encryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showEncryptFrame(bool)) );
     connect( ui->picPathTextField, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
     connect( ui->textPathTextField, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
     connect( ui->textEdit, SIGNAL(textChanged()), this, SLOT(showButtonHide()) );
@@ -35,13 +35,9 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->picBrowseButton_2, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
     connect( ui->findButton, SIGNAL( clicked() ), this, SLOT( find() ) );
     connect( ui->keyBrowseButton_2, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
-    ui->findButton->setEnabled(false); //TODO: run clicked RadioButtons
-    ui->cryptFrame_2->hide();
-    ui->knowledgeKeyFrame->hide();
-    ui->attackFrame->hide();
-    connect( ui->encryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showCryptCheckFrame_2(bool)) );
-    connect( ui->knownKeyRadio, SIGNAL(toggled(bool)), this, SLOT(showCryptFrame_2) );
-    connect( ui->unknownKeyRadio, SIGNAL(toggled(bool)), this, SLOT(showAttackFrame) );
+    ui->findButton->setEnabled(false);
+    ui->decryptFrame->hide();
+    connect( ui->decryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showDecryptFrame(bool)) );
     connect( ui->picPathTextField_2, SIGNAL(textChanged()), this, SLOT(showFindButton()) );
     connect( ui->textToDocRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
     connect( ui->textToFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
@@ -52,35 +48,19 @@ DiffTests::~DiffTests()
     delete ui;
 }
 
-void DiffTests::showCryptCheckFrame_2(bool show){
+void DiffTests::showDecryptFrame(bool show){
     if(show){
-        ui->knowledgeKeyFrame->show();
+        ui->decryptFrame->show();
     }else{
-        ui->knowledgeKeyFrame->hide();
+        ui->decryptFrame->hide();
     }
 }
 
-void DiffTests::showCryptFrame_2(){
-    if(ui->knownKeyRadio->isChecked()){
-        ui->cryptFrame_2->show();
-    }else{
-        ui->cryptFrame_2->hide();
-    }
-}
-
-void DiffTests::showAttackFrame(){
-    if(ui->unknownKeyRadio->isChecked()){
-        ui->attackFrame->show();
-    }else{
-        ui->attackFrame->hide();
-    }
-}
-
-void DiffTests::showCryptFrame(bool show){
+void DiffTests::showEncryptFrame(bool show){
     if(show){
-        ui->cryptFrame->show();
+        ui->encryptFrame->show();
     }else{
-        ui->cryptFrame->hide();
+        ui->encryptFrame->hide();
     }
 }
 
@@ -145,9 +125,9 @@ void DiffTests::hide()
         file.close();
     }else if(ui->textFromFieldRadio->isChecked()) plain = ui->textEdit->toPlainText(); //if(textFromFieldRadio)
 
-    //decrypt
-    if(ui->decryptCheckBox->isChecked()){
-        decrypt(&plain);
+    //encrypt
+    if(ui->encryptCheckBox->isChecked()){
+        plain = encrypt(plain);
     }
 
     stego.insertText(&plain, UNICODE);
@@ -165,9 +145,9 @@ void DiffTests::find()
 
     QString* plain = stego.getHiddenText();
 
-    //encrypt
-    if(ui->encryptCheckBox->isChecked()){
-        encrypt(plain);
+    //decrypt
+    if(ui->decryptCheckBox->isChecked()){
+        //plain = decrypt(plain);
     }
 
     if(ui->textToFieldRadio->isChecked()){
@@ -199,23 +179,23 @@ void DiffTests::browseOneTimePad()
     ui->keyTextField_2->setText( path );
 }
 
-void DiffTests::decrypt(QString* plain)
-{
-    /*
+QString DiffTests::encrypt(QString plain)
+{/*
     switch (ui->techniqueComboBox->currentIndex())
-    case 0: //Caesar
-        //do something
-        break;
-    case 1: //AES
-        1+1;
-        //do something else
-        break;
-    default:
-        //do nothing
-        */
+        case 0: //Caesar
+            caesar(plain);
+            break;
+        case 1: //AES
+            aes();
+            //do something else
+            break;
+        default:
+            //do nothing
+*/
+    return "ciphertext";
 }
 
-void DiffTests::encrypt(QString* cipher)
+QString DiffTests::decrypt(QString cipher)
 {
-
+    return "plaintext";
 }

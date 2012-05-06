@@ -21,17 +21,17 @@ private slots:
     void hide();
     void find();
     void browseOneTimePad();
-    void decrypt(QString*);
-    void encrypt(QString*);
 
-    void showCryptFrame(bool);
-    void showCryptFrame_2();
-    void showCryptCheckFrame_2(bool);
-    void showAttackFrame();
+    void showEncryptFrame(bool);
+    void showDecryptFrame(bool);
     void showButtonHide();
     void showFindButton();
 
     bool isPath(QString);
+
+public slots:
+    QString decrypt(QString);
+    QString encrypt(QString);
 
 private:
     Ui::DiffTests *ui;
