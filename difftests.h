@@ -20,12 +20,15 @@ private slots:
     void choseText();
     void hide();
     void find();
+    int getFormat(QString text);
     void browseOneTimePad();
 
     void showEncryptFrame(bool);
     void showDecryptFrame(bool);
-    void showButtonHide();
+    void showHideButton();
     void showFindButton();
+    void checkKey();
+    void checkKey_2();
 
     bool isPath(QString);
 
