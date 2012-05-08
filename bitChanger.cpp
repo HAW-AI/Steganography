@@ -192,7 +192,24 @@ int BitChanger::changeLastBits(int val, QString* str){
 int BitChanger::changeLastBit(int value, QChar bit){
     QString *valBits = BitChanger::toBits(value);
     QString str = valBits->replace(valBits->size()-1,1,bit);
+    delete valBits;
     return BitChanger::toIntVal(&str);
+}
+
+QString BitChanger::getLastBits(int value, int bits){
+    QString* valBits = BitChanger::toBits(value);
+
+    if((valBits->size() < bits) || bits <= 0){
+        delete valBits;
+        qDebug("in error");
+        return ""; //Fehler, emptyString zurueck
+    }
+    QString result = valBits->mid(valBits->size() - bits, bits);
+    qDebug("in methode:");
+
+    delete valBits;
+    return result;
+
 }
 
 
