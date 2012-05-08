@@ -39,7 +39,7 @@ long Intermediary::availablePixel()
     long result = 0;
     foreach (const QImage &image, images->values())
     {
-        result += image.width() * image.height();
+        result += (image.width() * image.height()) - 160;
     }
     return result;
 }
