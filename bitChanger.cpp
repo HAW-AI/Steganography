@@ -149,8 +149,8 @@ uint BitChanger::toIntVal(QString* s){
 
 
 
-/*
-   ersetzt die letzten n Bits des eingegenen Wertes durch die angegebenen Bits aus QString c
+
+/*   ersetzt die letzten n Bits des eingegenen Wertes durch die angegebenen Bits aus QString c
    Eingabe: int val -> der Wert, dessen letzte n Bits geaendert werden
             QString c -> das Bitmuster, aus dem Teile die letzen n bits von val ersetzen sollen
             int start -> Startposition der zu uebernehmenden Bits aus QString
@@ -167,8 +167,21 @@ int BitChanger::changeLastBits(int val,QString c, int start, int end){
     QString str = valBits->replace(bitsPerLetter-(end-start+1),end-start+1,bits);
     return BitChanger::toIntVal(&str);
 
+}*/
+
+int BitChanger::changeLastBits(int val, QString* str){
+    QString* valBits = BitChanger::toBits(val);
+    qDebug("Value:");
+    qDebug((*valBits).toAscii());
+    if(valBits->size() < str->size()) return -1; //ersetzen nicht moeglich, da mehr Zeichen ersetzt werden sollen, als vorhanden sind
+
+    QString result = valBits->replace(valBits->size()-str->size(), str->size(),*str);
+    qDebug("Result:");
+    qDebug(result.toAscii());
+    return BitChanger::toIntVal(&result);
+
 }
-*/
+
 
 /*
   ersetzt das letzte Bit von value durch das angegebenen bit

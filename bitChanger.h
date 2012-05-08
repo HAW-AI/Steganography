@@ -21,6 +21,7 @@ public:
     static QString* textToBits_16Bit(QString*);
     static QString* bitStreamToText_16Bit(QString*);
     static QString* bitStreamToText_8Bit(QString*);
+    static int changeLastBits(int value, QString* bits);
 };
 
 #endif // bitChanger_H

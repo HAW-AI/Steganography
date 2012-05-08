@@ -18,6 +18,7 @@ public:
     int insertBitstream(QString*);
     int insertBitstream_3BitsPerPixel(QString* s);
 
+
     QString* getBitStream();
     QString* getBitstream_3BitsPerPixel();
 

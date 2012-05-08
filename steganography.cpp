@@ -211,6 +211,8 @@ int Steganography::insertBitstream_3BitsPerPixel(QString* s){
    }
 }
 
+
+
 /*
   berechnet das Inkrement
   Eingabe:
