@@ -15,13 +15,15 @@ SOURCES += main.cpp\
     tests.cpp \
     bitChanger.cpp \
     stringiterator.cpp\
-    steganography.cpp
+    steganography.cpp \
+    intermediary.cpp
 
 
 HEADERS  += difftests.h \
     tests.h \
     bitChanger.h \
     stringiterator.h \
-    steganography.h
+    steganography.h \
+    intermediary.h
 
 FORMS    += difftests.ui
