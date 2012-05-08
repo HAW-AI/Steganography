@@ -3,8 +3,8 @@
 #include "stringiterator.h"
 #include "iterator"
 
-#define UNICODE 16
-#define ASCII 8
+#define UNICODE_SIZE 16
+#define ASCII_SIZE 8
 
 BitChanger::BitChanger()
 {
@@ -55,8 +55,8 @@ QString* BitChanger::bitStreamToText_16Bit(QString* bitstream){
 
 
     QString* result = new QString();
-    for(int i = 0; i < bitstream->size(); i+=UNICODE){
-        QString s = bitstream->mid(i, UNICODE);
+    for(int i = 0; i < bitstream->size(); i+=UNICODE_SIZE){
+        QString s = bitstream->mid(i, UNICODE_SIZE);
         result->append(QChar(BitChanger::toIntVal(&s)));
 
     }
@@ -71,15 +71,15 @@ QString* BitChanger::bitStreamToText_16Bit(QString* bitstream){
   */
 QString* BitChanger::bitStreamToText_8Bit(QString* bitstream){
 
-    if(bitstream->size() % ASCII != 0){
+    if(bitstream->size() % ASCII_SIZE != 0){
         qDebug("Fehler im Bitstream");
 
     }
 
 
     QString* result = new QString();
-    for(int i = 0; i < bitstream->size(); i+=ASCII){
-        QString s = bitstream->mid(i, ASCII);
+    for(int i = 0; i < bitstream->size(); i+=ASCII_SIZE){
+        QString s = bitstream->mid(i, ASCII_SIZE);
         result->append(QChar(BitChanger::toIntVal(&s)));
     }
     return result;
