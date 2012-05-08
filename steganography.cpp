@@ -249,7 +249,7 @@ QString* Steganography::getBitstream_3BitsPerPixel(){
     int bitsPerPixel = 3;
     QString* result = new QString();
     qDebug("bis hier");
-    int hiddenLetters = getIntFromHeader(0);
+    int hiddenLetters = getSizeFromHeader();
     qDebug("size aus Header: %i", hiddenLetters);
     int extractedLetters = 0;
 
