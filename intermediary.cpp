@@ -7,6 +7,7 @@
 
 #define UNICODE 1
 #define ASCII 0
+#define HEADER_SIZE 160
 
 Intermediary::Intermediary(QString* text, int format, QString imagePath)
 {
@@ -39,7 +40,7 @@ long Intermediary::availablePixel()
     long result = 0;
     foreach (const QImage &image, images->values())
     {
-        result += (image.width() * image.height()) - 160;
+        result += (image.width() * image.height()) - HEADER_SIZE;
     }
     return result;
 }
@@ -60,7 +61,7 @@ void Intermediary::hide_1Bit(QString savePath)
         while (it != images->constEnd())
         {
             QImage image = it.value();
-            totalPixel = image.width() * image.height();
+            totalPixel = (image.width() * image.height()) - HEADER_SIZE;
             start = end;
             range = (totalPixel / bitRate);
             end = start + range;
