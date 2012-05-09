@@ -16,11 +16,15 @@ public:
     bool saveImage(QString file);
 
     int insertBitstream(QString*);
+    int insertBitstream(QList<uint>* list);
     int insertBitstream_3BitsPerPixel(QString* s);
+    int insertBitstream_6BitsPerPixel(QString* s);
 
 
     QString* getBitStream();
+    QList<uint>* getBitStreamAsIntList();
     QString* getBitstream_3BitsPerPixel();
+    QString* getBitstream_6BitsPerPixel();
 
     int getIntFromHeader(int from);
 

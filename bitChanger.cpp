@@ -1,10 +1,11 @@
 #include "bitChanger.h"
 #include "QString"
-#include "stringiterator.h"
 #include "iterator"
+#include "qimage.h"
 
 #define UNICODE_SIZE 16
 #define ASCII_SIZE 8
+#define PIXEL_SIZE 24
 
 BitChanger::BitChanger()
 {
@@ -30,6 +31,28 @@ QString* BitChanger::toBits(int i,int size){
         }
         i = i /2;
     }
+
+
+    // auffuellen mit fuehrenden Nullen, falls noetig
+
+    while(result->size() < size){
+        result->prepend("0");
+    }
+    return result;
+}
+
+QString* BitChanger::toBits(uint i,int size){
+    QString* result = new QString();
+    while(i > 0){
+        if(i % 2 == 0){
+            result->prepend("0");
+        }else{
+            result->prepend("1");
+            i -= 1;
+        }
+        i = i /2;
+    }
+
 
     // auffuellen mit fuehrenden Nullen, falls noetig
 
@@ -171,13 +194,9 @@ int BitChanger::changeLastBits(int val,QString c, int start, int end){
 
 int BitChanger::changeLastBits(int val, QString* str){
     QString* valBits = BitChanger::toBits(val);
-    qDebug("Value:");
-    qDebug((*valBits).toAscii());
     if(valBits->size() < str->size()) return -1; //ersetzen nicht moeglich, da mehr Zeichen ersetzt werden sollen, als vorhanden sind
 
     QString result = valBits->replace(valBits->size()-str->size(), str->size(),*str);
-    qDebug("Result:");
-    qDebug(result.toAscii());
     return BitChanger::toIntVal(&result);
 
 }
@@ -201,16 +220,120 @@ QString BitChanger::getLastBits(int value, int bits){
 
     if((valBits->size() < bits) || bits <= 0){
         delete valBits;
-        qDebug("in error");
         return ""; //Fehler, emptyString zurueck
     }
     QString result = valBits->mid(valBits->size() - bits, bits);
-    qDebug("in methode:");
 
     delete valBits;
     return result;
 
 }
 
+QString* BitChanger::pictureToBitstream(QImage* image){
+    qDebug("In Methode");
+    QString* result = new QString();
+    int red;
+    int green;
+    int blue;
+    qDebug("wenigstens bis hier");
+    qDebug("image_height : %i", image->height());
+
+    for(int line = 0; line < image->height(); line++){
+        qDebug("line: %i", line);
+        QRgb* Pixel = reinterpret_cast<QRgb*>(image->scanLine(line));
+
+        for(int pos = 0; pos < image->width(); pos++){
+
+            red = qRed(Pixel[pos]);
+            green = qGreen(Pixel[pos]);
+            blue = qBlue(Pixel[pos]);
+            result->append(*(BitChanger::toBits(red,8)));
+            result->append(*(BitChanger::toBits(green,8)));
+            result->append(*(BitChanger::toBits(blue,8)));
+        }
+    }
+
+    return result;
+
+}
+
+QImage* BitChanger::bitStreamToPicture(QString* stream, int height, int width){
+    qDebug("In Methode");
+    QImage* result = new QImage(width, height,QImage::Format_RGB32);
+    qDebug("in Methode1, Bild angelegt");
+
+
+    if(stream->size() % 24 != 0){
+        qDebug("Fehler im Bitstream");
+        return new QImage();
+
+    }
+    if((stream->size() / 24) != (result->width() * result->height())){
+        qDebug("Fehler im Bitstream 2");
+        return new QImage();
+    }
+
+    int line = 0;
+    int pos = 0;
+
+    int red;
+    int green;
+    int blue;
+    QRgb* Pixel = reinterpret_cast<QRgb*>(result->scanLine(line));
+
+    for(int i = 0; i < stream->size(); i+=PIXEL_SIZE){
+        if(pos >= result->width()){
+            pos = 0;
+            line++;
+            Pixel = reinterpret_cast<QRgb*>(result->scanLine(line));
+        }
+        if(line < result->height()){
+            QString s = stream->mid(i, PIXEL_SIZE);
+            red = BitChanger::toIntVal(&(s.mid(0,8)));
+            green = BitChanger::toIntVal(&(s.mid(8,8)));
+            blue = BitChanger::toIntVal(&(s.mid(16,8)));
+            Pixel[pos] = qRgb(red, green, blue);
+            pos++;
+        }
+
+
+    }
+    return result;
+
+
+}
+
+
+//nicht fuer die öffentlichkeit!!!
+void BitChanger::stringTest(){
+    qDebug("anfang");
+    QString* result = new QString();
+
+    for(int i = 0; i < 4000 ; i++){
+        qDebug("i: %i", i);
+        for(int y = 0; y < 4000;y++){
+            if(i == 2796){
+                qDebug("y: %i", y);
+            }
+            result->append("111111110000000011111111");
+        }
+
+    }
+    qDebug("fertig");
+}
+//nicht fuer die Oeffentlichkeit
+QImage* BitChanger::erstelleQimage(int width, int height){
+    QImage* result = new QImage(width,height,QImage::Format_ARGB32);
+    for(int line = 0; line < height; line++){
+         QRgb* Pixel = reinterpret_cast<QRgb*> (result->scanLine(line));
+         for(int pos = 0; pos < width; pos++){
+             Pixel[pos] = qRgb(100,100,100);
+         }
+    }
+    result->save("C:\\Users\\Sebastian\\Desktop\\erstelleBild.png","PNG");
+    return result;
+
+
+}
 
 
