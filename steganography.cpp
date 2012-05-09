@@ -12,7 +12,7 @@
 #define BLUE 2
 #define ASCII 0
 #define UNICODE 1
-#define MAX_INT 4294967294
+#define MAX_INT 4294967295
 
 Steganography::Steganography(QString filename)
 {
@@ -281,7 +281,6 @@ int Steganography::insertBitstream_3BitsPerPixel(QString* s){
         return -2; //Text zu lang
    }
 }
-
 
 int Steganography::insertBitstream_6BitsPerPixel(QString* s){
     int width = image.width();

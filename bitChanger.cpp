@@ -6,6 +6,7 @@
 #define UNICODE_SIZE 16
 #define ASCII_SIZE 8
 #define PIXEL_SIZE 24
+#define INT_SIZE 32
 
 BitChanger::BitChanger()
 {
@@ -109,6 +110,32 @@ QString* BitChanger::bitStreamToText_8Bit(QString* bitstream){
 }
 
 /*
+  berechnet aus einem Bitstream einen Text, wobei 8 Bit zu einem Zeichen zusammengefasst werden
+  Eingabe: QString bitstream => der Bitstream aus dem ein Text gebildet werden soll. Z.B "100000011000010"
+  Ausgabe: QString -> der Text, dem der Bitstream entspricht
+  Beispiel: "bitStreamToText("1000000110000010") => "AB", da "10000001" = 65 = "A", da 10000010 = 66 = "B"
+  */
+QString* BitChanger::bitStreamToText_8Bit(QList<uint>* bitstream){
+
+    if((bitstream->size() * INT_SIZE)  % ASCII_SIZE != 0){
+        qDebug("Fehler im Bitstream");
+
+    }
+
+    QList<uint>::const_iterator outerIterator;
+    QString* result = new QString();
+    for( outerIterator = bitstream->begin(); outerIterator != bitstream->end(); outerIterator++){
+        QString temp = BitChanger::toBits(*outerIterator);
+        for(int i = 0; i < temp.size();i+=ASCII_SIZE){
+            QString s = bitstream->mid(i, ASCII_SIZE);
+            result->append(QChar(BitChanger::toIntVal(&s)));
+        }
+    }
+    return result;
+}
+
+
+/*
    berechnet das Bitmuster eines Textes. Dabei werden ASCII-Werte benutzt
    Eingabe: QString* s -> Pointer auf den String, der umgewandelt werden soll
 
@@ -127,6 +154,28 @@ QString* BitChanger::textToBits_8Bit(QString* s){
     }
     return result;
 }
+
+/*
+   berechnet das Bitmuster eines Textes. Dabei werden ASCII-Werte benutzt
+   Eingabe: QString* s -> Pointer auf den String, der umgewandelt werden soll
+
+   Ausgabe: QString* -> Pointer auf den Bitstream
+   Bsp: QString str = "A";
+        QString* pointer = textToBits_8Bit(&str)
+        *pointer -> "01000001"
+
+ */
+QList<uint>* BitChanger::textToBits_8Bit(QString* s){
+    QString::const_iterator i = s->begin();
+    QList<uint>* result = new QList<uint>();
+    QString temp ="";
+    while(i != s->end()){
+        temp->append(BitChanger::toBits((*i).toAscii(),8));
+        i++;
+    }
+    return result;
+}
+
 
 /*
    berechnet das Bitmuster eines Textes. Dabei werden Unicode-Werte benutzt
