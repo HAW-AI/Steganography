@@ -590,12 +590,12 @@ QList<uint>* Steganography::getBitstreamAsIntList_3BitsPerPixel(){
     int height = image.height();
     int bitsPerPixel = 3;
     QList<uint>* result = new QList<uint>();
-    QString* temp = new QString();
+    int aktBit = 31;
+    uint listElement = 0;
     int hiddenLetters = getSizeFromHeader();
     int extractedLetters = 0;
 
     int inkrement = calcInkrement(width*(height-1), hiddenLetters, bitsPerPixel);
-    qDebug("Inkrement auslesen = %i", inkrement);
 
     if(inkrement >= 1){
 
@@ -615,35 +615,36 @@ QList<uint>* Steganography::getBitstreamAsIntList_3BitsPerPixel(){
             int blue = qBlue(pixel[pos]);
 
             if(extractedLetters < hiddenLetters){
-                temp->append(lastBit(red));
-                if(temp->size() == 32){
-                    result->append(BitChanger::toIntVal(temp));
-                    temp->clear();
+                listElement = BitChanger::changeBitAt(listElement,aktBit,lastBit(red));
+                aktBit--;
+                if(aktBit < 0){
+                    result->append(listElement);
+                    aktBit = 31;
                 }
                 extractedLetters++;
             }
             if(extractedLetters < hiddenLetters){
-                temp->append(lastBit(green));
-                if(temp->size() == 32){
-                    result->append(BitChanger::toIntVal(temp));
-                    temp->clear();
+                listElement = BitChanger::changeBitAt(listElement,aktBit,lastBit(green));
+                aktBit--;
+                if(aktBit < 0){
+                    result->append(listElement);
+                    aktBit = 31;
                 }
                 extractedLetters++;
             }
             if(extractedLetters < hiddenLetters){
-                temp->append(lastBit(blue));
-                if(temp->size() == 32){
-                    result->append(BitChanger::toIntVal(temp));
-                    temp->clear();
+                listElement = BitChanger::changeBitAt(listElement,aktBit,lastBit(blue));
+                aktBit--;
+                if(aktBit < 0){
+                    result->append(listElement);
+                    aktBit = 31;
                 }
                 extractedLetters++;
             }else{
-                delete temp;
                 return result;
             }
 
         }
-        delete temp;
         return result;
 
     }
