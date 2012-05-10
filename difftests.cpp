@@ -7,6 +7,7 @@
 #include "iostream"
 #include "QImage"
 #include "crypt.h"
+#include "problemdialog.h"
 
 #include <QtGui>
 #define UNICODE 1
@@ -347,4 +348,10 @@ QString DiffTests::decrypt(QString cipher)
             return cipher;
     }
     return plain;
+}
+
+void DiffTests::popupProblemDialog()
+{
+    pd = new ProblemDialog();
+    pd->show();
 }
