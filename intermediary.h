@@ -37,4 +37,19 @@ private:
     QMap<QString, QImage>* images;
 };
 
+// Konstruktor: 0 = ASCII / 1 = UNICODE
+
+// HIDE
+//QString test = "hey!!!!";
+//Intermediary* iHide = new Intermediary(&test, 0, "/Users/Raimund/test1.png");
+//iHide->addImage("/Users/Raimund/test2.png");
+//iHide->addImage("/Users/Raimund/test3.png");
+//iHide->hide_1Bit("/Users/Raimund/testResult"); // savePath erstmal ohne ".png" damit wir die Zahl im Dateinamen inkrementieren können!
+
+// FIND
+//Intermediary* iFind = new Intermediary("/Users/Raimund/testResult1.png");
+//iFind->addImage("/Users/Raimund/testResult2.png");
+//iFind->addImage("/Users/Raimund/testResult3.png");
+//iFind->getHiddenText();
+
 #endif // INTERMEDIARY_H
