@@ -17,7 +17,8 @@ SOURCES += main.cpp\
     stringiterator.cpp\
     steganography.cpp \
     intermediary.cpp \
-    crypt.cpp
+    crypt.cpp \
+    problemdialog.cpp
 
 
 HEADERS  += difftests.h \
@@ -26,6 +27,8 @@ HEADERS  += difftests.h \
     stringiterator.h \
     steganography.h \
     intermediary.h \
-    crypt.h
+    crypt.h \
+    problemdialog.h
 
-FORMS    += difftests.ui
+FORMS    += difftests.ui \
+    problemdialog.ui
