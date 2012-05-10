@@ -338,7 +338,7 @@ int BitChanger::changeBitAt(int val ,int pos, QChar c){
     if(c == '1'){
         return val | temp;
     }else{
-        return val | (MAX_INT - temp);
+        return val & (MAX_INT - temp);
     }
 }
 

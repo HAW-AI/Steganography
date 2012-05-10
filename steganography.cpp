@@ -839,15 +839,15 @@ QList<uint>* Steganography::getBitStreamAsIntList(){
     int height = image.height();
 
     int inkrement = calcInkrement(width * (height-1), getSizeFromHeader(),1);
-    qDebug("Inkrement auslesen: %i", inkrement);
 
     int currentColor = RED;
     int color;
     int line = -1;
-    QString* lastBits = new QString();
+    int aktBit = 31;
+    int listElement = 0;
     QList<uint>* result = new QList<uint>;
 
-    for(int pixelindex = inkrement-1; pixelindex < getIntFromHeader(0) * inkrement; pixelindex += inkrement){
+    for(int pixelindex = inkrement-1; pixelindex < getSizeFromHeader() * inkrement; pixelindex += inkrement){
         if((pixelindex / width) + 1 != line){
             line = (pixelindex / width) +1;
         }
@@ -864,25 +864,25 @@ QList<uint>* Steganography::getBitStreamAsIntList(){
                     color = qBlue(pixel[pos]) % 2;
                     currentColor = RED;
                 }else{
-                    delete lastBits;
                     return new QList<uint>();
                 }
                 if(color == 0){
-                    lastBits->append("0"); 
+                   listElement = BitChanger::changeBitAt(listElement,aktBit,'0');
+                   aktBit--;
                 }
                 else if(color == 1){
-                    lastBits->append("1");
+                    listElement = BitChanger::changeBitAt(listElement,aktBit,'1');
+                    aktBit--;
                 }
                 else{
                     return new QList<uint>();
                 }
-                if(lastBits->size() >= 32){
-                    //qDebug("neuer Intval: %u", BitChanger::toIntVal(lastBits));
-                    result->append(BitChanger::toIntVal(lastBits));
-                    lastBits->clear();
+                if(aktBit < 0){
+                    aktBit = 31;
+                    result->append(listElement);
+                    listElement = 0;
                 }
     }
-    delete lastBits;
     return result;
 }
 
