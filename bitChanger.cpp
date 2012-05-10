@@ -115,6 +115,7 @@ QString* BitChanger::bitStreamToText_8Bit(QString* bitstream){
   Ausgabe: QString -> der Text, dem der Bitstream entspricht
   Beispiel: "bitStreamToText("1000000110000010") => "AB", da "10000001" = 65 = "A", da 10000010 = 66 = "B"
   */
+/*
 QString* BitChanger::bitStreamToText_8Bit(QList<uint>* bitstream){
 
     if((bitstream->size() * INT_SIZE)  % ASCII_SIZE != 0){
@@ -128,6 +129,35 @@ QString* BitChanger::bitStreamToText_8Bit(QList<uint>* bitstream){
         QString temp = BitChanger::toBits(*outerIterator);
         for(int i = 0; i < temp.size();i+=ASCII_SIZE){
             QString s = bitstream->mid(i, ASCII_SIZE);
+            result->append(QChar(BitChanger::toIntVal(&s)));
+        }
+    }
+    return result;
+}*/
+/*####################################################
+Daniel @ Andy / Seb
+hier waren mehrere Fehler die ich mal nach möglichkeit
+gefixed habe damit die Klasse überhaupt verwendet werden
+kann! ggf bitte selber anpassen. nur syntax gefixed und
+nicht ggf falsche semantik
+####################################################*/
+QString* BitChanger::bitStreamToText_8Bit(QList<uint>* bitstream){
+
+    if((bitstream->size() * INT_SIZE)  % ASCII_SIZE != 0){
+        qDebug("Fehler im Bitstream");
+
+    }
+
+    QList<uint>::const_iterator outerIterator;
+    QString* result = new QString();
+    for( outerIterator = bitstream->begin(); outerIterator != bitstream->end(); outerIterator++){
+        QString* temp = BitChanger::toBits(*outerIterator);
+        for(int i = 0; i < temp->size();i+=ASCII_SIZE){
+            QList<uint> list = bitstream->mid(i, ASCII_SIZE);
+            QString s;
+            for(int i=0; i<list.size(); ++i){
+                s.append(list[i]);
+            }
             result->append(QChar(BitChanger::toIntVal(&s)));
         }
     }
@@ -165,7 +195,15 @@ QString* BitChanger::textToBits_8Bit(QString* s){
         *pointer -> "01000001"
 
  */
-QList<uint>* BitChanger::textToBits_8Bit(QString* s){
+/*
+
+*/
+/*####################################################
+Daniel @ Andy / Seb
+undefined im header und overloading nicht möglich!
+erstmal auskommentiert damit die Klasse funktioniert
+####################################################*/
+/*QList<uint>* BitChanger::textToBits_8Bit(QString* s){
     QString::const_iterator i = s->begin();
     QList<uint>* result = new QList<uint>();
     QString temp ="";
@@ -174,7 +212,7 @@ QList<uint>* BitChanger::textToBits_8Bit(QString* s){
         i++;
     }
     return result;
-}
+}*/
 
 
 /*
