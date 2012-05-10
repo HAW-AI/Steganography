@@ -2,6 +2,7 @@
 #define DIFFTESTS_H
 
 #include <QMainWindow>
+#include "problemdialog.h"
 
 namespace Ui {
 class DiffTests;
@@ -36,8 +37,11 @@ public slots:
     QString decrypt(QString);
     QString encrypt(QString);
 
+    void popupProblemDialog();
+
 private:
     Ui::DiffTests *ui;
+    ProblemDialog *pd;
 };
 
 #endif // DIFFTESTS_H
