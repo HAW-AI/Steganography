@@ -157,7 +157,6 @@ int Steganography::insertBitstream(QList<uint>* list){
     int height = image.height();
 
     int inkrement = calcInkrement(width * (height-1),list->size()*INT_SIZE,1);
-    qDebug("Inkrement einfuegen: %i", inkrement);
 
     if(inkrement >= 1){
 
@@ -173,7 +172,6 @@ int Steganography::insertBitstream(QList<uint>* list){
 
             if(aktBit < 0){
                 if(outerIterator != list->end()){
-                    qDebug("neues Int-Element: %u", *outerIterator);
                     outerIterator++;
                     aktBit = 31;
                 }else{
@@ -296,7 +294,6 @@ int Steganography::insertBitstream_3BitsPerPixel(QList<uint>* l){
     int aktBit = 31;
 
     int inkrement = calcInkrement(width * (height-1),l->size() * INT_SIZE ,bitsPerPixel);
-    qDebug("Inkrement einlesen: %i", inkrement);
 
     if(inkrement >= 1){
 
@@ -346,16 +343,13 @@ int Steganography::insertBitstream_3BitsPerPixel(QList<uint>* l){
 
                 pixel[pos] = qRgb(red, green, blue);
                 if(outerIterator == l->end()){
-                    qDebug("aktBit: %i", aktBit);
                 }
             }else{
                 return -2; // Fehler bei der Laenge; inkrement falsch berechnet
             }
         }
-        qDebug("ok exit");
         return 1; //Alles ok
     }else{
-        qDebug("error 3");
         return -2; //Text zu lang
    }
 }

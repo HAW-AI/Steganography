@@ -323,11 +323,13 @@ int BitChanger::changeLastBits(int val, QString* str){
         changeLastBit(7,1) => 7
   */
 int BitChanger::changeLastBit(int value, QChar bit){
-    QString *valBits = BitChanger::toBits(value);
-    QString str = valBits->replace(valBits->size()-1,1,bit);
-    delete valBits;
-    return BitChanger::toIntVal(&str);
+    if(bit == '1'){
+       return value | 1;
+    }else{
+      return value & (MAX_INT-1);
+    }
 }
+
 
 QString BitChanger::getLastBits(int value, int bits){
     QString* valBits = BitChanger::toBits(value);
