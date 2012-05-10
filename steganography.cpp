@@ -13,6 +13,7 @@
 #define ASCII 0
 #define UNICODE 1
 #define MAX_INT 4294967295
+#define INT_SIZE 32
 
 Steganography::Steganography(QString filename)
 {
@@ -148,38 +149,34 @@ int Steganography::insertBitstream(QString* s){
            1 -> alles ok
            -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
            -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
-
-
 */
+
+
 int Steganography::insertBitstream(QList<uint>* list){
     int width = image.width();
     int height = image.height();
 
-    int inkrement = calcInkrement(width * (height-1),list->size()*32,1);
+    int inkrement = calcInkrement(width * (height-1),list->size()*INT_SIZE,1);
+    qDebug("Inkrement einfuegen: %i", inkrement);
 
     if(inkrement >= 1){
 
         QList<uint>::const_iterator outerIterator = list->begin(); //iteriert ueber die uebergebene liste
         int currentColor = RED;
         int line = -1;
+        int aktBit = 31;
 
-
-        QString* temp = BitChanger::toBits(*outerIterator,32);    // der aktuelle uint als bitfolge
-        QString::const_iterator bitIterator = temp->begin();    //iteriert ueber die aktuelle Bitfolge
-
-
-        for(int pixelindex = inkrement-1; pixelindex < list->size()*32* inkrement; pixelindex += inkrement){
+        for(int pixelindex = inkrement-1; pixelindex < list->size()*INT_SIZE* inkrement; pixelindex += inkrement){
             if((pixelindex / width) + 1 != line){
                 line = (pixelindex / width) +1;
             }
 
-            if(bitIterator == temp->end()){
+            if(aktBit < 0){
                 if(outerIterator != list->end()){
+                    qDebug("neues Int-Element: %u", *outerIterator);
                     outerIterator++;
-                    temp = BitChanger::toBits(*outerIterator,32);
-                    bitIterator = temp->begin();
+                    aktBit = 31;
                 }else{
-                    delete temp;
                     return -2;
                 }
             }
@@ -194,30 +191,29 @@ int Steganography::insertBitstream(QList<uint>* list){
             int blue = qBlue(pixel[pos]);
 
             if(currentColor == RED){
-                red = BitChanger::changeLastBit(red,(*bitIterator));
+                red = BitChanger::changeLastBit(red,BitChanger::getBitAt(*outerIterator,aktBit--));
                 currentColor = GREEN;
             }else if(currentColor == GREEN){
-                green = BitChanger::changeLastBit(green,(*bitIterator));
+                green = BitChanger::changeLastBit(green,BitChanger::getBitAt(*outerIterator, aktBit--));
                 currentColor = BLUE;
             }else if(currentColor == BLUE){
-                blue = BitChanger::changeLastBit(blue,(*bitIterator));
+                blue = BitChanger::changeLastBit(blue,BitChanger::getBitAt(*outerIterator,aktBit--));
                 currentColor = RED;
             }else{
-                delete temp;
                 return -1;   //Fehler bei der Farbauswahl
             }
 
                 pixel[pos] = qRgb(red, green, blue);
 
-            bitIterator++;
+
 
         }
-        delete temp;
         return 1; //Alles ok
     }else{
         return -2; //Text zu lang
    }
 }
+
 
 
 /*
@@ -278,6 +274,88 @@ int Steganography::insertBitstream_3BitsPerPixel(QString* s){
         }
         return 1; //Alles ok
     }else{
+        return -2; //Text zu lang
+   }
+}
+
+/*
+ fuegt eine Bitfolge in das Bild ein und nutzt dabei 3 Bit pro Pixel
+
+ Eingabe: QString* text -> zu versteckender Text (muss eine Bitfolge sein)
+ Ausgabe: Integer
+           1 -> alles ok
+           -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
+           -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
+
+
+*/
+int Steganography::insertBitstream_3BitsPerPixel(QList<uint>* l){
+    int width = image.width();
+    int height = image.height();
+    int bitsPerPixel = 3;
+    int aktBit = 31;
+
+    int inkrement = calcInkrement(width * (height-1),l->size() * INT_SIZE ,bitsPerPixel);
+    qDebug("Inkrement einlesen: %i", inkrement);
+
+    if(inkrement >= 1){
+
+        QList<uint>::const_iterator outerIterator = l->begin();    //iteriert ueber die uebergebenen Bits
+
+        int line = -1;
+
+        for(int pixelindex = inkrement-1; pixelindex < l->size()* inkrement * INT_SIZE; pixelindex += inkrement){
+            if((pixelindex / width) + 1 != line){
+                line = (pixelindex / width) +1;
+            }
+            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
+
+            int pos = (pixelindex % width);
+
+
+            if(aktBit < 0){
+                if(outerIterator != l->end()){
+                    outerIterator++;
+                    aktBit = 31;
+                }
+            }
+
+
+            if(outerIterator != l->end()){
+                int red = qRed(pixel[pos]);
+                int green = qGreen(pixel[pos]);
+                int blue = qBlue(pixel[pos]);
+
+                red = BitChanger::changeLastBit(red,BitChanger::getBitAt(*outerIterator, aktBit--));
+
+                if(outerIterator != l->end()){
+                    if(aktBit < 0){
+                        aktBit = 31;
+                        outerIterator++;
+                    }
+                    green = BitChanger::changeLastBit(green,BitChanger::getBitAt(*outerIterator, aktBit--));
+                }
+
+                if(outerIterator != l->end()){
+                    if(aktBit < 0){
+                        aktBit = 31;
+                        outerIterator++;
+                    }
+                    blue = BitChanger::changeLastBit(blue,BitChanger::getBitAt(*outerIterator, aktBit--));
+                }
+
+                pixel[pos] = qRgb(red, green, blue);
+                if(outerIterator == l->end()){
+                    qDebug("aktBit: %i", aktBit);
+                }
+            }else{
+                return -2; // Fehler bei der Laenge; inkrement falsch berechnet
+            }
+        }
+        qDebug("ok exit");
+        return 1; //Alles ok
+    }else{
+        qDebug("error 3");
         return -2; //Text zu lang
    }
 }
@@ -347,7 +425,81 @@ int Steganography::insertBitstream_6BitsPerPixel(QString* s){
    }
 }
 
+int Steganography::insertBitstream_6BitsPerPixel(QList<uint>* l){
 
+    int width = image.width();
+    int height = image.height();
+    int bitsPerPixel = 6;
+    int aktBit = 31;
+
+    int inkrement = calcInkrement(width * (height-1),l->size() * INT_SIZE ,bitsPerPixel);
+    qDebug("Inkrement: %i", inkrement);
+    if(inkrement >= 1){
+
+        QList<uint>::const_iterator outerIterator = l->begin();    //iteriert ueber die uebergebenen Bits
+        QString temp = "";
+
+        int line = -1;
+
+        for(int pixelindex = inkrement-1; pixelindex < l->size()* inkrement * INT_SIZE; pixelindex += inkrement){
+            if((pixelindex / width) + 1 != line){
+                line = (pixelindex / width) +1;
+            }
+            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
+
+            int pos = (pixelindex % width);
+
+
+            if(outerIterator != l->end()){
+
+                int red = qRed(pixel[pos]);
+                int green = qGreen(pixel[pos]);
+                int blue = qBlue(pixel[pos]);
+                if(aktBit < 0){
+                    outerIterator++;
+                    aktBit = 31;
+                }
+                temp.clear();
+                temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
+                temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
+
+                red = BitChanger::changeLastBits(red, &temp);
+
+
+                if(outerIterator != l->end()){
+
+                    if(aktBit < 0){
+                        outerIterator++;
+                        aktBit = 31;
+                    }
+                    temp.clear();
+                    temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
+                    temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
+                    green = BitChanger::changeLastBits(green, &temp);
+
+                }
+
+                if(outerIterator != l->end()){
+                    if(aktBit < 0){
+                        outerIterator++;
+                        aktBit = 31;
+                    }
+                    temp.clear();
+                    temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
+                    temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
+                    blue = BitChanger::changeLastBits(blue, &temp);
+                }
+
+                pixel[pos] = qRgb(red, green, blue);
+            }else{
+                return -2; // Fehler bei der Laenge; inkrement falsch berechnet
+            }
+        }
+        return 1; //Alles ok
+    }else{
+        return -2; //Text zu lang
+   }
+}
 
 /*
   berechnet das Inkrement
@@ -428,6 +580,81 @@ QString* Steganography::getBitstream_3BitsPerPixel(){
     }
 }
 
+/*
+ fuegt eine Bitfolge in das Bild ein und nutzt dabei 3 Bit pro Pixel
+
+ Eingabe: QString* text -> zu versteckender Text (muss eine Bitfolge sein)
+ Ausgabe: Integer
+           1 -> alles ok
+           -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
+           -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
+
+
+*/
+QList<uint>* Steganography::getBitstreamAsIntList_3BitsPerPixel(){
+    int width = image.width();
+    int height = image.height();
+    int bitsPerPixel = 3;
+    QList<uint>* result = new QList<uint>();
+    QString* temp = new QString();
+    int hiddenLetters = getSizeFromHeader();
+    int extractedLetters = 0;
+
+    int inkrement = calcInkrement(width*(height-1), hiddenLetters, bitsPerPixel);
+    qDebug("Inkrement auslesen = %i", inkrement);
+
+    if(inkrement >= 1){
+
+        int line = -1;
+
+        for(int pixelindex = inkrement-1; pixelindex < hiddenLetters* inkrement; pixelindex += inkrement){
+            if((pixelindex / width) + 1 != line){
+                line = (pixelindex / width) +1;
+            }
+
+            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
+
+            int pos = (pixelindex % width);
+
+            int red = qRed(pixel[pos]);
+            int green = qGreen(pixel[pos]);
+            int blue = qBlue(pixel[pos]);
+
+            if(extractedLetters < hiddenLetters){
+                temp->append(lastBit(red));
+                if(temp->size() == 32){
+                    result->append(BitChanger::toIntVal(temp));
+                    temp->clear();
+                }
+                extractedLetters++;
+            }
+            if(extractedLetters < hiddenLetters){
+                temp->append(lastBit(green));
+                if(temp->size() == 32){
+                    result->append(BitChanger::toIntVal(temp));
+                    temp->clear();
+                }
+                extractedLetters++;
+            }
+            if(extractedLetters < hiddenLetters){
+                temp->append(lastBit(blue));
+                if(temp->size() == 32){
+                    result->append(BitChanger::toIntVal(temp));
+                    temp->clear();
+                }
+                extractedLetters++;
+            }else{
+                delete temp;
+                return result;
+            }
+
+        }
+        delete temp;
+        return result;
+
+    }
+}
+
 QString* Steganography::getBitstream_6BitsPerPixel(){
     int width = image.width();
     int height = image.height();
@@ -466,6 +693,70 @@ QString* Steganography::getBitstream_6BitsPerPixel(){
             }
             if(extractedLetters < hiddenLetters){
                 result->append(BitChanger::getLastBits(blue, 2));
+                extractedLetters+=2;
+            }else{
+                return result;
+            }
+
+        }
+
+        return result;
+
+    }
+}
+
+
+QList<uint>* Steganography::getBitstreamAsIntList_6BitsPerPixel(){
+    int width = image.width();
+    int height = image.height();
+    int bitsPerPixel = 6;
+    QList<uint>* result = new QList<uint>();
+    QString* temp = new QString();
+    int hiddenLetters = getSizeFromHeader();
+    int extractedLetters = 0;
+
+    int inkrement = calcInkrement(width*(height-1), hiddenLetters, bitsPerPixel);
+    qDebug("Inkrement auslesen = %i", inkrement);
+
+    if(inkrement >= 1){
+
+        int line = -1;
+
+        for(int pixelindex = inkrement-1; pixelindex < hiddenLetters* inkrement; pixelindex += inkrement){
+            if((pixelindex / width) + 1 != line){
+                line = (pixelindex / width) +1;
+            }
+
+            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
+
+            int pos = (pixelindex % width);
+
+            int red = qRed(pixel[pos]);
+            int green = qGreen(pixel[pos]);
+            int blue = qBlue(pixel[pos]);
+
+            if(extractedLetters < hiddenLetters){
+                temp->append(BitChanger::getLastBits(red, 2));
+                if(temp->size() > 31){
+                    result->append(BitChanger::toIntVal(temp));
+                    temp->clear();
+                }
+                extractedLetters+=2;
+            }
+            if(extractedLetters < hiddenLetters){
+                temp->append(BitChanger::getLastBits(green, 2));
+                if(temp->size() > 31){
+                    result->append(BitChanger::toIntVal(temp));
+                    temp->clear();
+                }
+                extractedLetters+=2;
+            }
+            if(extractedLetters < hiddenLetters){
+                temp->append(BitChanger::getLastBits(blue, 2));
+                if(temp->size() > 31){
+                    result->append(BitChanger::toIntVal(temp));
+                    temp->clear();
+                }
                 extractedLetters+=2;
             }else{
                 return result;
@@ -553,7 +844,8 @@ QList<uint>* Steganography::getBitStreamAsIntList(){
     int width = image.width();
     int height = image.height();
 
-    int inkrement = calcInkrement(width * (height-1), getIntFromHeader(0),1);
+    int inkrement = calcInkrement(width * (height-1), getSizeFromHeader(),1);
+    qDebug("Inkrement auslesen: %i", inkrement);
 
     int currentColor = RED;
     int color;
@@ -591,6 +883,7 @@ QList<uint>* Steganography::getBitStreamAsIntList(){
                     return new QList<uint>();
                 }
                 if(lastBits->size() >= 32){
+                    //qDebug("neuer Intval: %u", BitChanger::toIntVal(lastBits));
                     result->append(BitChanger::toIntVal(lastBits));
                     lastBits->clear();
                 }

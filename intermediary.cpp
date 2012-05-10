@@ -2,71 +2,99 @@
 #include "intermediary.h"
 #include "steganography.h"
 
+#include "iostream"
 #include "QImage"
 #include "QMap"
 
-#define UNICODE 1
-#define ASCII 0
-#define HEADER_SIZE 160
+#define LINE "==============================="
 
-Intermediary::Intermediary(QString* text, int format, QString imagePath)
-{
-    bitChanger = new BitChanger();
+using namespace std;
+
+Intermediary::Intermediary(QString* text, int format, QString imagePath) {
     images = new QMap<QString, QImage>();
     setText(text, format);
     addImage(imagePath);
 }
 
-void Intermediary::setText(QString* text, int format)
-{
+Intermediary::Intermediary(QString imagePath) {
+    images = new QMap<QString, QImage>();
+    setText(new QString(), 0);
+    addImage(imagePath);
+}
+
+void Intermediary::setText(QString* text, int format) {
     this->format = format;
-    if (format == 0)
+    this->textToHide = text;
+}
+
+void Intermediary::addImage(QString imagePath) {
+    QImage image = QImage(imagePath);
+    if (availableChar(image) > 0)
     {
-        bitsToHide = bitChanger->textToBits_8Bit(text);
-    }
-    else
-    {
-        bitsToHide = bitChanger->textToBits_16Bit(text);
+        images->insert(imagePath, QImage(imagePath));
     }
 }
 
-void Intermediary::addImage(QString imagePath)
-{
-    images->insert(imagePath, QImage(imagePath));
-}
-
-long Intermediary::availablePixel()
-{
+long Intermediary::availableChar() {
     long result = 0;
-    foreach (const QImage &image, images->values())
-    {
-        result += (image.width() * image.height()) - HEADER_SIZE;
+    foreach (const QImage &image, images->values()) {
+        result += availableChar(image);
     }
     return result;
 }
 
-void Intermediary::hide_1Bit(QString savePath)
-{
-    if (isReady_1Bit())
+long Intermediary::availableChar(QImage image) {
+    long result = 0;
+    if (image.width() >= 160 && image.height() > 1)
     {
-        int sequenceNo = 0;
+        result = (image.width() * (image.height() - 1)) / bitsPerChar();
+    }
+    return result;
+}
 
-        long totalPixel = 0;
+void Intermediary::hide_1Bit(QString savePath) {
+    std::cout<<endl;
+    std::cout<<LINE<<endl;
+    std::cout<<"is ready? ";
+    if (!isReady_1Bit()) {
+        std::cout<<"no"<<endl;
+    } else {
+        std::cout<<"yes"<<endl;
+
+        int sequenceNo = 1;
+        long totalChar = 0;
         long start = 0;
-        long end = 0;
         long range = 0;
-        long bitRate = (availablePixel() / totalBits());
+        long charRate = (availableChar() / textToHide->count()) + (availableChar() % textToHide->count());
+
+        std::cout<<"totalBits: "<<totalBits()<<endl;
+        std::cout<<"availableChar: "<<availableChar()<<endl;
+        std::cout<<"charRate: "<<charRate<<endl;
+
+        // 100 Char verf√ºgbar / 99 Char ben√∂tigt = charRate: 1 = Textl√§nge entspricht availableChar(image)
+        // 100 Char verf√ºgbar / 52 Char ben√∂tigt = charRate: 1 = Textl√§nge entspricht availableChar(image)
+        // 100 Char verf√ºgbar / 49 Char ben√∂tigt = charRate: 2 = Textl√§nge entspricht availableChar(image) / 2
+        // 100 Char verf√ºgbar / 33 Char ben√∂tigt = charRate: 3 = Textl√§nge entspricht availableChar(image) / 3
 
         QMap<QString, QImage>::const_iterator it = images->constBegin();
-        while (it != images->constEnd())
-        {
+        while (it != images->constEnd() && (start + range) < textToHide->count()) {
             QImage image = it.value();
-            totalPixel = (image.width() * image.height()) - HEADER_SIZE;
-            start = end;
-            range = (totalPixel / bitRate);
-            end = start + range;
+            totalChar = availableChar(image);
+            start = start + range;
+            range = (totalChar / charRate);
+            if (range == 0 || totalChar % charRate != 0) range++;
 
-            QString currentText = bitsToHide->mid(start, end);
+            std::cout<<LINE<<endl;
+            std::cout<<"totalChar: "<<totalChar<<endl;
+            std::cout<<"start: "<<start<<endl;
+            std::cout<<"range: "<<range<<endl;
+
+            QString currentText = textToHide->mid(start, range);
+            std::cout<<"text: "<<currentText.toStdString()<<endl;
+
+            // 100 totalChar / charRate: 1 = 100 Chars
+            // 100 totalChar / charRate: 2 = 50 Chars
+            // 100 totalChar / charRate: 3 = 33 Chars
 
             Steganography* stego = new Steganography(it.key());
             stego->insertSizeInHeader(range);
@@ -76,47 +104,48 @@ void Intermediary::hide_1Bit(QString savePath)
             stego->insertBitsPerPixelInHeader(1);
             stego->insertSequenceNoInHeader(sequenceNo);
             stego->insertText_1BitPerPixel(&currentText, format);
-            stego->saveImage(savePath + sequenceNo);
 
-            sequenceNo++;
+            QString fileName = savePath;
+            fileName.append(QString().setNum(sequenceNo)).append(".png");
+            std::cout<<fileName.toStdString()<<endl;
+            stego->saveImage(fileName);
+
             it++;
+            sequenceNo++;
         }
     }
-
-    //for (int i = 0; i < pictures->count(); i++)
-    //{
-        //long currentPosition = (pictures->value(i).height() * pictures->value(i).width()) / avarageBitRate;
-        //QString splitPlain = bitsToHide->mid(startPosition, startPosition + currentPosition);
-
-        //Steganography* stego = new Steganography("asd");
-        //stego->insertText_1BitPerPixel(&splitPlain, UNICODE);
-
-        // set new start position
-        //startPosition = currentPosition + 1;
-
-        // picture numbering
-        //QString pictureNumber = pictures->count() > 1 ? (i + 1) + "" : "";
-        //stego->saveImage(savePath + pictureNumber);
-    //}
+    std::cout<<LINE<<endl<<endl;
 }
 
-void Intermediary::hide_3Bit(QString savePath)
-{
-    if (isReady_3Bit())
-    {
-        //
+void Intermediary::hide_3Bit(QString savePath) {
+    if (isReady_3Bit()) {
+
     }
 }
 
-void Intermediary::hide_6Bit(QString savePath)
-{
-    if (isReady_6Bit())
-    {
-        //
+void Intermediary::hide_6Bit(QString savePath) {
+    if (isReady_6Bit()) {
+
     }
 }
 
-QString* getHiddenText()
-{
-    return new QString();
+QString* Intermediary::getHiddenText() {
+    QMap<int, QString*>* textMap = new QMap<int, QString*>();
+    QMap<QString, QImage>::const_iterator it = images->constBegin();
+    while (it != images->constEnd()) {
+        Steganography* stego = new Steganography(it.key());
+        textMap->insert(stego->getSequenceNoFromHeader(), stego->getHiddenText());
+        it++;
+    }
+    QString* result = new QString();
+    QMap<int, QString*>::const_iterator it2 = textMap->constBegin();
+    while (it2 != textMap->constEnd()) {
+        result->append(it2.value());
+        it2++;
+    }
+    std::cout<<endl;
+    std::cout<<LINE<<endl;
+    std::cout<<"hidden text: "<<result->toStdString()<<endl;
+    std::cout<<LINE<<endl;
+    return result;
 }
