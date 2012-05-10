@@ -11,6 +11,7 @@ class BitChanger
 {
 public:
     BitChanger();
+    static int changeBitAt(int value, int position, QChar bit);
     static QString* toBits(int i, int size = 16);
     static uint toIntVal(QString*);
     static int redVal(int value,QString c);

@@ -330,6 +330,18 @@ int BitChanger::changeLastBit(int value, QChar bit){
     }
 }
 
+/*
+  veraendert bei int val das bit an position pos auf c, c aus {'0','1'}
+  */
+int BitChanger::changeBitAt(int val ,int pos, QChar c){
+    uint  temp = (uint) qPow(2,pos);
+    if(c == '1'){
+        return val | temp;
+    }else{
+        return val | (MAX_INT - temp);
+    }
+}
+
 
 QString BitChanger::getLastBits(int value, int bits){
     QString* valBits = BitChanger::toBits(value);
