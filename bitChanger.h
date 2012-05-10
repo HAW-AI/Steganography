@@ -3,6 +3,7 @@
 
 #include "QString"
 #include "QChar"
+#include "qimage.h"
 
 
 
@@ -23,6 +24,13 @@ public:
     static QString* bitStreamToText_8Bit(QString*);
     static int changeLastBits(int value, QString* bits);
     static QString getLastBits(int value, int bits);
+    static QImage* bitStreamToPicture(QString* stream, int height, int width);
+    static QString* pictureToBitstream(QImage* image);
+    static QString* toBits(uint value, int size);
+
+    static void stringTest();
+    static QImage* erstelleQimage(int width, int height);
+    static QString* bitStreamToText_8Bit(QList<uint>* bitstream);
 };
 
 #endif // bitChanger_H
