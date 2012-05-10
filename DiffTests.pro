@@ -16,7 +16,8 @@ SOURCES += main.cpp\
     bitChanger.cpp \
     stringiterator.cpp\
     steganography.cpp \
-    intermediary.cpp
+    intermediary.cpp \
+    crypt.cpp
 
 
 HEADERS  += difftests.h \
@@ -24,6 +25,7 @@ HEADERS  += difftests.h \
     bitChanger.h \
     stringiterator.h \
     steganography.h \
-    intermediary.h
+    intermediary.h \
+    crypt.h
 
 FORMS    += difftests.ui
