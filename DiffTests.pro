@@ -8,7 +8,7 @@ QT       += core gui
 
 TARGET = DiffTests
 TEMPLATE = app
-
+RC_FILE = ic.rc
 
 SOURCES += main.cpp\
         difftests.cpp \
