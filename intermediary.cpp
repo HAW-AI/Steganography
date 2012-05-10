@@ -10,21 +10,24 @@
 
 using namespace std;
 
-Intermediary::Intermediary(QString* text, int format, QString imagePath)
-{
+Intermediary::Intermediary(QString* text, int format, QString imagePath) {
     images = new QMap<QString, QImage>();
     setText(text, format);
     addImage(imagePath);
 }
 
-void Intermediary::setText(QString* text, int format)
-{
+Intermediary::Intermediary(QString imagePath) {
+    images = new QMap<QString, QImage>();
+    setText(new QString(), 0);
+    addImage(imagePath);
+}
+
+void Intermediary::setText(QString* text, int format) {
     this->format = format;
     this->textToHide = text;
 }
 
-void Intermediary::addImage(QString imagePath)
-{
+void Intermediary::addImage(QString imagePath) {
     QImage image = QImage(imagePath);
     if (availableChar(image) > 0)
     {
@@ -32,18 +35,15 @@ void Intermediary::addImage(QString imagePath)
     }
 }
 
-long Intermediary::availableChar()
-{
+long Intermediary::availableChar() {
     long result = 0;
-    foreach (const QImage &image, images->values())
-    {
+    foreach (const QImage &image, images->values()) {
         result += availableChar(image);
     }
     return result;
 }
 
-long Intermediary::availableChar(QImage image)
-{
+long Intermediary::availableChar(QImage image) {
     long result = 0;
     if (image.width() >= 160 && image.height() > 1)
     {
@@ -61,7 +61,7 @@ void Intermediary::hide_1Bit(QString savePath) {
     } else {
         std::cout<<"yes"<<endl;
 
-        int sequenceNo = 0;
+        int sequenceNo = 1;
         long totalChar = 0;
         long start = 0;
         long range = 0;
@@ -129,6 +129,23 @@ void Intermediary::hide_6Bit(QString savePath) {
     }
 }
 
-QString* getHiddenText() {
-    return new QString();
+QString* Intermediary::getHiddenText() {
+    QMap<int, QString*>* textMap = new QMap<int, QString*>();
+    QMap<QString, QImage>::const_iterator it = images->constBegin();
+    while (it != images->constEnd()) {
+        Steganography* stego = new Steganography(it.key());
+        textMap->insert(stego->getSequenceNoFromHeader(), stego->getHiddenText());
+        it++;
+    }
+    QString* result = new QString();
+    QMap<int, QString*>::const_iterator it2 = textMap->constBegin();
+    while (it2 != textMap->constEnd()) {
+        result->append(it2.value());
+        it2++;
+    }
+    std::cout<<endl;
+    std::cout<<LINE<<endl;
+    std::cout<<"hidden text: "<<result->toStdString()<<endl;
+    std::cout<<LINE<<endl;
+    return result;
 }

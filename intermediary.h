@@ -10,6 +10,7 @@ class Intermediary
 {
 public:
     Intermediary(QString* text, int format, QString imagePath);
+    Intermediary(QString imagePath);
     void setText(QString* text, int format);
     void addImage(QString imagePath);
     bool isReady_1Bit() { return remainingPixel_1Bit() <= 0; }
