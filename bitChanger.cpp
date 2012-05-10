@@ -2,11 +2,13 @@
 #include "QString"
 #include "iterator"
 #include "qimage.h"
+#include "qmath.h"
 
 #define UNICODE_SIZE 16
 #define ASCII_SIZE 8
 #define PIXEL_SIZE 24
 #define INT_SIZE 32
+#define MAX_INT 4294967295
 
 BitChanger::BitChanger()
 {
@@ -41,6 +43,17 @@ QString* BitChanger::toBits(int i,int size){
     }
     return result;
 }
+
+QChar BitChanger::getBitAt(uint value, uint position){
+    uint temp = (uint) qPow(2,position);
+    if((value & temp) == 0){
+        return '0';
+    }else{
+        return '1';
+    }
+}
+
+
 
 QString* BitChanger::toBits(uint i,int size){
     QString* result = new QString();
@@ -88,6 +101,37 @@ QString* BitChanger::bitStreamToText_16Bit(QString* bitstream){
 }
 
 /*
+  berechnet aus einem Bitstream einen Text, wobei 16 Bit zu einem Unicode-Zeichen zusammengefasst werden
+  Eingabe: QString bitstream => der Bitstream aus dem ein Text gebildet werden soll. Z.B "100000011000010"
+  Ausgabe: QString -> der Text, dem der Bitstream entspricht
+  Beispiel: "bitStreamToText("0000000001000001") => "A", da "0000000010000001" = 65 = "A"
+  */
+QString* BitChanger::bitStreamToText_16Bit(QList<uint>* bitstream, int characters){
+
+    /*if(bitstream->size() % UNICODE != 0){
+        qDebug("Fehler im Bitstream");
+
+    }*/
+
+
+    QString* result = new QString();
+    QString* temp;
+    QList<uint>::const_iterator iter = bitstream->begin();
+    while(iter != bitstream->end()){
+        temp = BitChanger::toBits(*iter,32);
+        result->append(QChar((BitChanger::toIntVal(&(temp->mid(0,UNICODE_SIZE))))));
+        result->append(QChar((BitChanger::toIntVal(&(temp->mid(16,UNICODE_SIZE))))));
+        temp->clear();
+        iter++;
+    }
+    if(result->size() > characters){
+        result->chop(result->size() - characters);
+    }
+    delete temp;
+    return result;
+}
+
+/*
   berechnet aus einem Bitstream einen Text, wobei 8 Bit zu einem Zeichen zusammengefasst werden
   Eingabe: QString bitstream => der Bitstream aus dem ein Text gebildet werden soll. Z.B "100000011000010"
   Ausgabe: QString -> der Text, dem der Bitstream entspricht
@@ -109,30 +153,7 @@ QString* BitChanger::bitStreamToText_8Bit(QString* bitstream){
     return result;
 }
 
-/*
-  berechnet aus einem Bitstream einen Text, wobei 8 Bit zu einem Zeichen zusammengefasst werden
-  Eingabe: QString bitstream => der Bitstream aus dem ein Text gebildet werden soll. Z.B "100000011000010"
-  Ausgabe: QString -> der Text, dem der Bitstream entspricht
-  Beispiel: "bitStreamToText("1000000110000010") => "AB", da "10000001" = 65 = "A", da 10000010 = 66 = "B"
-  */
-QString* BitChanger::bitStreamToText_8Bit(QList<uint>* bitstream){
 
-    if((bitstream->size() * INT_SIZE)  % ASCII_SIZE != 0){
-        qDebug("Fehler im Bitstream");
-
-    }
-
-    QList<uint>::const_iterator outerIterator;
-    QString* result = new QString();
-    for( outerIterator = bitstream->begin(); outerIterator != bitstream->end(); outerIterator++){
-        QString temp = BitChanger::toBits(*outerIterator);
-        for(int i = 0; i < temp.size();i+=ASCII_SIZE){
-            QString s = bitstream->mid(i, ASCII_SIZE);
-            result->append(QChar(BitChanger::toIntVal(&s)));
-        }
-    }
-    return result;
-}
 
 
 /*
@@ -165,17 +186,25 @@ QString* BitChanger::textToBits_8Bit(QString* s){
         *pointer -> "01000001"
 
  */
-QList<uint>* BitChanger::textToBits_8Bit(QString* s){
+QList<uint>* BitChanger::textToBitsInIntList_8Bit(QString* s){
     QString::const_iterator i = s->begin();
     QList<uint>* result = new QList<uint>();
     QString temp ="";
     while(i != s->end()){
-        temp->append(BitChanger::toBits((*i).toAscii(),8));
+        temp.append(BitChanger::toBits((*i).toAscii(),8));
         i++;
     }
     return result;
 }
 
+int BitChanger::changeLastBits(int value, uint lastBits){
+    /*uint lastBitsInverted = MAX_INT;
+    qDebug("lastbits: %u", lastBitsInverted);
+    value = value & lastBitsInverted;
+    qDebug("neuer value: %i", value);
+    return value^lastBits;*/
+    return 0;
+}
 
 /*
    berechnet das Bitmuster eines Textes. Dabei werden Unicode-Werte benutzt
@@ -196,6 +225,38 @@ QString* BitChanger::textToBits_16Bit(QString* s){
     }
     return result;
 }
+
+/*
+   berechnet das Bitmuster eines Textes. Dabei werden Unicode-Werte benutzt
+   Eingabe: QString* s -> Pointer auf den String, der umgewandelt werden soll
+
+   Ausgabe: QString* -> Pointer auf den Bitstream
+   Bsp: QString str = "A";
+        QString* pointer = textToBits_16Bit(&str)
+        *pointer -> "0000000001000001"
+
+ */
+QList<uint>* BitChanger::textToBitsInIntList_16Bit(QString* s){
+    QList<uint>* result = new QList<uint>();
+    QString::const_iterator i = s->begin();
+    QString* temp = new QString();
+    while(i != s->end()){
+        temp->append(BitChanger::toBits((*i).unicode()));
+        if(temp->size() == 32){
+            result->append(BitChanger::toIntVal(temp));
+            temp->clear();
+        }
+        i++;
+    }
+    if(temp->size() == UNICODE_SIZE){
+        temp->append("0000000000000000");
+        result->append(BitChanger::toIntVal(temp));
+
+    }
+    delete temp;
+    return result;
+}
+
 
 
 /* 

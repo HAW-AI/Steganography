@@ -27,6 +27,11 @@ public:
     static QImage* bitStreamToPicture(QString* stream, int height, int width);
     static QString* pictureToBitstream(QImage* image);
     static QString* toBits(uint value, int size);
+    static QChar getBitAt(uint value, uint position);
+    QList<uint>* textToBitsInIntList_8Bit(QString* s);
+    static int changeLastBits(int value, uint bits);
+    static QList<uint>* textToBitsInIntList_16Bit(QString* s);
+    static QString* bitStreamToText_16Bit(QList<uint>* bitstream, int characters);
 
     static void stringTest();
     static QImage* erstelleQimage(int width, int height);

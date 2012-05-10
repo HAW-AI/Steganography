@@ -17,12 +17,16 @@ public:
 
     int insertBitstream(QString*);
     int insertBitstream(QList<uint>* list);
+    int insertBitstream_3BitsPerPixel(QList<uint>* l);
     int insertBitstream_3BitsPerPixel(QString* s);
     int insertBitstream_6BitsPerPixel(QString* s);
+    int insertBitstream_6BitsPerPixel(QList<uint>* s);
 
 
     QString* getBitStream();
     QList<uint>* getBitStreamAsIntList();
+    QList<uint>* getBitstreamAsIntList_3BitsPerPixel();
+    QList<uint>* getBitstreamAsIntList_6BitsPerPixel();
     QString* getBitstream_3BitsPerPixel();
     QString* getBitstream_6BitsPerPixel();
 
@@ -43,6 +47,7 @@ public:
     int insertSecondAttribute(int);
     int insertBitsPerPixelInHeader(int bitsPerPixel);
     int insertSequenceNoInHeader(int sequenceNo);
+
 
 
     int insertPictureHeader(int, int, int); // rausnehmen??
