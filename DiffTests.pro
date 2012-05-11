@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     steganography.cpp \
     intermediary.cpp \
     crypt.cpp \
-    problemdialog.cpp
+    problemdialog.cpp \
+    noisewarning.cpp
 
 
 HEADERS  += difftests.h \
@@ -28,7 +29,9 @@ HEADERS  += difftests.h \
     steganography.h \
     intermediary.h \
     crypt.h \
-    problemdialog.h
+    problemdialog.h \
+    noisewarning.h
 
 FORMS    += difftests.ui \
-    problemdialog.ui
+    problemdialog.ui \
+    noisewarning.ui
