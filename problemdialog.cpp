@@ -1,8 +1,13 @@
 #include "problemdialog.h"
 #include "ui_problemdialog.h"
+#include <QDialog>
+
+#define CANCLE 0
+#define MOREDENSITY 1
+#define MOREPICS 2
 
 ProblemDialog::ProblemDialog(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::ProblemDialog)
 {
     ui->setupUi(this);
@@ -20,17 +25,16 @@ ProblemDialog::~ProblemDialog()
 
 void ProblemDialog::choseNewPic()
 {
-    close();
-    qDebug("cancle");
+    close(); //OK
 }
 
 void ProblemDialog::moreDensity()
 {
-    qDebug("moreDensity");
+    close();
 }
 
 void ProblemDialog::choseMorePics()
 {
-    qDebug("morePics");
+    close();
 }
 

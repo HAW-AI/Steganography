@@ -8,6 +8,7 @@
 #include "QImage"
 #include "crypt.h"
 #include "problemdialog.h"
+#include "intermediary.h"
 
 #include <QtGui>
 #define UNICODE 1
@@ -24,7 +25,8 @@ DiffTests::DiffTests(QWidget *parent) :
     ui(new Ui::DiffTests)
 {
     ui->setupUi(this);
-    
+    setWindowTitle("Stego-saur");
+
     //hide-Buttons
     connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
     connect( ui->textBrowseButton, SIGNAL( clicked() ), this, SLOT( choseText() ) );
@@ -46,6 +48,7 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->keyBrowseButton_2, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
     ui->findButton->setEnabled(false);
     ui->decryptFrame->hide();
+    ui->textEdit_2->setEnabled(false);
     connect( ui->decryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showDecryptFrame(bool)) );
     connect( ui->picPathTextField_2, SIGNAL(textChanged()), this, SLOT(showFindButton()) );
     connect( ui->textToDocRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
@@ -243,7 +246,7 @@ void DiffTests::checkKey_2()
     showFindButton();
 }
 
-void DiffTests::hide()
+/*void DiffTests::hide()
 {
     QString picPath = ui->picPathTextField->toPlainText();
     Steganography stego(picPath);
@@ -271,7 +274,7 @@ void DiffTests::hide()
     stego.saveImage(newPath);
     qDebug("Fertig!");
 }
-
+*/
 void DiffTests::find()
 {
     QString picPath = ui->picPathTextField_2->toPlainText();
@@ -353,5 +356,32 @@ QString DiffTests::decrypt(QString cipher)
 void DiffTests::popupProblemDialog()
 {
     pd = new ProblemDialog();
-    pd->show();
+    pd->exec();
+}
+
+void DiffTests::hide()
+{
+    QString plain;
+    if(ui->textFromDocRadio->isChecked()){
+        QString plainPath = ui->textPathTextField->toPlainText();
+        QFile file(plainPath);
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream in(&file);
+        plain = in.readAll();
+        file.close();
+    }else if(ui->textFromFieldRadio->isChecked()) plain = ui->textEdit->toPlainText(); //if(textFromFieldRadio)
+
+    //encrypt
+    if(ui->encryptCheckBox->isChecked()){
+        plain = encrypt(plain);
+    }
+
+    im = new Intermediary(&plain, format, ui->picPathTextField->toPlainText());
+    if(im->isReady_1Bit()){
+        QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+        im->hide_1Bit(newPath);
+    }else{
+        popupProblemDialog();
+    }
+
 }
