@@ -38,6 +38,7 @@ public:
     int getSecondAttributeFromHeader();
     int getBitsPerPixelFromHeader();
     int getSequenceNoFromHeader();
+    int getRealSizeFromHeader();
 
     int insertIntInHeader(int, int);
 
@@ -47,6 +48,7 @@ public:
     int insertSecondAttribute(int);
     int insertBitsPerPixelInHeader(int bitsPerPixel);
     int insertSequenceNoInHeader(int sequenceNo);
+    int insertRealSizeInHeader(int realSize);
 
 
 
