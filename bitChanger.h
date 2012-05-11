@@ -35,10 +35,9 @@ public:
 
     static QString* bitStreamToText_16Bit(QString*);
     static QString* bitStreamToText_8Bit(QString*);
-
     static QImage* bitStreamToPicture(QString* stream, int height, int width);
 
-    QList<uint>* textToBitsInIntList_8Bit(QString* s);
+    static QList<uint>* textToBitsInIntList_8Bit(QString* s);
     static QList<uint>* textToBitsInIntList_16Bit(QString* s);
     static QList<uint>* pictureToBitstreamAsIntList(QImage* image);
 
