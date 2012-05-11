@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>363</width>
-    <height>222</height>
+    <height>157</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,45 +63,6 @@
    </property>
    <property name="text">
     <string>Chose more pictures</string>
-   </property>
-  </widget>
-  <widget class="Line" name="line">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>160</y>
-     <width>341</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="xXPixelLabel">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>180</y>
-     <width>341</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>x/x Pixel</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="bpPLabel">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>200</y>
-     <width>341</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>x Bit/Pixel</string>
    </property>
   </widget>
  </widget>

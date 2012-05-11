@@ -16,6 +16,7 @@ ProblemDialog::ProblemDialog(QWidget *parent) :
     connect(ui->newPicButton, SIGNAL(clicked()), this, SLOT(choseNewPic()) );
     connect(ui->moreDensityButton, SIGNAL(clicked()), this, SLOT(moreDensity()) );
     connect(ui->morePicsButton, SIGNAL(clicked()), this, SLOT(choseMorePics()) );
+    //TODO: help-button belegen
 }
 
 ProblemDialog::~ProblemDialog()
@@ -25,19 +26,19 @@ ProblemDialog::~ProblemDialog()
 
 void ProblemDialog::choseNewPic()
 {
-    close(); //OK
+    close();
     setResult(0);
 }
 
 void ProblemDialog::moreDensity()
 {
     close();
-    setResult(1); //Rejected
+    setResult(1);
 }
 
 void ProblemDialog::choseMorePics()
 {
     close();
-    setResult(2); //Accepted
+    setResult(2);
 }
 
