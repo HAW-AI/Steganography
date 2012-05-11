@@ -32,6 +32,12 @@ DiffTests::DiffTests(QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle("Stego-saur");
 
+    //personal helps
+    //ui->picPathTextField->setText("C:/Users/Ben/Desktop/erdbeere.png");
+    //ui->picPathTextField_2->setText("C:/Users/Ben/Desktop/erdbeere2.png");
+    ui->picPathTextField->setText("C:/Users/Ben/Desktop/2x2pix.png");
+    ui->textEdit->setText("Ich mag Erdbeeren!");
+
     //hide-Buttons
     connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
     connect( ui->textBrowseButton, SIGNAL( clicked() ), this, SLOT( choseText() ) );
