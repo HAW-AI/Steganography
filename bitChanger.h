@@ -39,6 +39,7 @@ public:
     static void stringTest();
     static QImage* erstelleQimage(int width, int height);
     static QString* bitStreamToText_8Bit(QList<uint>* bitstream);
+    static int getBits(int value,int from, int numberOfBits);
 };
 
 #endif // bitChanger_H

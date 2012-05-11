@@ -64,6 +64,35 @@ QChar BitChanger::getBitAt(uint value, uint position){
     }
 }
 
+int BitChanger::getBits(int value,int from, int numberOfBits){
+    int temp = 0;
+    for(int i = 0;i < numberOfBits-1; i++){ // maske erstellen, in maske werden die zu extrahierenden Bits auf 1 gesetzt, rest auf 0
+        temp += 1;                          //in for-schleife in den niederwertigen bits so viele einsen erzeugen, wie bist extrahiert werden sollen
+        temp = temp << 1;
+    }
+    if(numberOfBits > 0){   //gehoert mit zu maske erstellen, niederwertigtes bit auf 1 setzen, falls min. 1 bit extrahiert werden soll
+        temp+=1;
+    }
+
+    //einsen in maske an die stelle shiften, wo bits extrahiert werden sollen
+       temp = temp << from;
+
+    // maske fertig erstellt
+
+    //alle bits loeschen ausser den gewuenschten
+    value = value & temp;
+
+    //extrahierte bits wieder zurueck auf niederwertigste stelle shiften
+   if((from + numberOfBits >= 31) && (numberOfBits > 0) && (numberOfBits < 31)){
+       value = value >> 1;
+       value = changeBitAt(value,31,'0'); //damit 0en nachgezogen werden
+       return value >> from-1;
+   }else{
+       return value >> from;
+   }
+
+}
+
 
 
 QString* BitChanger::toBits(uint i,int size){
