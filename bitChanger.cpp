@@ -417,33 +417,50 @@ QList<uint>* BitChanger::pictureToBitstreamAsIntList(QImage* image){
     int red;
     int green;
     int blue;
+    int listElement = 0;
+    int insertionPos = 31;
 
     for(int line = 0; line < image->height(); line++){
         QRgb* Pixel = reinterpret_cast<QRgb*>(image->scanLine(line));
+        qDebug("schreibe line: %i", line);
 
         for(int pos = 0; pos < image->width(); pos++){
-
+            //rot einfuegen
             red = qRed(Pixel[pos]);
-            green = qGreen(Pixel[pos]);
-            blue = qBlue(Pixel[pos]);
-            temp->append(*(BitChanger::toBits(red,8)));
-            if(temp->size() == 32){
-                result->append(BitChanger::toIntVal(temp));
-                temp->clear();
+            for(int aktBit = 7; aktBit>= 0; aktBit--){  //aktBit == 7, weil nur letzte 8 bit relevant
+                listElement = BitChanger::changeBitAt(listElement, insertionPos,BitChanger::getBitAt(red,aktBit));
+                insertionPos--;
             }
-            temp->append(*(BitChanger::toBits(green,8)));
-            if(temp->size() == 32){
-                result->append(BitChanger::toIntVal(temp));
-                temp->clear();
+            if(insertionPos < 0){
+                result->append(listElement);
+                insertionPos = 31;
             }
-            temp->append(*(BitChanger::toBits(blue,8)));
-            if(temp->size() == 32){
-                result->append(BitChanger::toIntVal(temp));
-                temp->clear();
-            }
+
+            //gruen einfuegen
+             green = qGreen(Pixel[pos]);
+             for(int aktBit = 7; aktBit>= 0; aktBit--){  //aktBit == 7, weil nur letzte 8 bit relevant
+                 listElement = BitChanger::changeBitAt(listElement, insertionPos,BitChanger::getBitAt(green,aktBit));
+                 insertionPos--;
+             }
+             if(insertionPos < 0){
+                 result->append(listElement);
+                 insertionPos = 31;
+             }
+
+             //blau einfuegen
+              blue = qBlue(Pixel[pos]);
+              for(int aktBit = 7; aktBit>= 0; aktBit--){  //aktBit == 7, weil nur letzte 8 bit relevant
+                  listElement = BitChanger::changeBitAt(listElement, insertionPos,BitChanger::getBitAt(blue,aktBit));
+                  insertionPos--;
+              }
+              if(insertionPos < 0){
+                  result->append(listElement);
+                  insertionPos = 31;
+              }
+
         }
     }
-    delete temp;
+
     return result;
 
 }
@@ -497,7 +514,6 @@ QImage* BitChanger::bitStreamToPicture(QList<uint>* stream, int height, int widt
     int pixels = height*width;
     int paintedPixels = 0;
     int currentColor = RED;
-    QString* temp;
 
     int line = 0;
     int pos = 0;
@@ -511,21 +527,21 @@ QImage* BitChanger::bitStreamToPicture(QList<uint>* stream, int height, int widt
 
     while(iter != stream->end()){
         if(pos >= result->width()){
+            qDebug("lese line: %i", line);
             pos = 0;
             line++;
             Pixel = reinterpret_cast<QRgb*>(result->scanLine(line));
         }
         if(line < result->height()){
-            temp = BitChanger::toBits(*iter,32);
-            for(int i = 0; i < 32; i+= 8){
+            for(int i = 24; i >=0; i-= 8){
                 if(currentColor == RED){
-                    red = BitChanger::toIntVal(&(temp->mid(i,8)));
+                    red = BitChanger::getBits(*iter,i,8);
                     currentColor = GREEN;
                 }else if(currentColor == GREEN){
-                    green = BitChanger::toIntVal(&(temp->mid(i,8)));
+                    green = BitChanger::getBits(*iter,i,8);
                     currentColor = BLUE;
                 }else if(currentColor == BLUE){
-                    blue = BitChanger::toIntVal(&(temp->mid(i,8)));
+                    blue = BitChanger::getBits(*iter,i,8);
                     currentColor = RED;
                     Pixel[pos] = qRgb(red, green, blue);
                     pos++;
@@ -535,12 +551,10 @@ QImage* BitChanger::bitStreamToPicture(QList<uint>* stream, int height, int widt
                     }
                 }
             }
-            temp->clear();
         }
         iter++;
     }
 
-    delete temp;
     return result;
 
 
