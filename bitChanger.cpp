@@ -148,19 +148,15 @@ QString* BitChanger::bitStreamToText_16Bit(QString* bitstream){
   */
 QString* BitChanger::bitStreamToText_16Bit(QList<uint>* bitstream, int characters){
     QString* result = new QString();
-    QString* temp;
     QList<uint>::const_iterator iter = bitstream->begin();
     while(iter != bitstream->end()){
-        temp = BitChanger::toBits(*iter,32);
-        result->append(QChar((BitChanger::toIntVal(&(temp->mid(0,UNICODE_SIZE))))));
-        result->append(QChar((BitChanger::toIntVal(&(temp->mid(16,UNICODE_SIZE))))));
-        temp->clear();
+        result->append(QChar(BitChanger::getBits(*iter,16,UNICODE_SIZE)));
+        result->append(QChar(BitChanger::getBits(*iter,0,UNICODE_SIZE)));
         iter++;
     }
     if(result->size() > characters){
         result->chop(result->size() - characters);
     }
-    delete temp;
     return result;
 }
 
@@ -272,21 +268,22 @@ QString* BitChanger::textToBits_16Bit(QString* s){
 QList<uint>* BitChanger::textToBitsInIntList_16Bit(QString* s){
     QList<uint>* result = new QList<uint>();
     QString::const_iterator i = s->begin();
-    QString* temp = new QString();
+    uint listElement = 0;
+    int insertPosition = 31;
+    int aktChar;
     while(i != s->end()){
-        temp->append(BitChanger::toBits((*i).unicode()));
-        if(temp->size() == 32){
-            result->append(BitChanger::toIntVal(temp));
-            temp->clear();
+        aktChar = (*i).unicode();
+        for(int aktBit = 15; aktBit >=0 ; aktBit--){ //aktBit = 15, weil bei 16 bit-unicode nur bits 0-15 interessant
+            listElement = BitChanger::changeBitAt(listElement, insertPosition,BitChanger::getBitAt(aktChar,aktBit));
+            insertPosition--;
+        }
+        if(insertPosition < 0){
+            result->append(listElement);
+            insertPosition = 31;
         }
         i++;
     }
-    if(temp->size() == UNICODE_SIZE){
-        temp->append("0000000000000000");
-        result->append(BitChanger::toIntVal(temp));
 
-    }
-    delete temp;
     return result;
 }
 
