@@ -38,7 +38,7 @@ public slots:
     QString decrypt(QString);
     QString encrypt(QString);
 
-    void popupProblemDialog();
+    int popupProblemDialog();
 
 private:
     Ui::DiffTests *ui;

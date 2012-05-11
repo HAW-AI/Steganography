@@ -3,8 +3,8 @@
 #include <QDialog>
 
 #define CANCLE 0
-#define MOREDENSITY 1
-#define MOREPICS 2
+#define DENSITY 1
+#define PICS 2
 
 ProblemDialog::ProblemDialog(QWidget *parent) :
     QDialog(parent),
@@ -26,15 +26,18 @@ ProblemDialog::~ProblemDialog()
 void ProblemDialog::choseNewPic()
 {
     close(); //OK
+    setResult(0);
 }
 
 void ProblemDialog::moreDensity()
 {
     close();
+    setResult(1); //Rejected
 }
 
 void ProblemDialog::choseMorePics()
 {
     close();
+    setResult(2); //Accepted
 }
 

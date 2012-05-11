@@ -16,6 +16,10 @@
 #define ENCRYPT 1
 #define DECRYPT 0
 
+#define CANCLE 0
+#define DENSITY 1
+#define PICS 2
+
 int format;
 QString ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
@@ -353,10 +357,11 @@ QString DiffTests::decrypt(QString cipher)
     return plain;
 }
 
-void DiffTests::popupProblemDialog()
+int DiffTests::popupProblemDialog()
 {
     pd = new ProblemDialog();
     pd->exec();
+    return pd->result();
 }
 
 void DiffTests::hide()
@@ -381,7 +386,17 @@ void DiffTests::hide()
         QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
         im->hide_1Bit(newPath);
     }else{
-        popupProblemDialog();
+        int action = popupProblemDialog();
+        if( action == CANCLE)
+        {
+            qDebug("Cancle");
+        }else if (action == DENSITY) //Accepted - More Pics
+        {
+            qDebug("More Density");
+        }else if (action == PICS)
+        {
+            qDebug("More Pics");
+        }else{}
     }
 
 }
