@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "problemdialog.h"
+#include "intermediary.h"
 
 namespace Ui {
 class DiffTests;
@@ -42,6 +43,7 @@ public slots:
 private:
     Ui::DiffTests *ui;
     ProblemDialog *pd;
+    Intermediary *im;
 };
 
 #endif // DIFFTESTS_H

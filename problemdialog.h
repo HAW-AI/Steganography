@@ -1,13 +1,13 @@
 #ifndef PROBLEMDIALOG_H
 #define PROBLEMDIALOG_H
 
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
 class ProblemDialog;
 }
 
-class ProblemDialog : public QWidget
+class ProblemDialog : public QDialog
 {
     Q_OBJECT
     
