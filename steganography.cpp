@@ -900,12 +900,12 @@ int Steganography::getFirstAttributeFromHeader(){
 }
 
 int Steganography::insertRealSizeInHeader(int realSize){
-    return insertIntInHeader(realsize, 161);
+    return insertIntInHeader(realSize, 161);
 }
 
 int Steganography::getRealSizeFromHeader(){
     if(image.width() < 182) return -1;
-    retrun getIntFromHeader(161);
+    return getIntFromHeader(161);
 }
 
 /*
