@@ -9,6 +9,7 @@
 #include "crypt.h"
 #include "problemdialog.h"
 #include "intermediary.h"
+#include "noisewarning.h"
 
 #include <QtGui>
 #define UNICODE 1
@@ -364,6 +365,13 @@ int DiffTests::popupProblemDialog()
     return pd->result();
 }
 
+int DiffTests::noiseWarningDialog()
+{
+    nw = new NoiseWarning();
+    nw->exec();
+    return nw->result();
+}
+
 void DiffTests::hide()
 {
     QString plain;
@@ -387,12 +395,34 @@ void DiffTests::hide()
         im->hide_1Bit(newPath);
     }else{
         int action = popupProblemDialog();
-        if( action == CANCLE)
+        if( action == CANCLE){}
+        else if (action == DENSITY)
         {
-            qDebug("Cancle");
-        }else if (action == DENSITY) //Accepted - More Pics
-        {
-            qDebug("More Density");
+            //warning
+            int w = noiseWarningDialog();
+            if(im->isReady_3Bit() && w == 1){
+                QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                im->hide_3Bit(newPath);
+            }else{
+                action = popupProblemDialog();
+                if( action == CANCLE){}
+                else if (action == DENSITY)
+                {
+                    //warning
+                    w = noiseWarningDialog();
+                    if(im->isReady_6Bit() && w == 1){
+                        QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                        im->hide_6Bit(newPath);
+                    }else{
+                        qDebug("still not enough!");
+                    }
+                }else if (action == PICS)
+                {
+                    qDebug("More Pics");
+                }else{}
+
+            }
+
         }else if (action == PICS)
         {
             qDebug("More Pics");

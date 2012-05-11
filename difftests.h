@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "problemdialog.h"
 #include "intermediary.h"
+#include "noisewarning.h"
 
 namespace Ui {
 class DiffTests;
@@ -39,10 +40,12 @@ public slots:
     QString encrypt(QString);
 
     int popupProblemDialog();
+    int noiseWarningDialog();
 
 private:
     Ui::DiffTests *ui;
     ProblemDialog *pd;
+    NoiseWarning *nw;
     Intermediary *im;
 };
 
