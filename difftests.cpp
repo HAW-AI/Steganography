@@ -10,6 +10,7 @@
 #include "problemdialog.h"
 #include "intermediary.h"
 #include "noisewarning.h"
+#include "addpicdialog.h"
 
 #include <QtGui>
 #define UNICODE 1
@@ -31,12 +32,6 @@ DiffTests::DiffTests(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("Stego-saur");
-
-    //personal helps
-    //ui->picPathTextField->setText("C:/Users/Ben/Desktop/erdbeere.png");
-    //ui->picPathTextField_2->setText("C:/Users/Ben/Desktop/erdbeere2.png");
-    ui->picPathTextField->setText("C:/Users/Ben/Desktop/2x2pix.png");
-    ui->textEdit->setText("Ich mag Erdbeeren!");
 
     //hide-Buttons
     connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
@@ -378,6 +373,13 @@ int DiffTests::noiseWarningDialog()
     return nw->result();
 }
 
+int DiffTests::addPicDialog()
+{
+    apd = new AddPicDialog();
+    apd->exec();
+    return apd->result();
+}
+
 void DiffTests::hide()
 {
     QString plain;
@@ -394,6 +396,7 @@ void DiffTests::hide()
     if(ui->encryptCheckBox->isChecked()){
         plain = encrypt(plain);
     }
+//TODO: Achtung, bei einem Abbruch würde mehrmals verschlüsselt!
 
     im = new Intermediary(&plain, format, ui->picPathTextField->toPlainText());
     if(im->isReady_1Bit()){
@@ -424,14 +427,14 @@ void DiffTests::hide()
                     }
                 }else if (action == PICS)
                 {
-                    qDebug("More Pics");
+                    int i = addPicDialog();
                 }else{}
 
             }
 
         }else if (action == PICS)
         {
-            qDebug("More Pics");
+            int i = addPicDialog();
         }else{}
     }
 

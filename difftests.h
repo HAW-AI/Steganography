@@ -5,6 +5,7 @@
 #include "problemdialog.h"
 #include "intermediary.h"
 #include "noisewarning.h"
+#include "addpicdialog.h"
 
 namespace Ui {
 class DiffTests;
@@ -41,12 +42,14 @@ public slots:
 
     int popupProblemDialog();
     int noiseWarningDialog();
+    int addPicDialog();
 
 private:
     Ui::DiffTests *ui;
     ProblemDialog *pd;
     NoiseWarning *nw;
     Intermediary *im;
+    AddPicDialog *apd;
 };
 
 #endif // DIFFTESTS_H
