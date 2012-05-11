@@ -65,7 +65,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Do you want to contiue?</string>
+    <string>Do you want to continue?</string>
    </property>
   </widget>
  </widget>
