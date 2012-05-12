@@ -183,6 +183,21 @@ QString* BitChanger::bitStreamToText_8Bit(QString* bitstream){
 }
 
 
+QString* BitChanger::bitStreamToText_8Bit(QList<uint>* bitstream, int characters){
+    QString* result = new QString();
+    QList<uint>::const_iterator iter = bitstream->begin();
+    while(iter != bitstream->end()){
+        result->append(QChar(BitChanger::getBits(*iter,24,ASCII_SIZE)));
+        result->append(QChar(BitChanger::getBits(*iter,16,ASCII_SIZE)));
+        result->append(QChar(BitChanger::getBits(*iter,8,ASCII_SIZE)));
+        result->append(QChar(BitChanger::getBits(*iter,0,ASCII_SIZE)));
+        iter++;
+    }
+    if(result->size() > characters){
+        result->chop(result->size() - characters);
+    }
+    return result;
+}
 
 
 /*
@@ -214,7 +229,7 @@ QString* BitChanger::textToBits_8Bit(QString* s){
         QString* pointer = textToBits_8Bit(&str)
         *pointer -> "01000001"
 
- */
+
 QList<uint>* BitChanger::textToBitsInIntList_8Bit(QString* s){
     QString::const_iterator i = s->begin();
     QList<uint>* result = new QList<uint>();
@@ -223,6 +238,32 @@ QList<uint>* BitChanger::textToBitsInIntList_8Bit(QString* s){
         temp.append(BitChanger::toBits((*i).toAscii(),8));
         i++;
     }
+    return result;
+}
+*/
+
+QList<uint>* BitChanger::textToBitsInIntList_8Bit(QString* s){
+    QList<uint>* result = new QList<uint>();
+    QString::const_iterator i = s->begin();
+    uint listElement = 0;
+    int insertPosition = 31;
+    int aktChar;
+    while(i != s->end()){
+        aktChar = (*i).toAscii();
+        for(int aktBit = 7; aktBit >=0 ; aktBit--){ //aktBit = 15, weil bei 16 bit-unicode nur bits 0-15 interessant
+            listElement = BitChanger::changeBitAt(listElement, insertPosition,BitChanger::getBitAt(aktChar,aktBit));
+            insertPosition--;
+        }
+        if(insertPosition < 0){
+            result->append(listElement);
+            insertPosition = 31;
+        }
+        i++;
+    }
+    if(listElement != 0){
+        result->append(listElement);
+    }
+
     return result;
 }
 
@@ -282,6 +323,9 @@ QList<uint>* BitChanger::textToBitsInIntList_16Bit(QString* s){
             insertPosition = 31;
         }
         i++;
+    }
+    if(listElement != 0){
+        result->append(listElement);
     }
 
     return result;
