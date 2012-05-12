@@ -86,7 +86,7 @@ int BitChanger::getBits(int value,int from, int numberOfBits){
    if((from + numberOfBits >= 31) && (numberOfBits > 0) && (numberOfBits < 31)){
        value = value >> 1;
        value = changeBitAt(value,31,'0'); //damit 0en nachgezogen werden
-       return value >> from-1;
+       return value >> (from-1);
    }else{
        return value >> from;
    }
@@ -413,7 +413,6 @@ QString* BitChanger::pictureToBitstream(QImage* image){
 
 QList<uint>* BitChanger::pictureToBitstreamAsIntList(QImage* image){
     QList<uint>* result = new QList<uint>();
-    QString* temp = new QString();
     int red;
     int green;
     int blue;

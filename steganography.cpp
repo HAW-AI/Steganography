@@ -279,7 +279,7 @@ int Steganography::insertBitstream_3BitsPerPixel(QString* s){
 /*
  fuegt eine Bitfolge in das Bild ein und nutzt dabei 3 Bit pro Pixel
 
- Eingabe: QString* text -> zu versteckender Text (muss eine Bitfolge sein)
+ Eingabe: QList<uint>* l -> zu versteckende Bitfolge
  Ausgabe: Integer
            1 -> alles ok
            -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
@@ -453,12 +453,8 @@ int Steganography::insertBitstream_6BitsPerPixel(QList<uint>* l){
                     outerIterator++;
                     aktBit = 31;
                 }
-                temp.clear();
-                temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
-                temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
-
-                red = BitChanger::changeLastBits(red, &temp);
-
+                red = BitChanger::changeBitAt(red,1,BitChanger::getBitAt(*outerIterator,aktBit--));
+                red = BitChanger::changeBitAt(red,0,BitChanger::getBitAt(*outerIterator,aktBit--));
 
                 if(outerIterator != l->end()){
 
@@ -466,10 +462,8 @@ int Steganography::insertBitstream_6BitsPerPixel(QList<uint>* l){
                         outerIterator++;
                         aktBit = 31;
                     }
-                    temp.clear();
-                    temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
-                    temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
-                    green = BitChanger::changeLastBits(green, &temp);
+                    green = BitChanger::changeBitAt(green,1,BitChanger::getBitAt(*outerIterator,aktBit--));
+                    green = BitChanger::changeBitAt(green,0,BitChanger::getBitAt(*outerIterator,aktBit--));;
 
                 }
 
@@ -478,10 +472,8 @@ int Steganography::insertBitstream_6BitsPerPixel(QList<uint>* l){
                         outerIterator++;
                         aktBit = 31;
                     }
-                    temp.clear();
-                    temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
-                    temp.append(BitChanger::getBitAt(*outerIterator, aktBit--));
-                    blue = BitChanger::changeLastBits(blue, &temp);
+                    blue = BitChanger::changeBitAt(blue,1,BitChanger::getBitAt(*outerIterator,aktBit--));
+                    blue = BitChanger::changeBitAt(blue,0,BitChanger::getBitAt(*outerIterator,aktBit--));
                 }
 
                 pixel[pos] = qRgb(red, green, blue);
@@ -509,7 +501,7 @@ int Steganography::calcInkrement(int pixels, int bits, int bitsPerPixel){
     if((bits % bitsPerPixel) != 0){
         inkrement = (pixels) / ((bits / bitsPerPixel) +1);
     }else{
-        inkrement = inkrement = pixels / (bits / bitsPerPixel);
+        inkrement = pixels / (bits / bitsPerPixel);
     }
     return inkrement;
 }
@@ -705,8 +697,9 @@ QList<uint>* Steganography::getBitstreamAsIntList_6BitsPerPixel(){
     int width = image.width();
     int height = image.height();
     int bitsPerPixel = 6;
+    int aktBit = 31;
+    int listElement = 0;
     QList<uint>* result = new QList<uint>();
-    QString* temp = new QString();
     int hiddenLetters = getSizeFromHeader();
     int extractedLetters = 0;
 
@@ -731,26 +724,29 @@ QList<uint>* Steganography::getBitstreamAsIntList_6BitsPerPixel(){
             int blue = qBlue(pixel[pos]);
 
             if(extractedLetters < hiddenLetters){
-                temp->append(BitChanger::getLastBits(red, 2));
-                if(temp->size() > 31){
-                    result->append(BitChanger::toIntVal(temp));
-                    temp->clear();
+                listElement = BitChanger::changeBitAt(listElement,aktBit--,BitChanger::getBitAt(red,1));
+                listElement = BitChanger::changeBitAt(listElement, aktBit--,BitChanger::getBitAt(red,0));
+                if(aktBit < 0){
+                    result->append(listElement);
+                    aktBit = 31;
                 }
                 extractedLetters+=2;
             }
             if(extractedLetters < hiddenLetters){
-                temp->append(BitChanger::getLastBits(green, 2));
-                if(temp->size() > 31){
-                    result->append(BitChanger::toIntVal(temp));
-                    temp->clear();
+                listElement = BitChanger::changeBitAt(listElement,aktBit--,BitChanger::getBitAt(green,1));
+                listElement = BitChanger::changeBitAt(listElement, aktBit--,BitChanger::getBitAt(green,0));
+                if(aktBit < 0){
+                    result->append(listElement);
+                    aktBit = 31;
                 }
                 extractedLetters+=2;
             }
             if(extractedLetters < hiddenLetters){
-                temp->append(BitChanger::getLastBits(blue, 2));
-                if(temp->size() > 31){
-                    result->append(BitChanger::toIntVal(temp));
-                    temp->clear();
+                listElement = BitChanger::changeBitAt(listElement,aktBit--,BitChanger::getBitAt(blue,1));
+                listElement = BitChanger::changeBitAt(listElement, aktBit--,BitChanger::getBitAt(blue,0));
+                if(aktBit < 0){
+                    result->append(listElement);
+                    aktBit = 31;
                 }
                 extractedLetters+=2;
             }else{
@@ -762,6 +758,7 @@ QList<uint>* Steganography::getBitstreamAsIntList_6BitsPerPixel(){
         return result;
 
     }
+    return &QList<uint>();
 }
 
 
