@@ -21,6 +21,7 @@ public:
     
 private slots:
     void chosePicture();
+    void chosePicture_2();
     void choseText();
     void hide();
     void find();
