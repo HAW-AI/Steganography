@@ -49,7 +49,7 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->keyTextField, SIGNAL(textChanged()), this, SLOT(checkKey()) );
 
     //find-Buttons
-    connect( ui->picBrowseButton_2, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
+    connect( ui->picBrowseButton_2, SIGNAL( clicked() ), this, SLOT( chosePicture_2() ) );
     connect( ui->findButton, SIGNAL( clicked() ), this, SLOT( find() ) );
     connect( ui->keyBrowseButton_2, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
     ui->findButton->setEnabled(false);
@@ -143,6 +143,17 @@ void DiffTests::chosePicture()
                 QDir::homePath(),
                 "PNG Files(*.png)");  //JPEG files (*.jpg *.png);; Gif files (*.gif)
     ui->picPathTextField->setText( path );
+}
+
+void DiffTests::chosePicture_2()
+{
+    QString path;
+    path = QFileDialog::getOpenFileName(
+                this,
+                "Choose a file",
+                QDir::homePath(),
+                "PNG Files(*.png)");  //JPEG files (*.jpg *.png);; Gif files (*.gif)
+    ui->picPathTextField_2->setText( path );
 }
 
 void DiffTests::choseText()
@@ -252,63 +263,6 @@ void DiffTests::checkKey_2()
     showFindButton();
 }
 
-/*void DiffTests::hide()
-{
-    QString picPath = ui->picPathTextField->toPlainText();
-    Steganography stego(picPath);
-
-    QString plain;
-    if(ui->textFromDocRadio->isChecked()){
-        QString plainPath = ui->textPathTextField->toPlainText();
-        QFile file(plainPath);
-        file.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream in(&file);
-        plain = in.readAll();
-        file.close();
-    }else if(ui->textFromFieldRadio->isChecked()) plain = ui->textEdit->toPlainText(); //if(textFromFieldRadio)
-
-    //encrypt
-    if(ui->encryptCheckBox->isChecked()){
-        plain = encrypt(plain);
-    }
-
-    //ui->textEdit->setText(plain);
-
-    stego.insertText_1BitPerPixel(&plain, UNICODE);
-    QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), picPath, tr("*.png *.jpg"));
-    ui->picPathTextField_2->setText(newPath);
-    stego.saveImage(newPath);
-    qDebug("Fertig!");
-}
-*/
-void DiffTests::find()
-{
-    QString picPath = ui->picPathTextField_2->toPlainText();
-    Steganography stego(picPath);
-
-    QString* plain = stego.getHiddenText();
-
-    //decrypt
-    if(ui->decryptCheckBox->isChecked()){
-        plain = &(decrypt(*plain));
-    }
-
-    if(ui->textToFieldRadio->isChecked()){
-        ui->textEdit_2->setText(*plain);
-    }else if(ui->textToDocRadio->isChecked()){
-        QString newPath = QFileDialog::getSaveFileName(
-                    this,
-                    "Save Textfile",
-                    QString::null,
-                    "Text Files(*.txt)");
-        QFile file(newPath);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        QTextStream out(&file);
-        out << plain;
-        file.close();
-    }
-}
-
 void DiffTests::browseOneTimePad()
 {
     QString path;
@@ -396,46 +350,112 @@ void DiffTests::hide()
     if(ui->encryptCheckBox->isChecked()){
         plain = encrypt(plain);
     }
-//TODO: Achtung, bei einem Abbruch würde mehrmals verschlüsselt!
 
     im = new Intermediary(&plain, format, ui->picPathTextField->toPlainText());
+    QString newPath;
+
+    bool ready = false;
+    while(!ready){
+
     if(im->isReady_1Bit()){
-        QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+        newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
         im->hide_1Bit(newPath);
+        ready = true;
     }else{
         int action = popupProblemDialog();
-        if( action == CANCLE){}
+        if( action == CANCLE){ready = true;}
         else if (action == DENSITY)
         {
             //warning
             int w = noiseWarningDialog();
             if(im->isReady_3Bit() && w == 1){
-                QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
                 im->hide_3Bit(newPath);
+                ready = true;
             }else{
                 action = popupProblemDialog();
-                if( action == CANCLE){}
+                if( action == CANCLE){ready = true;}
                 else if (action == DENSITY)
                 {
                     //warning
                     w = noiseWarningDialog();
                     if(im->isReady_6Bit() && w == 1){
-                        QString newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                        newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
                         im->hide_6Bit(newPath);
+                        ready = true;
                     }else{
                         qDebug("still not enough!");
                     }
                 }else if (action == PICS)
                 {
                     int i = addPicDialog();
+                    ready = true;
                 }else{}
 
             }
-
         }else if (action == PICS)
         {
             int i = addPicDialog();
+            ready = true;
         }else{}
+    }
+    }
+    ui->picPathTextField_2->setText(newPath);
+
+}
+
+void DiffTests::find()
+{
+    im = new Intermediary(ui->picPathTextField_2->toPlainText());
+    QString* plain = im->getHiddenText();
+
+    //decrypt
+    if(ui->decryptCheckBox->isChecked()){
+        plain = &(decrypt(*plain));
+    }
+
+    if(ui->textToFieldRadio->isChecked()){
+        ui->textEdit_2->setText(*plain);
+    }else if(ui->textToDocRadio->isChecked()){
+        QString newPath = QFileDialog::getSaveFileName(
+                    this,
+                    "Save Textfile",
+                    QString::null,
+                    "Text Files(*.txt)");
+        QFile file(newPath);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+        out << plain;
+        file.close();
     }
 
 }
+/*
+void DiffTests::find()
+{
+    QString picPath = ui->picPathTextField_2->toPlainText();
+    Steganography stego(picPath);
+
+    QString* plain = stego.getHiddenText();
+
+    //decrypt
+    if(ui->decryptCheckBox->isChecked()){
+        plain = &(decrypt(*plain));
+    }
+
+    if(ui->textToFieldRadio->isChecked()){
+        ui->textEdit_2->setText(*plain);
+    }else if(ui->textToDocRadio->isChecked()){
+        QString newPath = QFileDialog::getSaveFileName(
+                    this,
+                    "Save Textfile",
+                    QString::null,
+                    "Text Files(*.txt)");
+        QFile file(newPath);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+        out << plain;
+        file.close();
+    }
+}
+*/
