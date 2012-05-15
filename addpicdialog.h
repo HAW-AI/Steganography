@@ -17,6 +17,12 @@ public:
     
 private:
     Ui::AddPicDialog *ui;
+
+private slots:
+    void add();
+    void del();
+    void ok();
+    void showOK();
 };
 
 #endif // ADDPICDIALOG_H
