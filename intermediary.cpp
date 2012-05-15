@@ -4,22 +4,26 @@
 
 #include "iostream"
 #include "QImage"
+#include "QList"
 #include "QMap"
 
 #define LINE "==============================="
+#define HEADER_SIZE 193
 
 using namespace std;
 
 Intermediary::Intermediary(QString* text, int format, QString imagePath) {
+    bitChanger = new BitChanger();
     images = new QMap<QString, QImage>();
-    setText(text, format);
     addImage(imagePath);
+    setText(text, format);
 }
 
 Intermediary::Intermediary(QString imagePath) {
+    bitChanger = new BitChanger();
     images = new QMap<QString, QImage>();
-    setText(new QString(), 0);
     addImage(imagePath);
+    setText(new QString(), 0);
 }
 
 void Intermediary::setText(QString* text, int format) {
@@ -29,8 +33,7 @@ void Intermediary::setText(QString* text, int format) {
 
 void Intermediary::addImage(QString imagePath) {
     QImage image = QImage(imagePath);
-    if (availableChar(image) > 0)
-    {
+    if (availableChar(image) > 0) {
         images->insert(imagePath, QImage(imagePath));
     }
 }
@@ -45,8 +48,7 @@ long Intermediary::availableChar() {
 
 long Intermediary::availableChar(QImage image) {
     long result = 0;
-    if (image.width() >= 160 && image.height() > 1)
-    {
+    if (image.width() >= HEADER_SIZE && image.height() > 1) {
         result = (image.width() * (image.height() - 1)) / bitsPerChar();
     }
     return result;
@@ -67,14 +69,8 @@ void Intermediary::hide_1Bit(QString savePath) {
         long range = 0;
         long charRate = (availableChar() / textToHide->count()) + (availableChar() % textToHide->count());
 
-        std::cout<<"totalBits: "<<totalBits()<<endl;
         std::cout<<"availableChar: "<<availableChar()<<endl;
         std::cout<<"charRate: "<<charRate<<endl;
-
-        // 100 Char verf√ºgbar / 99 Char ben√∂tigt = charRate: 1 = Textl√§nge entspricht availableChar(image)
-        // 100 Char verf√ºgbar / 52 Char ben√∂tigt = charRate: 1 = Textl√§nge entspricht availableChar(image)
-        // 100 Char verf√ºgbar / 49 Char ben√∂tigt = charRate: 2 = Textl√§nge entspricht availableChar(image) / 2
-        // 100 Char verf√ºgbar / 33 Char ben√∂tigt = charRate: 3 = Textl√§nge entspricht availableChar(image) / 3
 
         QMap<QString, QImage>::const_iterator it = images->constBegin();
         while (it != images->constEnd() && (start + range) < textToHide->count()) {
@@ -92,18 +88,22 @@ void Intermediary::hide_1Bit(QString savePath) {
             QString currentText = textToHide->mid(start, range);
             std::cout<<"text: "<<currentText.toStdString()<<endl;
 
-            // 100 totalChar / charRate: 1 = 100 Chars
-            // 100 totalChar / charRate: 2 = 50 Chars
-            // 100 totalChar / charRate: 3 = 33 Chars
+            // bits to hide
+            QList<uint>* bits = new QList<uint>();
+            if (format == 0)
+                bits = bitChanger->textToBitsInIntList_8Bit(&currentText);
+            else
+                bits = bitChanger->textToBitsInIntList_16Bit(&currentText);
 
             Steganography* stego = new Steganography(it.key());
-            stego->insertSizeInHeader(range);
+            stego->insertSizeInHeader(bits->size() * 32);
             stego->insertTBFieldInHeader(1);
             stego->insertFirstAttribute(format);
             stego->insertSecondAttribute(0);
             stego->insertBitsPerPixelInHeader(1);
             stego->insertSequenceNoInHeader(sequenceNo);
-            stego->insertText_1BitPerPixel(&currentText, format);
+            stego->insertRealSizeInHeader(currentText.size());
+            stego->insertBitstream(bits);
 
             QString fileName = savePath;
             fileName.append(QString().setNum(sequenceNo)).append(".png");
@@ -118,25 +118,54 @@ void Intermediary::hide_1Bit(QString savePath) {
 }
 
 void Intermediary::hide_3Bit(QString savePath) {
-    if (isReady_3Bit()) {
+    std::cout<<endl;
+    std::cout<<LINE<<endl;
+    std::cout<<"is ready? ";
+    if (!isReady_3Bit()) {
+        std::cout<<"no"<<endl;
+    } else {
+        std::cout<<"yes"<<endl;
 
+        // ToDo
     }
+    std::cout<<LINE<<endl<<endl;
 }
 
 void Intermediary::hide_6Bit(QString savePath) {
-    if (isReady_6Bit()) {
+    std::cout<<endl;
+    std::cout<<LINE<<endl;
+    std::cout<<"is ready? ";
+    if (!isReady_1Bit()) {
+        std::cout<<"no"<<endl;
+    } else {
+        std::cout<<"yes"<<endl;
 
+        // ToDo
     }
+    std::cout<<LINE<<endl<<endl;
 }
 
 QString* Intermediary::getHiddenText() {
+    // With QMap, the items are always sorted by key!
     QMap<int, QString*>* textMap = new QMap<int, QString*>();
+
+    // get all parts of the text
     QMap<QString, QImage>::const_iterator it = images->constBegin();
     while (it != images->constEnd()) {
         Steganography* stego = new Steganography(it.key());
-        textMap->insert(stego->getSequenceNoFromHeader(), stego->getHiddenText());
+        QString* currentText = new QString();
+        QList<uint>* bits = stego->getBitStreamAsIntList();
+        int realSize = stego->getRealSizeFromHeader();
+        if (stego->getFirstAttributeFromHeader() == 0) {
+            currentText = bitChanger->bitStreamToText_8Bit(bits, realSize);
+        } else {
+            currentText = bitChanger->bitStreamToText_16Bit(bits, realSize);
+        }
+        textMap->insert(stego->getSequenceNoFromHeader(), currentText);
         it++;
     }
+
+    // put all parts of the text together
     QString* result = new QString();
     QMap<int, QString*>::const_iterator it2 = textMap->constBegin();
     while (it2 != textMap->constEnd()) {
