@@ -106,7 +106,9 @@ void Intermediary::hide_1Bit(QString savePath) {
             stego->insertBitstream(bits);
 
             QString fileName = savePath;
-            fileName.append(QString().setNum(sequenceNo)).append(".png");
+            if (images->size() > 1){
+                fileName.insert(fileName.size()-4, QString().setNum(seuqenceNo));
+            }
             std::cout<<fileName.toStdString()<<endl;
             stego->saveImage(fileName);
 
