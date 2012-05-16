@@ -22,6 +22,8 @@ public:
     QString* getHiddenText();
     QImage* getHiddenImage();
 
+    QMap<QString, QImage>* images;
+
 private:
     long remainingPixel_1Bit() { return totalBits() - availableBits(); }
     long remainingPixel_3Bit() { return totalBits() - availableBits() * 3; }
@@ -35,7 +37,7 @@ private:
     int format;
     long bitsToHide;
     QString* textToHide;
-    QMap<QString, QImage>* images;
+    //QMap<QString, QImage>* images; //Fenja war's
     BitChanger* bitChanger;
 };
 
