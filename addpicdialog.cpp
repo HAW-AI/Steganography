@@ -3,6 +3,10 @@
 #include "difftests.h"
 #include "intermediary.h"
 
+#include <QtGui>
+
+Intermediary* im;
+
 AddPicDialog::AddPicDialog(Intermediary *im,QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddPicDialog)
@@ -10,14 +14,15 @@ AddPicDialog::AddPicDialog(Intermediary *im,QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle("Add pictures");
 
-    //ui->picTextArea->setText(); //erster bildpath in der map
-
     ui->okButton->setEnabled(false);
+    ui->delButton->setEnabled(false);
+    //ui->picList->addItem(im->images->keys().first());
     connect(ui->addButton, SIGNAL(clicked()), this, SLOT(add()) );
     connect(ui->delButton, SIGNAL(clicked()), this, SLOT(del()) );
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(ok()) );
     connect(ui->cancleButton, SIGNAL(clicked()), this, SLOT(close()) );
     connect(ui->bpPComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showOK(int)) );
+    connect(ui->picList, SIGNAL(clicked(QModelIndex)), this, SLOT(showDEL()) );
 }
 
 AddPicDialog::~AddPicDialog()
@@ -27,13 +32,16 @@ AddPicDialog::~AddPicDialog()
 
 void AddPicDialog::add()
 {
-    QString path="hallo";
-    ui->picTextArea->append(path);
+    QString newPath = QFileDialog::getOpenFileName(this, tr("Add picture"), QString::null, tr("*.png *.jpg"));
+    //im->addImage(newPath);
+    ui->picList->addItem(new QListWidgetItem(newPath));
 }
 
 void AddPicDialog::del()
 {
-
+    delete ui->picList->item(ui->picList->currentRow());
+    //ui->picList->takeItem(ui->picList->currentRow());
+    ui->delButton->setEnabled(false);
 }
 
 void AddPicDialog::ok()
@@ -53,7 +61,9 @@ int AddPicDialog::readDensity()
 
 }
 
+void AddPicDialog::showDEL(){ ui->delButton->setEnabled(true);}
+
 void AddPicDialog::showOK()
 {
-
+    ui->okButton->show();
 }
