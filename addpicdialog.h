@@ -27,7 +27,6 @@ private slots:
     void ok();
     void showOK();
     void showDEL();
-    int readDensity();
 };
 
 #endif // ADDPICDIALOG_H
