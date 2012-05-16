@@ -331,7 +331,7 @@ Intermediary* DiffTests::addPicDialog(Intermediary* im)
 {
     apd = new AddPicDialog(im);
     apd->exec();
-    //return apd->result();
+    return im;
 }
 
 void DiffTests::hide()
@@ -351,7 +351,8 @@ void DiffTests::hide()
         plain = encrypt(plain);
     }
 
-    im = new Intermediary(&plain, format, ui->picPathTextField->toPlainText());
+    QString oldPath = ui->picPathTextField->toPlainText();
+    im = new Intermediary(&plain, format, oldPath);
     QString newPath;
 
     bool ready = false;
@@ -430,32 +431,3 @@ void DiffTests::find()
     }
 
 }
-/*
-void DiffTests::find()
-{
-    QString picPath = ui->picPathTextField_2->toPlainText();
-    Steganography stego(picPath);
-
-    QString* plain = stego.getHiddenText();
-
-    //decrypt
-    if(ui->decryptCheckBox->isChecked()){
-        plain = &(decrypt(*plain));
-    }
-
-    if(ui->textToFieldRadio->isChecked()){
-        ui->textEdit_2->setText(*plain);
-    }else if(ui->textToDocRadio->isChecked()){
-        QString newPath = QFileDialog::getSaveFileName(
-                    this,
-                    "Save Textfile",
-                    QString::null,
-                    "Text Files(*.txt)");
-        QFile file(newPath);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        QTextStream out(&file);
-        out << plain;
-        file.close();
-    }
-}
-*/

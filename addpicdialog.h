@@ -26,6 +26,7 @@ private slots:
     void del();
     void ok();
     void showOK();
+    void showDEL();
     int readDensity();
 };
 

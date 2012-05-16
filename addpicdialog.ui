@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>411</width>
-    <height>249</height>
+    <width>447</width>
+    <height>245</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,20 +26,10 @@
     <string>Add picture(s)...</string>
    </property>
   </widget>
-  <widget class="QTextEdit" name="picTextArea">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>40</y>
-     <width>281</width>
-     <height>171</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="addButton">
    <property name="geometry">
     <rect>
-     <x>302</x>
+     <x>330</x>
      <y>40</y>
      <width>101</width>
      <height>28</height>
@@ -52,7 +42,7 @@
   <widget class="QPushButton" name="delButton">
    <property name="geometry">
     <rect>
-     <x>302</x>
+     <x>330</x>
      <y>80</y>
      <width>101</width>
      <height>28</height>
@@ -65,8 +55,8 @@
   <widget class="QPushButton" name="okButton">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>170</y>
+     <x>330</x>
+     <y>160</y>
      <width>101</width>
      <height>28</height>
     </rect>
@@ -78,8 +68,8 @@
   <widget class="QPushButton" name="cancleButton">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>210</y>
+     <x>330</x>
+     <y>200</y>
      <width>101</width>
      <height>28</height>
     </rect>
@@ -104,8 +94,8 @@
   <widget class="QComboBox" name="bpPComboBox">
    <property name="geometry">
     <rect>
-     <x>302</x>
-     <y>130</y>
+     <x>330</x>
+     <y>120</y>
      <width>101</width>
      <height>22</height>
     </rect>
@@ -125,6 +115,16 @@
      <string>6 Bit per Pixel</string>
     </property>
    </item>
+  </widget>
+  <widget class="QListWidget" name="picList">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>311</width>
+     <height>171</height>
+    </rect>
+   </property>
   </widget>
  </widget>
  <resources/>
