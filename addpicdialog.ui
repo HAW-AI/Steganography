@@ -26,7 +26,7 @@
     <string>Add picture(s)...</string>
    </property>
   </widget>
-  <widget class="QTextEdit" name="textEdit">
+  <widget class="QTextEdit" name="picTextArea">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -88,7 +88,7 @@
     <string>cancel</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="xPixLabel">
    <property name="geometry">
     <rect>
      <x>10</x>
