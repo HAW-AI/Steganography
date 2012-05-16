@@ -327,11 +327,11 @@ int DiffTests::noiseWarningDialog()
     return nw->result();
 }
 
-int DiffTests::addPicDialog()
+Intermediary* DiffTests::addPicDialog(Intermediary* im)
 {
-    apd = new AddPicDialog();
+    apd = new AddPicDialog(im);
     apd->exec();
-    return apd->result();
+    //return apd->result();
 }
 
 void DiffTests::hide()
@@ -388,14 +388,14 @@ void DiffTests::hide()
                     }
                 }else if (action == PICS)
                 {
-                    int i = addPicDialog();
+                    im = addPicDialog(im);
                     ready = true;
                 }else{}
 
             }
         }else if (action == PICS)
         {
-            int i = addPicDialog();
+            im = addPicDialog(im);
             ready = true;
         }else{}
     }

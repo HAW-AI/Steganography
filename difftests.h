@@ -43,7 +43,7 @@ public slots:
 
     int popupProblemDialog();
     int noiseWarningDialog();
-    int addPicDialog();
+    Intermediary* addPicDialog(Intermediary *);
 
 private:
     Ui::DiffTests *ui;
