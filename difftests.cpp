@@ -18,7 +18,7 @@
 #define ENCRYPT 1
 #define DECRYPT 0
 
-#define CANCLE 0
+#define CANCEL 0
 #define DENSITY 1
 #define PICS 2
 
@@ -355,54 +355,44 @@ void DiffTests::hide()
     im = new Intermediary(&plain, format, oldPath);
     QString newPath;
 
-    bool ready = false;
-    while(!ready){
-
     if(im->isReady_1Bit()){
         newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
         im->hide_1Bit(newPath);
-        ready = true;
     }else{
         int action = popupProblemDialog();
-        if( action == CANCLE){ready = true;}
-        else if (action == DENSITY)
-        {
-            //warning
-            int w = noiseWarningDialog();
-            if(im->isReady_3Bit() && w == 1){
-                newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
-                im->hide_3Bit(newPath);
-                ready = true;
-            }else{
-                action = popupProblemDialog();
-                if( action == CANCLE){ready = true;}
-                else if (action == DENSITY)
-                {
-                    //warning
-                    w = noiseWarningDialog();
-                    if(im->isReady_6Bit() && w == 1){
-                        newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
-                        im->hide_6Bit(newPath);
-                        ready = true;
-                    }else{
-                        qDebug("still not enough!");
-                    }
-                }else if (action == PICS)
-                {
-                    im = addPicDialog(im);
-                    ready = true;
-                }else{}
+        while(action != CANCEL){
 
+            if( action == DENSITY){
+                int w = noiseWarningDialog();
+                if(im->isReady_3Bit() && w == 1){
+                    newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                    im->hide_3Bit(newPath);
+                    action = CANCEL;
+                }else{
+                    action = popupProblemDialog();
+                    if( action == DENSITY){
+                        w = noiseWarningDialog();
+                        if(im->isReady_3Bit() && w == 1){
+                            newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                            im->hide_6Bit(newPath);
+                            action = CANCEL;
+                        }else{/*verstecken nicht möglich*/}
+                    }
+                }
             }
-        }else if (action == PICS)
-        {
-            im = addPicDialog(im);
-            ready = true;
-        }else{}
-    }
+            else if(action == PICS){
+                apd = new AddPicDialog(im);
+                apd->exec();
+                if(apd->result() == 1){
+                    action = CANCEL;
+                }else{
+                    action = 3;
+                }
+            }else{action=CANCEL;}
+            qDebug("looprun");
+        }
     }
     ui->picPathTextField_2->setText(newPath);
-
 }
 
 void DiffTests::find()
@@ -429,5 +419,4 @@ void DiffTests::find()
         out << plain;
         file.close();
     }
-
 }

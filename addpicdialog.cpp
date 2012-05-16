@@ -5,12 +5,13 @@
 
 #include <QtGui>
 
-Intermediary* im;
+Intermediary* intmed;
 
 AddPicDialog::AddPicDialog(Intermediary *im,QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddPicDialog)
 {
+    intmed=im;
     ui->setupUi(this);
     setWindowTitle("Add pictures");
 
@@ -20,8 +21,8 @@ AddPicDialog::AddPicDialog(Intermediary *im,QWidget *parent) :
     connect(ui->addButton, SIGNAL(clicked()), this, SLOT(add()) );
     connect(ui->delButton, SIGNAL(clicked()), this, SLOT(del()) );
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(ok()) );
-    connect(ui->cancleButton, SIGNAL(clicked()), this, SLOT(close()) );
-    connect(ui->bpPComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showOK(int)) );
+    connect(ui->cancleButton, SIGNAL(clicked()), this, SLOT(reject()) );
+    connect(ui->bpPComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showOK()) );
     connect(ui->picList, SIGNAL(clicked(QModelIndex)), this, SLOT(showDEL()) );
 }
 
@@ -32,38 +33,45 @@ AddPicDialog::~AddPicDialog()
 
 void AddPicDialog::add()
 {
-    QString newPath = QFileDialog::getOpenFileName(this, tr("Add picture"), QString::null, tr("*.png *.jpg"));
+    QString newPath = QFileDialog::getOpenFileName(this, tr("Add picture"), QString::null, tr("*.png"));
+    intmed->addImage(newPath);
     //im->addImage(newPath);
     ui->picList->addItem(new QListWidgetItem(newPath));
+    showOK();
 }
 
 void AddPicDialog::del()
 {
+    QString path = ui->picList->item(ui->picList->currentRow())->text();
     delete ui->picList->item(ui->picList->currentRow());
-    //ui->picList->takeItem(ui->picList->currentRow());
+    //intmed->removeImage(path);
+    intmed->images->take(ui->picList->item(ui->picList->currentRow())->text());
     ui->delButton->setEnabled(false);
+    showOK();
 }
 
 void AddPicDialog::ok()
 {
-    //im zurückgeben
-}
-
-int AddPicDialog::readDensity()
-{
-    switch(ui->bpPComboBox->currentIndex())
-    {
-    case 0: return 1;
-    case 1: return 3;
-    case 2: return 6;
-    default: return 1;
-    }
-
+    QString newPath = QFileDialog::getSaveFileName(this, tr("Save as"), QString::null, tr("*.png"));
+    intmed->hide_1Bit(newPath);
+    setResult(1);
+    close();
 }
 
 void AddPicDialog::showDEL(){ ui->delButton->setEnabled(true);}
 
 void AddPicDialog::showOK()
 {
-    ui->okButton->show();
+    bool show = false;
+    switch(ui->bpPComboBox->currentIndex())
+    {
+    case 0: if(intmed->isReady_1Bit()){show=true;}
+        break;
+    case 1: if(intmed->isReady_3Bit()) {show=true;}
+        break;
+    case 2: if(intmed->isReady_6Bit()) {show=true;}
+        break;
+    default:;
+    }
+    ui->okButton->setEnabled(show);
 }
