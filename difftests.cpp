@@ -33,6 +33,12 @@ DiffTests::DiffTests(QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle("Stego-saur");
 
+    //personal helps
+    //ui->picPathTextField->setText("C:/Users/Ben/Desktop/erdbeere.png");
+    //ui->picPathTextField_2->setText("C:/Users/Ben/Desktop/erdbeere2.png");
+    ui->picPathTextField->setText("C:/Users/Ben/Desktop/2x2pix.png");
+    ui->textEdit->setText("Ich mag Erdbeeren!");
+
     //hide-Buttons
     connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
     connect( ui->textBrowseButton, SIGNAL( clicked() ), this, SLOT( choseText() ) );
@@ -46,7 +52,8 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->textEdit, SIGNAL(textChanged()), this, SLOT(showHideButton()) );
     connect( ui->textFromDocRadio, SIGNAL(toggled(bool)), this, SLOT(showHideButton()) );
     connect( ui->textFromFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showHideButton()) );
-    connect( ui->keyTextField, SIGNAL(textChanged()), this, SLOT(checkKey()) );
+    connect( ui->keyTextField, SIGNAL(textChanged()), this, SLOT(showHideButton()) );
+    connect( ui->techniqueComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showHideButton()));
 
     //find-Buttons
     connect( ui->picBrowseButton_2, SIGNAL( clicked() ), this, SLOT( chosePicture_2() ) );
@@ -59,7 +66,8 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->picPathTextField_2, SIGNAL(textChanged()), this, SLOT(showFindButton()) );
     connect( ui->textToDocRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
     connect( ui->textToFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
-    connect( ui->keyTextField_2, SIGNAL(textChanged()), this, SLOT(checkKey_2()) );
+    connect( ui->keyTextField_2, SIGNAL(textChanged()), this, SLOT(showFindButton()) );
+    connect( ui->techniqueComboBox_2, SIGNAL(currentIndexChanged(int)), this, SLOT(showFindButton()));
 }
 
 DiffTests::~DiffTests()
@@ -80,53 +88,15 @@ int DiffTests::getFormat(QString text)
 }
 
 void DiffTests::showEncryptFrame(bool show){
-    if(show){
-        ui->encryptFrame->show();
-        checkKey();
-    }else{
-        ui->encryptFrame->hide();
-        showHideButton();
-    }
+    if(show)ui->encryptFrame->show();
+    else ui->encryptFrame->hide();
+    showHideButton();
 }
 
 void DiffTests::showDecryptFrame(bool show){
-    if(show){
-        ui->decryptFrame->show();
-        checkKey_2();
-    }else{
-        ui->decryptFrame->hide();
-        showFindButton();
-    }
-}
-
-void DiffTests::showHideButton(){
-    if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText())){
-            ui->hideButton->setEnabled(true);
-            QFile file(ui->textPathTextField->toPlainText());
-            file.open(QIODevice::ReadOnly | QIODevice::Text);
-            QTextStream in(&file);
-            QString plain = in.readAll();
-          format = getFormat(plain);
-            file.close();
-            if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
-            else ui->asciiUnicodeLabel->setText("Ascii format");
-    }else if(ui->textFromFieldRadio->isChecked() && !(ui->textEdit->toPlainText().isEmpty())&& isPath(ui->picPathTextField->toPlainText())){
-            ui->hideButton->setEnabled(true);
-            format = getFormat(ui->textEdit->toPlainText());
-            if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
-            else ui->asciiUnicodeLabel->setText("Ascii format");
-    }else{
-            ui->hideButton->setEnabled(false);
-            ui->asciiUnicodeLabel->setText("");
-    }
-}
-
-void DiffTests::showFindButton(){
-    if((ui->textToDocRadio->isChecked() || ui->textToFieldRadio->isChecked()) && isPath(ui->picPathTextField_2->toPlainText())){
-        ui->findButton->setEnabled(true);
-    }else{
-        ui->findButton->setEnabled(false);
-    }
+    if(show)ui->decryptFrame->show();
+    else ui->decryptFrame->hide();
+    showFindButton();
 }
 
 bool DiffTests::isPath(QString path){
@@ -147,120 +117,162 @@ void DiffTests::chosePicture()
 
 void DiffTests::chosePicture_2()
 {
-    QString path;
-    path = QFileDialog::getOpenFileName(
-                this,
-                "Choose a file",
-                QDir::homePath(),
-                "PNG Files(*.png)");  //JPEG files (*.jpg *.png);; Gif files (*.gif)
-    ui->picPathTextField_2->setText( path );
+    if(ui->SeveralPicsCheckBox->isChecked()){
+        //TODO: chose sev pics dialog o.ä.
+    }else{
+        QString path;
+        path = QFileDialog::getOpenFileName(
+                    this,
+                    "Choose a file",
+                    QDir::homePath(),
+                    "PNG Files(*.png)");
+        ui->picPathTextField_2->setText( path );
+    }
 }
 
 void DiffTests::choseText()
 {
+    //TODO: Bildauswahl möglich -> kein caesar/vigenere
     QString path;
     path = QFileDialog::getOpenFileName(
                 this,
                 "Choose a file",
                 QString::null,
-                "Text Files(*.txt)");
+                "Text Files(*.txt *.png)");
+    if(path.endsWith(".png")){
+        ui->encryptCheckBox->setEnabled(false);
+    }
     ui->textPathTextField->setText( path );
 }
 
-void DiffTests::checkKey()
+void DiffTests::showHideButton()
 {
-    int keyLength = ui->keyTextField->toPlainText().size();
-    int oldFormat = format;
-    if(getFormat(ui->keyTextField->toPlainText()) == ASCII)
-    {
-        switch (ui->techniqueComboBox->currentIndex())
-        {
-            case 0:
-                //Caesar
-                if(keyLength == 1){
-                    ui->hideButton->setEnabled(true);
-                    ui->keyTipLabel->setText("ok");
-                }else{
-                    ui->hideButton->setEnabled(false);
-                    ui->keyTipLabel->setText("only one letter key");
-                };
-                break;
-            case 1:
-                //Vigenère
-                if(keyLength > 0){
-                    ui->keyTipLabel->setText("ok");
-                    ui->hideButton->setEnabled(true);
-                }else{
-                    ui->keyTipLabel->setText("one letter minimum");
-                    ui->hideButton->setEnabled(false);
-                }
-                break;
-            case 2:
-                //AES
-                if(keyLength <= 32 && keyLength >= 16){
-                    ui->hideButton->setEnabled(true);
-                }else{
-                    ui->hideButton->setEnabled(false);
-                }
-                break;
-            default:
-                ui->hideButton->setEnabled(false);
-                ui->keyTipLabel->setText("");
-        }
+    if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText())){
+            ui->hideButton->setEnabled(true);
+            QFile file(ui->textPathTextField->toPlainText());
+            file.open(QIODevice::ReadOnly | QIODevice::Text);
+            QTextStream in(&file);
+            QString plain = in.readAll();
+          format = getFormat(plain);
+            file.close();
+            if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
+            else ui->asciiUnicodeLabel->setText("Ascii format");
+    }else if(ui->textFromFieldRadio->isChecked() && !(ui->textEdit->toPlainText().isEmpty())&& isPath(ui->picPathTextField->toPlainText())){
+            ui->hideButton->setEnabled(true);
+            format = getFormat(ui->textEdit->toPlainText());
+            if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
+            else ui->asciiUnicodeLabel->setText("Ascii format");
     }else{
-        ui->keyTipLabel->setText("key is not Ascii format");
-        ui->hideButton->setEnabled(false);
+            ui->hideButton->setEnabled(false);
+            ui->asciiUnicodeLabel->setText("");
     }
-    format = oldFormat;
-    showHideButton();
+
+    bool show = ui->hideButton->isEnabled();
+
+    if(ui->encryptCheckBox->isChecked()){
+        int keyLength = ui->keyTextField->toPlainText().size();
+        int oldFormat = format;
+        if(getFormat(ui->keyTextField->toPlainText()) == ASCII)
+        {
+            switch (ui->techniqueComboBox->currentIndex())
+            {
+                case 0:
+                    //Caesar
+                    if(keyLength == 1){
+                        ui->hideButton->setEnabled(true);
+                        ui->keyTipLabel->setText("ok");
+                    }else{
+                        ui->hideButton->setEnabled(false);
+                        ui->keyTipLabel->setText("only one letter key");
+                    };
+                    break;
+                case 1:
+                    //Vigenère
+                    if(keyLength > 0){
+                        ui->keyTipLabel->setText("ok");
+                        ui->hideButton->setEnabled(true);
+                    }else{
+                        ui->keyTipLabel->setText("one letter minimum");
+                        ui->hideButton->setEnabled(false);
+                    }
+                    break;
+                case 2:
+                    //AES
+                    if(keyLength <= 32 && keyLength >= 16){
+                        ui->hideButton->setEnabled(true);
+                    }else{
+                        ui->hideButton->setEnabled(false);
+                    }
+                    break;
+                default:
+                    ui->hideButton->setEnabled(false);
+                    ui->keyTipLabel->setText("");
+            }
+        }else{
+            ui->keyTipLabel->setText("key is not Ascii format");
+            ui->hideButton->setEnabled(false);
+        }
+        format = oldFormat;
+        if(show != ui->hideButton->isEnabled()) ui->hideButton->setEnabled(false);
+    }
 }
 
-void DiffTests::checkKey_2()
+void DiffTests::showFindButton()
 {
-    int keyLength = ui->keyTextField_2->toPlainText().size();
-    int oldFormat = format;
-    if(getFormat(ui->keyTextField_2->toPlainText()) == ASCII)
-    {
-        switch (ui->techniqueComboBox_2->currentIndex())
-        {
-            case 0:
-                //Caesar
-                if(keyLength == 1){
-                    ui->findButton->setEnabled(true);
-                    ui->keyTipLabel_2->setText("ok");
-                }else{
-                    ui->findButton->setEnabled(false);
-                    ui->keyTipLabel_2->setText("only one letter key");
-                };
-                break;
-            case 1:
-                //Vigenère
-                if(keyLength > 0){
-                    ui->keyTipLabel_2->setText("ok");
-                    ui->findButton->setEnabled(true);
-                }else{
-                    ui->keyTipLabel_2->setText("one letter minimum");
-                    ui->findButton->setEnabled(false);
-                }
-                break;
-            case 2:
-                //AES
-                if(keyLength <= 32 && keyLength >= 16){
-                    ui->findButton->setEnabled(true);
-                }else{
-                    ui->findButton->setEnabled(false);
-                }
-                break;
-            default:
-                ui->findButton->setEnabled(false);
-                ui->keyTipLabel->setText("");
-        }
+    if((ui->textToDocRadio->isChecked() || ui->textToFieldRadio->isChecked()) && isPath(ui->picPathTextField_2->toPlainText())){
+        ui->findButton->setEnabled(true);
     }else{
-        ui->keyTipLabel_2->setText("key is not Ascii format");
         ui->findButton->setEnabled(false);
     }
-    format = oldFormat;
-    showFindButton();
+
+    bool show = ui->findButton->isEnabled();
+
+    if(ui->decryptCheckBox->isChecked()){
+        int keyLength = ui->keyTextField_2->toPlainText().size();
+        int oldFormat = format;
+        if(getFormat(ui->keyTextField_2->toPlainText()) == ASCII)
+        {
+            switch (ui->techniqueComboBox_2->currentIndex())
+            {
+                case 0:
+                    //Caesar
+                    if(keyLength == 1){
+                        ui->findButton->setEnabled(true);
+                        ui->keyTipLabel_2->setText("ok");
+                    }else{
+                        ui->findButton->setEnabled(false);
+                        ui->keyTipLabel_2->setText("only one letter key");
+                    };
+                    break;
+                case 1:
+                    //Vigenère
+                    if(keyLength > 0){
+                        ui->keyTipLabel_2->setText("ok");
+                        ui->findButton->setEnabled(true);
+                    }else{
+                        ui->keyTipLabel_2->setText("one letter minimum");
+                        ui->findButton->setEnabled(false);
+                    }
+                    break;
+                case 2:
+                    //AES
+                    if(keyLength <= 32 && keyLength >= 16){
+                        ui->findButton->setEnabled(true);
+                    }else{
+                        ui->findButton->setEnabled(false);
+                    }
+                    break;
+                default:
+                    ui->findButton->setEnabled(false);
+                    ui->keyTipLabel->setText("");
+            }
+        }else{
+            ui->keyTipLabel_2->setText("key is not Ascii format");
+            ui->findButton->setEnabled(false);
+        }
+        format = oldFormat;
+    }
+    if(show != ui->findButton->isEnabled()) ui->findButton->setEnabled(false);
 }
 
 void DiffTests::browseOneTimePad()
@@ -398,7 +410,7 @@ void DiffTests::hide()
 void DiffTests::find()
 {
     im = new Intermediary(ui->picPathTextField_2->toPlainText());
-    QString* plain = im->getHiddenText();
+    QString* plain = im->getHiddenText();//oder hiddenimage
 
     //decrypt
     if(ui->decryptCheckBox->isChecked()){
@@ -412,7 +424,8 @@ void DiffTests::find()
                     this,
                     "Save Textfile",
                     QString::null,
-                    "Text Files(*.txt)");
+                    "Text Files(*.txt *.png)");
+        //TODO auslesen, ob bild oder text
         QFile file(newPath);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream out(&file);

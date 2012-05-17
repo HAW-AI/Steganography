@@ -112,7 +112,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Text from document</string>
+        <string>From document</string>
        </property>
       </widget>
       <widget class="QRadioButton" name="textFromFieldRadio">
@@ -125,7 +125,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Text from textfield</string>
+        <string>From textfield</string>
        </property>
       </widget>
       <widget class="QTextEdit" name="textPathTextField">
@@ -380,7 +380,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>50</y>
+        <y>80</y>
         <width>501</width>
         <height>221</height>
        </rect>
@@ -401,7 +401,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Text to document</string>
+        <string>To document</string>
        </property>
       </widget>
       <widget class="QRadioButton" name="textToFieldRadio">
@@ -414,7 +414,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Text to textfield</string>
+        <string>To textfield</string>
        </property>
       </widget>
       <widget class="QTextEdit" name="textEdit_2">
@@ -447,7 +447,7 @@
         <x>0</x>
         <y>0</y>
         <width>501</width>
-        <height>51</height>
+        <height>81</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -456,7 +456,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QLabel" name="picLabel_2">
+      <widget class="QLabel" name="label_2">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -487,14 +487,27 @@
       <widget class="QPushButton" name="picBrowseButton_2">
        <property name="geometry">
         <rect>
-         <x>380</x>
-         <y>10</y>
+         <x>390</x>
+         <y>40</y>
          <width>93</width>
          <height>28</height>
         </rect>
        </property>
        <property name="text">
         <string>Browse</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="SeveralPicsCheckBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>121</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Several pictures</string>
        </property>
       </widget>
      </widget>
@@ -505,7 +518,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>280</y>
+        <y>310</y>
         <width>501</width>
         <height>41</height>
        </rect>
@@ -537,7 +550,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>430</y>
+        <y>460</y>
         <width>501</width>
         <height>51</height>
        </rect>
@@ -579,7 +592,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>320</y>
+        <y>350</y>
         <width>501</width>
         <height>111</height>
        </rect>

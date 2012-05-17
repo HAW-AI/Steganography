@@ -32,8 +32,6 @@ private slots:
     void showDecryptFrame(bool);
     void showHideButton();
     void showFindButton();
-    void checkKey();
-    void checkKey_2();
 
     bool isPath(QString);
 
