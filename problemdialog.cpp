@@ -2,7 +2,7 @@
 #include "ui_problemdialog.h"
 #include <QDialog>
 
-#define CANCLE 0
+#define CANCEL 0
 #define DENSITY 1
 #define PICS 2
 
@@ -27,18 +27,18 @@ ProblemDialog::~ProblemDialog()
 void ProblemDialog::choseNewPic()
 {
     close();
-    setResult(0);
+    setResult(CANCEL);
 }
 
 void ProblemDialog::moreDensity()
 {
     close();
-    setResult(1);
+    setResult(DENSITY);
 }
 
 void ProblemDialog::choseMorePics()
 {
     close();
-    setResult(2);
+    setResult(PICS);
 }
 
