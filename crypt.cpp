@@ -1,35 +1,34 @@
 #include "crypt.h"
 #include "QString"
 #include "QTextCodec"
+#include <QDebug>
 
 #define UNICODE 1
 #define ASCII 0
 #define ENCRYPT 1
 #define DECRYPT 0
 
-Crypt::Crypt(QString text, QString key, int format)
+Crypt::Crypt(QString* text, QString* key, int format)
     :text(text),key(key),format(format)
 {}
 
-QString Crypt::caesar(int mode)
+void Crypt::caesar(int mode)
 {
-    QString plain=text;
-    QString cipher="";
     int k;
-    if (mode == ENCRYPT)k = key.at(0).toAscii();
-    else k = (key.at(0).toAscii())*-1; //DECRYPT
-
+    if (mode == ENCRYPT)k = key->at(0).toAscii();
+    else k = (key->at(0).toAscii())*-1; //DECRYPT
+    //qDebug()<<text->toUtf8();
     if(format == UNICODE){
         QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-        for(int i = 0; i<plain.size();i++)
+        for(int i = 0; i<text->size();i++)
         {
-            int l = plain.at(i).unicode();
-            cipher[i] = (QChar(l+k).unicode());
+            int l = text->at(i).unicode();
+            text->replace(i,1,QChar(l).unicode());
         }
     }else{ //format == ASCII
-        for(int i = 0; i<plain.size();i++)
+        for(int i = 0; i<text->size();i++)
         {
-            int l = plain.at(i).toAscii();
+            int l = text->at(i).toAscii();
             if (l >= 32 && l <= 126)
             {
                 l -= ' ';
@@ -39,49 +38,45 @@ QString Crypt::caesar(int mode)
                 while (l > 94) l -= 94;
                 l += ' ';
             }
-            cipher[i] = (QChar(l).toAscii());
+            text->replace(i,1, QChar(l).toAscii());
         }
     }
-    return cipher;
+    //qDebug()<<text->toUtf8();
 }
 
-QString Crypt::vigenere(int mode)
+void Crypt::vigenere(int mode)
 {
-    QString plain = text;
-    QString cipher = "";
     int k;
-
     if( format == UNICODE){
         QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-        for( int i = 0; i<plain.size();i++)
+        for( int i = 0; i<text->size();i++)
         {
-            int l = plain.at(i).unicode();
+            int l = text->at(i).unicode();
             if(mode == ENCRYPT){
-                k = key.at( i % key.size() ).toAscii();
+                k = key->at( i % key->size() ).toAscii();
             }else{
-                k = (key.at( i % key.size() ).toAscii())*-1;
+                k = (key->at( i % key->size() ).toAscii())*-1;
             }
-            cipher[i] = (QChar(l+k).unicode() );
+            text->replace(i,1, QChar(l+k).unicode());
         }
     }else{ //format == ASCII
-        for( int i = 0; i<plain.size(); i++)
+        for( int i = 0; i<text->size(); i++)
         {
-            int l = plain.at(i).toAscii();
+            int l = text->at(i).toAscii();
             if( l >= 32 && l <= 126){
                 l-=' ';
                 if(mode == ENCRYPT){
-                    k = key.at( i % key.size() ).toAscii();
+                    k = key->at( i % key->size() ).toAscii();
                 }else{
-                    k = (key.at( i % key.size() ).toAscii())*-1;
+                    k = (key->at( i % key->size() ).toAscii())*-1;
                 }
                 l+= k;
                 while (l<0) l += 94;
                 while(l > 94) l -= 94;
                 l+=' ';
             }
-            cipher[i] = (QChar(l).toAscii());
+            text->replace(i,1, QChar(l).toAscii());
         }
     }
-    return cipher;
 }
 
