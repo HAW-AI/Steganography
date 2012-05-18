@@ -13,15 +13,15 @@ class AddPicDialog : public QDialog
     Q_OBJECT
     
 public:
-    //AddPicDialog(Intermediary*,QWidget *parent = 0);
-    //explicit AddPicDialog(QWidget *parent = 0, Intermediary *im);
     explicit AddPicDialog(Intermediary *im, QWidget *parent = 0);
     ~AddPicDialog();
     
 private:
     Ui::AddPicDialog *ui;
+    Intermediary *im;
 
 private slots:
+    void actualizeList();
     void add();
     void del();
     void ok();

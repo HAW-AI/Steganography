@@ -62,6 +62,7 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->textToFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
     connect( ui->keyTextField_2, SIGNAL(textChanged()), this, SLOT(showFindButton()) );
     connect( ui->techniqueComboBox_2, SIGNAL(currentIndexChanged(int)), this, SLOT(showFindButton()));
+
 }
 
 DiffTests::~DiffTests()
@@ -131,7 +132,7 @@ void DiffTests::choseText()
     path = QFileDialog::getOpenFileName(
                 this,
                 "Choose a file",
-                QString::null,
+                QDir::homePath(),
                 "Text Files(*.txt *.png)");
     if(path.endsWith(".png")){
         ui->encryptCheckBox->setEnabled(false);
@@ -275,7 +276,7 @@ void DiffTests::browseOneTimePad()
     path = QFileDialog::getOpenFileName(
                 this,
                 "Choose a file",
-                QString::null,
+                QDir::homePath(),
                 "Text Files(*.txt)");
     ui->keyTextField->setText( path );
     ui->keyTextField_2->setText( path );
@@ -329,11 +330,10 @@ int DiffTests::noiseWarningDialog()
     return nw->result();
 }
 
-Intermediary* DiffTests::addPicDialog(Intermediary* im)
+void DiffTests::notEnough()
 {
-    apd = new AddPicDialog(im);
-    apd->exec();
-    return im;
+    ne = new NotEnoughInfo();
+    ne->exec();
 }
 
 void DiffTests::hide()
@@ -380,7 +380,10 @@ void DiffTests::hide()
                             savePath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
                             im->hide_6Bit(savePath);
                             action = CANCEL;
-                        }else{/*verstecken nicht möglich*/}
+                        }else{
+                            notEnough();
+                            action = CANCEL;
+                        }
                     }
                 }
             }
@@ -393,7 +396,6 @@ void DiffTests::hide()
                     action = 3;
                 }
             }else{action=CANCEL;}
-            qDebug("looprun");
         }
     }
     ui->picPathTextField_2->setText(savePath);

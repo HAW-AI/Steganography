@@ -6,6 +6,7 @@
 #include "intermediary.h"
 #include "noisewarning.h"
 #include "addpicdialog.h"
+#include "notenoughinfo.h"
 
 namespace Ui {
 class DiffTests;
@@ -41,7 +42,8 @@ public slots:
 
     int popupProblemDialog();
     int noiseWarningDialog();
-    Intermediary* addPicDialog(Intermediary *);
+    //Intermediary* addPicDialog(Intermediary *);
+    void notEnough();
 
 private:
     Ui::DiffTests *ui;
@@ -49,6 +51,7 @@ private:
     NoiseWarning *nw;
     Intermediary *im;
     AddPicDialog *apd;
+    NotEnoughInfo *ne;
 };
 
 #endif // DIFFTESTS_H

@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     crypt.cpp \
     problemdialog.cpp \
     noisewarning.cpp \
-    addpicdialog.cpp
+    addpicdialog.cpp \
+    notenoughinfo.cpp
 
 
 HEADERS  += difftests.h \
@@ -32,9 +33,11 @@ HEADERS  += difftests.h \
     crypt.h \
     problemdialog.h \
     noisewarning.h \
-    addpicdialog.h
+    addpicdialog.h \
+    notenoughinfo.h
 
 FORMS    += difftests.ui \
     problemdialog.ui \
     noisewarning.ui \
-    addpicdialog.ui
+    addpicdialog.ui \
+    notenoughinfo.ui

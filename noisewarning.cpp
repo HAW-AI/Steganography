@@ -7,6 +7,7 @@ NoiseWarning::NoiseWarning(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("Noise warning");
+    setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 }
 
 NoiseWarning::~NoiseWarning()

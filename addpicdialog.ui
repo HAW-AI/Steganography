@@ -75,7 +75,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>cancel</string>
+    <string>Cancel</string>
    </property>
   </widget>
   <widget class="QLabel" name="xPixLabel">
