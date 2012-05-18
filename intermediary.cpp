@@ -180,3 +180,8 @@ QString* Intermediary::getHiddenText() {
     std::cout<<LINE<<endl;
     return result;
 }
+
+int Intermediary::imageOrTextHidden() {
+    Steganography* stego = new Steganography(images->constBegin().key());
+    return stego->getIntFromHeader(32);
+}
