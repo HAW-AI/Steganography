@@ -33,12 +33,6 @@ DiffTests::DiffTests(QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle("Stego-saur");
 
-    //personal helps
-    //ui->picPathTextField->setText("C:/Users/Ben/Desktop/erdbeere.png");
-    //ui->picPathTextField_2->setText("C:/Users/Ben/Desktop/erdbeere2.png");
-    ui->picPathTextField->setText("C:/Users/Ben/Desktop/2x2pix.png");
-    ui->textEdit->setText("Ich mag Erdbeeren!");
-
     //hide-Buttons
     connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
     connect( ui->textBrowseButton, SIGNAL( clicked() ), this, SLOT( choseText() ) );
@@ -287,42 +281,38 @@ void DiffTests::browseOneTimePad()
     ui->keyTextField_2->setText( path );
 }
 
-QString DiffTests::encrypt(QString plain)
+QString* DiffTests::encrypt(QString* plain)
 {
-    Crypt c (plain,ui->keyTextField->toPlainText(),format);
-    QString cipher;
+    Crypt c (plain,&(ui->keyTextField->toPlainText()),format);
     switch (ui->techniqueComboBox->currentIndex())
     {
         case 0: //Caesar
-            cipher = c.caesar(ENCRYPT);
+            c.caesar(ENCRYPT);
             break;
         case 1: //Vigenère
-            cipher = c.vigenere(ENCRYPT);
+            c.vigenere(ENCRYPT);
             break;
         default:
             ui->keyTipLabel->setText("Encryption failed");
-            return plain;
     }
-    return cipher;
+    return plain;
 }
 
-QString DiffTests::decrypt(QString cipher)
+QString* DiffTests::decrypt(QString* cipher)
 {
-    Crypt c (cipher,ui->keyTextField_2->toPlainText(),format);
-    QString plain;
+    Crypt c (cipher,&(ui->keyTextField_2->toPlainText()),format);
     switch (ui->techniqueComboBox_2->currentIndex())
     {
         case 0: //Caesar
-            plain = c.caesar(DECRYPT);
+            c.caesar(DECRYPT);
             break;
         case 1: //Vigenère
-            plain = c.vigenere(DECRYPT);
+            c.vigenere(DECRYPT);
             break;
         default:
             ui->keyTipLabel_2->setText("Decryption failed");
-            return cipher;
     }
-    return plain;
+    return cipher;
 }
 
 int DiffTests::popupProblemDialog()
@@ -348,6 +338,8 @@ Intermediary* DiffTests::addPicDialog(Intermediary* im)
 
 void DiffTests::hide()
 {
+    //TODO plain to QString*
+    //-> problem bei im->hide_1Bit
     QString plain;
     if(ui->textFromDocRadio->isChecked()){
         QString plainPath = ui->textPathTextField->toPlainText();
@@ -360,16 +352,16 @@ void DiffTests::hide()
 
     //encrypt
     if(ui->encryptCheckBox->isChecked()){
-        plain = encrypt(plain);
+        plain = *(encrypt(&plain));
     }
 
     QString oldPath = ui->picPathTextField->toPlainText();
     im = new Intermediary(&plain, format, oldPath);
-    QString newPath;
+    QString savePath;
 
     if(im->isReady_1Bit()){
-        newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
-        im->hide_1Bit(newPath);
+        savePath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+        im->hide_1Bit(savePath);
     }else{
         int action = popupProblemDialog();
         while(action != CANCEL){
@@ -377,16 +369,16 @@ void DiffTests::hide()
             if( action == DENSITY){
                 int w = noiseWarningDialog();
                 if(im->isReady_3Bit() && w == 1){
-                    newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
-                    im->hide_3Bit(newPath);
+                    savePath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                    im->hide_3Bit(savePath);
                     action = CANCEL;
                 }else{
                     action = popupProblemDialog();
                     if( action == DENSITY){
                         w = noiseWarningDialog();
                         if(im->isReady_3Bit() && w == 1){
-                            newPath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
-                            im->hide_6Bit(newPath);
+                            savePath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                            im->hide_6Bit(savePath);
                             action = CANCEL;
                         }else{/*verstecken nicht möglich*/}
                     }
@@ -404,7 +396,7 @@ void DiffTests::hide()
             qDebug("looprun");
         }
     }
-    ui->picPathTextField_2->setText(newPath);
+    ui->picPathTextField_2->setText(savePath);
 }
 
 void DiffTests::find()
@@ -414,7 +406,7 @@ void DiffTests::find()
 
     //decrypt
     if(ui->decryptCheckBox->isChecked()){
-        plain = &(decrypt(*plain));
+        plain = decrypt(plain);
     }
 
     if(ui->textToFieldRadio->isChecked()){
@@ -429,7 +421,8 @@ void DiffTests::find()
         QFile file(newPath);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream out(&file);
-        out << plain;
+        QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+        //out << plain->toUtf8(); //TODO
         file.close();
     }
 }

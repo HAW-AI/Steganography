@@ -36,8 +36,8 @@ private slots:
     bool isPath(QString);
 
 public slots:
-    QString decrypt(QString);
-    QString encrypt(QString);
+    QString *decrypt(QString *);
+    QString *encrypt(QString *);
 
     int popupProblemDialog();
     int noiseWarningDialog();

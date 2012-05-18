@@ -5,14 +5,14 @@
 
 class Crypt{
 public:
-    Crypt(QString text, QString key, int format);
+    Crypt(QString *text, QString *key, int format);
 
-    QString caesar(int mode);
-    QString vigenere(int mode);
+    void caesar(int mode);
+    void vigenere(int mode);
 
 private:
-    QString text;
-    QString key;
+    QString* text;
+    QString* key;
     int format;
 };
 
