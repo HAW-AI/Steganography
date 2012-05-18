@@ -33,11 +33,6 @@ DiffTests::DiffTests(QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle("Stego-saur");
 
-    //personal helps
-    ui->picPathTextField->setText("C:/Users/Ben/Desktop/erdbeere.png");
-    ui->picPathTextField_2->addItem("C:/Users/Ben/Desktop/erdbeere2.png");
-    ui->textEdit->setText("Ich mag Erdbeeren!");
-
     //hide-Buttons
     connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
     connect( ui->textBrowseButton, SIGNAL( clicked() ), this, SLOT( choseText() ) );
@@ -125,6 +120,7 @@ void DiffTests::chosePicture_2()
                 QDir::homePath(),
                 "PNG Files(*.png)");
     if((ui->picPathTextField_2->findItems(path,Qt::MatchExactly)).isEmpty()) ui->picPathTextField_2->addItem(path);
+    showFindButton();
 }
 
 void DiffTests::showRemove()
@@ -411,9 +407,10 @@ void DiffTests::hide()
             }else{action=CANCEL;}
         }
     }
+    ui->picPathTextField_2->clear();
     ui->picPathTextField_2->addItem(savePath);
 }
-
+//TODO: Text wird abgeschnitten!
 void DiffTests::find()
 {
     QString path = ui->picPathTextField_2->item(0)->text();
@@ -423,16 +420,15 @@ void DiffTests::find()
         for(int index = 1; index < (ui->picPathTextField_2->count());index++){
             im->addImage(ui->picPathTextField_2->item(index)->text());}
     }
-    qDebug()<<im->imageOrTextHidden();
-    if(im->imageOrTextHidden() == 1)//Text Hidden
+
+    if(im->imageOrTextHidden() < 0)//Text Hidden //TODO: hier nochmal nachhaken
     {
-        qDebug("text");
         QString* plain = im->getHiddenText();
         //decrypt
         if(ui->decryptCheckBox->isChecked()){
             plain = decrypt(plain);
         }
-
+        qDebug()<<*plain;
         if(ui->textToFieldRadio->isChecked()){
             ui->textEdit_2->setText(*plain);
         }else if(ui->textToDocRadio->isChecked()){
@@ -442,21 +438,21 @@ void DiffTests::find()
                         QDir::homePath(),
                         "Text Files(*.txt)");
             QFile fileOut(newPath);
-            if (!fileOut.open(QIODevice::WriteOnly | QIODevice::Text))
+            if (fileOut.open(QIODevice::WriteOnly | QIODevice::Text))
             {
-                    qDebug() << "Write Error";
+                QTextStream streamFileOut(&fileOut);
+                streamFileOut.setCodec("UTF-8");
+                streamFileOut.setGenerateByteOrderMark(true);
+                streamFileOut << *plain;
+                streamFileOut.flush();
+                fileOut.close();
             }
-            QTextStream streamFileOut(&fileOut);
-            streamFileOut.setCodec("UTF-8");
-            streamFileOut.setGenerateByteOrderMark(true);
-            streamFileOut << plain;
-            streamFileOut.flush();
-            fileOut.close();
+
         }
     }else{ //(im->imageOrTextHidden() == 1)//Image Hidden
         qDebug("image");
         /*QImage* image;
-        image = im->getHiddenImage();
+        image = im->getHiddenImage(); //muss noch implementiert werden
         if(ui->textToFieldRadio->isChecked()){
             //bild öffnen
         }else{
