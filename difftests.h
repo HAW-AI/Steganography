@@ -23,11 +23,13 @@ public:
 private slots:
     void chosePicture();
     void chosePicture_2();
+    void removePicture_2();
     void choseText();
     void hide();
     void find();
     int getFormat(QString text);
     void browseOneTimePad();
+    void showRemove();
 
     void showEncryptFrame(bool);
     void showDecryptFrame(bool);
@@ -42,7 +44,6 @@ public slots:
 
     int popupProblemDialog();
     int noiseWarningDialog();
-    //Intermediary* addPicDialog(Intermediary *);
     void notEnough();
 
 private:

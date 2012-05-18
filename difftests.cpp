@@ -33,6 +33,11 @@ DiffTests::DiffTests(QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle("Stego-saur");
 
+    //personal helps
+    ui->picPathTextField->setText("C:/Users/Ben/Desktop/erdbeere.png");
+    ui->picPathTextField_2->addItem("C:/Users/Ben/Desktop/erdbeere2.png");
+    ui->textEdit->setText("Ich mag Erdbeeren!");
+
     //hide-Buttons
     connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
     connect( ui->textBrowseButton, SIGNAL( clicked() ), this, SLOT( choseText() ) );
@@ -51,13 +56,15 @@ DiffTests::DiffTests(QWidget *parent) :
 
     //find-Buttons
     connect( ui->picBrowseButton_2, SIGNAL( clicked() ), this, SLOT( chosePicture_2() ) );
+    connect( ui->picRemoveButton, SIGNAL(clicked()), this, SLOT( removePicture_2() ) );
+    connect( ui->picPathTextField_2, SIGNAL(clicked(QModelIndex)), this, SLOT(showRemove()));
     connect( ui->findButton, SIGNAL( clicked() ), this, SLOT( find() ) );
     connect( ui->keyBrowseButton_2, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
+    ui->picRemoveButton->setEnabled(false);
     ui->findButton->setEnabled(false);
     ui->decryptFrame->hide();
     ui->textEdit_2->setEnabled(false);
     connect( ui->decryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showDecryptFrame(bool)) );
-    connect( ui->picPathTextField_2, SIGNAL(textChanged()), this, SLOT(showFindButton()) );
     connect( ui->textToDocRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
     connect( ui->textToFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
     connect( ui->keyTextField_2, SIGNAL(textChanged()), this, SLOT(showFindButton()) );
@@ -79,7 +86,6 @@ int DiffTests::getFormat(QString text)
         }
     }
     return ASCII;
-
 }
 
 void DiffTests::showEncryptFrame(bool show){
@@ -112,22 +118,31 @@ void DiffTests::chosePicture()
 
 void DiffTests::chosePicture_2()
 {
-    if(ui->SeveralPicsCheckBox->isChecked()){
-        //TODO: chose sev pics dialog o.ä.
-    }else{
-        QString path;
-        path = QFileDialog::getOpenFileName(
-                    this,
-                    "Choose a file",
-                    QDir::homePath(),
-                    "PNG Files(*.png)");
-        ui->picPathTextField_2->setText( path );
-    }
+    QString path;
+    path = QFileDialog::getOpenFileName(
+                this,
+                "Choose a file",
+                QDir::homePath(),
+                "PNG Files(*.png)");
+    if((ui->picPathTextField_2->findItems(path,Qt::MatchExactly)).isEmpty()) ui->picPathTextField_2->addItem(path);
 }
+
+void DiffTests::showRemove()
+{
+    ui->picRemoveButton->setEnabled(true);
+    showFindButton();
+}
+
+void DiffTests::removePicture_2()
+{
+    delete ui->picPathTextField_2->item(ui->picPathTextField_2->currentRow());
+    ui->picRemoveButton->setEnabled(false);
+    showFindButton();
+}
+
 
 void DiffTests::choseText()
 {
-    //TODO: Bildauswahl möglich -> kein caesar/vigenere
     QString path;
     path = QFileDialog::getOpenFileName(
                 this,
@@ -214,14 +229,12 @@ void DiffTests::showHideButton()
 
 void DiffTests::showFindButton()
 {
-    if((ui->textToDocRadio->isChecked() || ui->textToFieldRadio->isChecked()) && isPath(ui->picPathTextField_2->toPlainText())){
+    if((ui->textToDocRadio->isChecked() || ui->textToFieldRadio->isChecked())&& (ui->picPathTextField_2->count() != 0)){
         ui->findButton->setEnabled(true);
     }else{
         ui->findButton->setEnabled(false);
     }
-
     bool show = ui->findButton->isEnabled();
-
     if(ui->decryptCheckBox->isChecked()){
         int keyLength = ui->keyTextField_2->toPlainText().size();
         int oldFormat = format;
@@ -398,33 +411,61 @@ void DiffTests::hide()
             }else{action=CANCEL;}
         }
     }
-    ui->picPathTextField_2->setText(savePath);
+    ui->picPathTextField_2->addItem(savePath);
 }
 
 void DiffTests::find()
 {
-    im = new Intermediary(ui->picPathTextField_2->toPlainText());
-    QString* plain = im->getHiddenText();//oder hiddenimage
+    QString path = ui->picPathTextField_2->item(0)->text();
+    im = new Intermediary(path);
 
-    //decrypt
-    if(ui->decryptCheckBox->isChecked()){
-        plain = decrypt(plain);
+    if(ui->SeveralPicsCheckBox->isChecked()){
+        for(int index = 1; index < (ui->picPathTextField_2->count());index++){
+            im->addImage(ui->picPathTextField_2->item(index)->text());}
     }
+    qDebug()<<im->imageOrTextHidden();
+    if(im->imageOrTextHidden() == 1)//Text Hidden
+    {
+        qDebug("text");
+        QString* plain = im->getHiddenText();
+        //decrypt
+        if(ui->decryptCheckBox->isChecked()){
+            plain = decrypt(plain);
+        }
 
-    if(ui->textToFieldRadio->isChecked()){
-        ui->textEdit_2->setText(*plain);
-    }else if(ui->textToDocRadio->isChecked()){
-        QString newPath = QFileDialog::getSaveFileName(
-                    this,
-                    "Save Textfile",
-                    QString::null,
-                    "Text Files(*.txt *.png)");
-        //TODO auslesen, ob bild oder text
-        QFile file(newPath);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        QTextStream out(&file);
-        QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-        //out << plain->toUtf8(); //TODO
-        file.close();
+        if(ui->textToFieldRadio->isChecked()){
+            ui->textEdit_2->setText(*plain);
+        }else if(ui->textToDocRadio->isChecked()){
+            QString newPath = QFileDialog::getSaveFileName(
+                        this,
+                        "Save Textfile",
+                        QDir::homePath(),
+                        "Text Files(*.txt)");
+            QFile fileOut(newPath);
+            if (!fileOut.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                    qDebug() << "Write Error";
+            }
+            QTextStream streamFileOut(&fileOut);
+            streamFileOut.setCodec("UTF-8");
+            streamFileOut.setGenerateByteOrderMark(true);
+            streamFileOut << plain;
+            streamFileOut.flush();
+            fileOut.close();
+        }
+    }else{ //(im->imageOrTextHidden() == 1)//Image Hidden
+        qDebug("image");
+        /*QImage* image;
+        image = im->getHiddenImage();
+        if(ui->textToFieldRadio->isChecked()){
+            //bild öffnen
+        }else{
+            QString newPath = QFileDialog::getSaveFileName(
+                        this,
+                        "Save Image",
+                        QDir::homePath(),
+                        "Image Files(*.png)");
+            image->save(newPath,"PNG",100);
+        }*/
     }
 }

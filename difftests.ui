@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="hideTab">
      <attribute name="title">
@@ -71,6 +71,12 @@
         <font>
          <pointsize>8</pointsize>
         </font>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
       </widget>
       <widget class="QPushButton" name="picBrowseButton">
@@ -136,6 +142,12 @@
          <width>191</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
       </widget>
       <widget class="QPushButton" name="textBrowseButton">
@@ -356,6 +368,12 @@
          <height>31</height>
         </rect>
        </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
       </widget>
       <widget class="QLabel" name="keyTipLabel">
        <property name="geometry">
@@ -380,7 +398,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>80</y>
+        <y>90</y>
         <width>501</width>
         <height>221</height>
        </rect>
@@ -447,7 +465,7 @@
         <x>0</x>
         <y>0</y>
         <width>501</width>
-        <height>81</height>
+        <height>91</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -469,22 +487,46 @@
         <string>Chose Picture</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="picPathTextField_2">
+      <widget class="QPushButton" name="picBrowseButton_2">
+       <property name="geometry">
+        <rect>
+         <x>390</x>
+         <y>10</y>
+         <width>93</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="SeveralPicsCheckBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>81</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Several</string>
+       </property>
+      </widget>
+      <widget class="QListWidget" name="picPathTextField_2">
        <property name="geometry">
         <rect>
          <x>100</x>
          <y>10</y>
-         <width>251</width>
-         <height>31</height>
+         <width>256</width>
+         <height>61</height>
         </rect>
        </property>
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
       </widget>
-      <widget class="QPushButton" name="picBrowseButton_2">
+      <widget class="QPushButton" name="picRemoveButton">
        <property name="geometry">
         <rect>
          <x>390</x>
@@ -494,20 +536,20 @@
         </rect>
        </property>
        <property name="text">
-        <string>Browse</string>
+        <string>Remove</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="SeveralPicsCheckBox">
+      <widget class="Line" name="line_5">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>50</y>
-         <width>121</width>
-         <height>20</height>
+         <x>10</x>
+         <y>80</y>
+         <width>481</width>
+         <height>16</height>
         </rect>
        </property>
-       <property name="text">
-        <string>Several pictures</string>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </widget>
@@ -675,6 +717,12 @@
          <width>281</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
       </widget>
       <widget class="QLabel" name="keyTipLabel_2">

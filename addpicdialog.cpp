@@ -52,6 +52,7 @@ void AddPicDialog::del()
 {
     QString path = ui->picList->item(ui->picList->currentRow())->text();
     im->images->remove(path);
+    ui->delButton->setEnabled(false);
     actualizeList();
     showOK();
 }
