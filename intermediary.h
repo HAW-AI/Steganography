@@ -21,6 +21,7 @@ public:
     void hide_6Bit(QString savePath);
     QString* getHiddenText();
     QImage* getHiddenImage();
+    int imageOrTextHidden();
 
     QMap<QString, QImage>* images;
 
