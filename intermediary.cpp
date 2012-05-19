@@ -183,5 +183,5 @@ QString* Intermediary::getHiddenText() {
 
 int Intermediary::imageOrTextHidden() {
     Steganography* stego = new Steganography(images->constBegin().key());
-    return stego->getIntFromHeader(32);
+    return stego->getFormatFromHeader();
 }
