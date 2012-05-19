@@ -978,7 +978,7 @@ QString* Steganography::getHiddenText(){
   */
 int Steganography::insertTBFieldInHeader(int size){
     if(image.width() < 160) return -2;
-    if(size != 1 || size != 0) return -1;
+    if(size != 1 && size != 0) return -1;
 
     QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(0));
     int red = qRed(pixel[32]);
