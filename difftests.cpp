@@ -136,7 +136,6 @@ void DiffTests::removePicture_2()
     showFindButton();
 }
 
-
 void DiffTests::choseText()
 {
     QString path;
@@ -407,10 +406,13 @@ void DiffTests::hide()
             }else{action=CANCEL;}
         }
     }
+
     ui->picPathTextField_2->clear();
     ui->picPathTextField_2->addItem(savePath);
 }
+
 //TODO: Text wird abgeschnitten!
+
 void DiffTests::find()
 {
     QString path = ui->picPathTextField_2->item(0)->text();
@@ -421,14 +423,14 @@ void DiffTests::find()
             im->addImage(ui->picPathTextField_2->item(index)->text());}
     }
 
-    if(im->imageOrTextHidden() < 0)//Text Hidden //TODO: hier nochmal nachhaken
+    if(im->imageOrTextHidden() == 1)
     {
         QString* plain = im->getHiddenText();
         //decrypt
         if(ui->decryptCheckBox->isChecked()){
             plain = decrypt(plain);
         }
-        qDebug()<<*plain;
+
         if(ui->textToFieldRadio->isChecked()){
             ui->textEdit_2->setText(*plain);
         }else if(ui->textToDocRadio->isChecked()){
