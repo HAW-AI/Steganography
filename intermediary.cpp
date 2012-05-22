@@ -67,9 +67,10 @@ void Intermediary::hide_1Bit(QString savePath) {
         long totalChar = 0;
         long start = 0;
         long range = 0;
-        long charRate = (availableChar() / textToHide->count()) + (availableChar() % textToHide->count());
+        long charRate = (availableChar() / textToHide->size());
 
         std::cout<<"availableChar: "<<availableChar()<<endl;
+        std::cout<<"neededChar: "<<textToHide->size()<<endl;
         std::cout<<"charRate: "<<charRate<<endl;
 
         QMap<QString, QImage>::const_iterator it = images->constBegin();
