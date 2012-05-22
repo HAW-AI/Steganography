@@ -423,15 +423,16 @@ void DiffTests::find()
             im->addImage(ui->picPathTextField_2->item(index)->text());}
     }
 
-    if(im->imageOrTextHidden() == 1)
+    if(im->imageOrTextHidden() == 1) //1 = Text, 0 = Bild
     {
+        qDebug("Hidden text found.");
         QString* plain = im->getHiddenText();
         //decrypt
         if(ui->decryptCheckBox->isChecked()){
             plain = decrypt(plain);
         }
-
         if(ui->textToFieldRadio->isChecked()){
+            ui->picField->clear();
             ui->textEdit_2->setText(*plain);
         }else if(ui->textToDocRadio->isChecked()){
             QString newPath = QFileDialog::getSaveFileName(
@@ -449,14 +450,14 @@ void DiffTests::find()
                 streamFileOut.flush();
                 fileOut.close();
             }
-
         }
-    }else{ //(im->imageOrTextHidden() == 1)//Image Hidden
-        qDebug("image");
-        /*QImage* image;
+    }else if(im->imageOrTextHidden() == 0){
+        qDebug("Hidden image found.");
+        QImage* image;
         image = im->getHiddenImage(); //muss noch implementiert werden
         if(ui->textToFieldRadio->isChecked()){
-            //bild öffnen
+            ui->textEdit_2->clear();
+            ui->picField->setPixmap(QPixmap::fromImage(*image));
         }else{
             QString newPath = QFileDialog::getSaveFileName(
                         this,
@@ -464,6 +465,6 @@ void DiffTests::find()
                         QDir::homePath(),
                         "Image Files(*.png)");
             image->save(newPath,"PNG",100);
-        }*/
+        }
     }
 }

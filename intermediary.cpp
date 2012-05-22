@@ -181,6 +181,13 @@ QString* Intermediary::getHiddenText() {
     std::cout<<LINE<<endl;
     return result;
 }
+QImage* Intermediary::getHiddenImage()
+{
+    //TODO
+    //QImage fromData(const uchar * data, int size, const char * format = 0)
+    //QImage fromData(const QByteArray & data, const char * format = 0)
+}
+
 
 int Intermediary::imageOrTextHidden() {
     Steganography* stego = new Steganography(images->constBegin().key());
