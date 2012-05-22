@@ -9,6 +9,7 @@
 
 #define LINE "==============================="
 #define HEADER_SIZE 193
+#define INT_SIZE 32
 
 using namespace std;
 
@@ -49,7 +50,9 @@ long Intermediary::availableChar() {
 long Intermediary::availableChar(QImage image) {
     long result = 0;
     if (image.width() >= HEADER_SIZE && image.height() > 1) {
-        result = (image.width() * (image.height() - 1)) / bitsPerChar();
+        long totalPixel = (image.width() * (image.height() - 1));
+        totalPixel -= totalPixel % INT_SIZE; // totalPixel muss ein vielfaches von INT sein
+        result = totalPixel / bitsPerChar();
     }
     return result;
 }
@@ -78,7 +81,7 @@ void Intermediary::hide_1Bit(QString savePath) {
             QImage image = it.value();
             totalChar = availableChar(image);
             start = start + range;
-            range = (totalChar / charRate);
+            range = (totalChar / charRate) - 1;
             if (range == 0 || totalChar % charRate != 0) range++;
 
             std::cout<<LINE<<endl;
@@ -104,7 +107,8 @@ void Intermediary::hide_1Bit(QString savePath) {
             stego->insertBitsPerPixelInHeader(1);
             stego->insertSequenceNoInHeader(sequenceNo);
             stego->insertRealSizeInHeader(currentText.size());
-            stego->insertBitstream(bits);
+            int result = stego->insertBitstream(bits);
+            std::cout<<"result: "<<result<<endl;
 
             QString fileName = savePath;
             if (images->size() > 1){
