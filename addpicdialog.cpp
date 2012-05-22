@@ -41,7 +41,7 @@ void AddPicDialog::actualizeList()
 
 void AddPicDialog::add()
 {
-    QString newPath = QFileDialog::getOpenFileName(this, tr("Add picture"), QString::null, tr("*.png"));
+    QString newPath = QFileDialog::getOpenFileName(this, tr("Add picture"), QDir::homePath(), tr("*.png"));
     im->addImage(newPath);
     ui->picList->addItem(new QListWidgetItem(newPath));
     actualizeList();
@@ -59,8 +59,17 @@ void AddPicDialog::del()
 
 void AddPicDialog::ok()
 {
-    QString newPath = QFileDialog::getSaveFileName(this, tr("Save as"), QString::null, tr("*.png"));
-    im->hide_1Bit(newPath);
+    QString newPath = QFileDialog::getSaveFileName(this, tr("Save as"), QDir::homePath(), tr("*.png"));
+    switch(ui->bpPComboBox->currentIndex())
+    {
+    case 0: im->hide_1Bit(newPath);
+        break;
+    case 1: im->hide_3Bit(newPath);
+        break;
+    case 2: im->hide_6Bit(newPath);
+        break;
+    default:;
+    }
     setResult(1);
     close();
 }

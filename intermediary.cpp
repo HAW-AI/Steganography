@@ -138,7 +138,7 @@ void Intermediary::hide_6Bit(QString savePath) {
     std::cout<<endl;
     std::cout<<LINE<<endl;
     std::cout<<"is ready? ";
-    if (!isReady_1Bit()) {
+    if (!isReady_6Bit()) {
         std::cout<<"no"<<endl;
     } else {
         std::cout<<"yes"<<endl;
