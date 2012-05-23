@@ -502,7 +502,11 @@ QList<uint>* BitChanger::pictureToBitstreamAsIntList(QImage* image){
               }
 
         }
+        if(insertionPos < 31){
+            result->append(listElement);
+        }
     }
+
 
     return result;
 
