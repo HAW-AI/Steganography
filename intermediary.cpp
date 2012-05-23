@@ -45,12 +45,17 @@ void Intermediary::setImage(QString imagePath) {
 }
 
 bool Intermediary::addImage(QString imagePath) {
+    std::cout<<endl<<LINE<<endl;
     bool result = false;
     QImage image = QImage(imagePath);
     if (availableInts_1Bit(image) > 0) {
         images->insert(imagePath, image);
         result = true;
+        std::cout<<"image added"<<endl;
+    } else {
+        std::cout<<"image not added, because the image is to small"<<endl;
     }
+    std::cout<<LINE<<endl;
     return result;
 }
 
@@ -93,13 +98,14 @@ void Intermediary::hide_1Bit(QString savePath) {
         std::cout<<"intRate: "<<intRate<<endl;
 
         QMap<QString, QImage>::const_iterator it = images->constBegin();
-        while (it != images->constEnd() && (start + range) < intsToHide->size()) {
+        while (it != images->constEnd() && range != -1) {
             QImage image = it.value();
             totalInts = availableInts_1Bit(image);
             start = start + range;
             range = (totalInts / intRate);
 
             // falls noch ein int passt, dann nimm den auch noch
+            // um der Rundung bei der Division entgegen zu wirken
             if (totalInts % intRate != 0) range++;
 
             // beim letzten Bild setze die Range auf -1 damit bei
@@ -178,13 +184,14 @@ void Intermediary::hide_3Bit(QString savePath) {
         std::cout<<"intRate: "<<intRate<<endl;
 
         QMap<QString, QImage>::const_iterator it = images->constBegin();
-        while (it != images->constEnd() && (start + range) < intsToHide->size()) {
+        while (it != images->constEnd() && range != -1) {
             QImage image = it.value();
             totalInts = availableInts_3Bit(image);
             start = start + range;
             range = (totalInts / intRate);
 
             // falls noch ein int passt, dann nimm den auch noch
+            // um der Rundung bei der Division entgegen zu wirken
             if (totalInts % intRate != 0) range++;
 
             // beim letzten Bild setze die Range auf -1 damit bei
@@ -263,13 +270,14 @@ void Intermediary::hide_6Bit(QString savePath) {
         std::cout<<"intRate: "<<intRate<<endl;
 
         QMap<QString, QImage>::const_iterator it = images->constBegin();
-        while (it != images->constEnd() && (start + range) < intsToHide->size()) {
+        while (it != images->constEnd() && range != -1) {
             QImage image = it.value();
             totalInts = availableInts_6Bit(image);
             start = start + range;
             range = (totalInts / intRate);
 
             // falls noch ein int passt, dann nimm den auch noch
+            // um der Rundung bei der Division entgegen zu wirken
             if (totalInts % intRate != 0) range++;
 
             // beim letzten Bild setze die Range auf -1 damit bei
