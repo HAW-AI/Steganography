@@ -260,7 +260,7 @@ QList<uint>* BitChanger::textToBitsInIntList_8Bit(QString* s){
         }
         i++;
     }
-    if(listElement != 0){
+    if(insertPosition < 31){
         result->append(listElement);
     }
 
@@ -324,7 +324,7 @@ QList<uint>* BitChanger::textToBitsInIntList_16Bit(QString* s){
         }
         i++;
     }
-    if(listElement != 0){
+    if(insertPosition < 31){
         result->append(listElement);
     }
 
