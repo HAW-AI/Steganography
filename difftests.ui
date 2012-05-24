@@ -337,11 +337,6 @@
          <string>Vigenère</string>
         </property>
        </item>
-       <item>
-        <property name="text">
-         <string>AES</string>
-        </property>
-       </item>
       </widget>
       <widget class="QPushButton" name="keyBrowseButton">
        <property name="enabled">
@@ -703,13 +698,11 @@
          <string>Vigenère</string>
         </property>
        </item>
-       <item>
-        <property name="text">
-         <string>Vernam / One-Time-Pad</string>
-        </property>
-       </item>
       </widget>
       <widget class="QPushButton" name="keyBrowseButton_2">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>380</x>
