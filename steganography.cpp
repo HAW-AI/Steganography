@@ -346,7 +346,7 @@ int Steganography::insertBitstream_3BitsPerPixel(QList<uint>* l){
                 if(outerIterator == l->end()){
                 }
             }else{
-                return -2; // Fehler bei der Laenge; inkrement falsch berechnet
+                return -3; // Fehler bei der Laenge; inkrement falsch berechnet
             }
         }
         return 1; //Alles ok
@@ -479,7 +479,7 @@ int Steganography::insertBitstream_6BitsPerPixel(QList<uint>* l){
 
                 pixel[pos] = qRgb(red, green, blue);
             }else{
-                return -2; // Fehler bei der Laenge; inkrement falsch berechnet
+                return -3; // Fehler bei der Laenge; inkrement falsch berechnet
             }
         }
         return 1; //Alles ok
