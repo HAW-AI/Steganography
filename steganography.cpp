@@ -73,6 +73,7 @@ int Steganography::insertText_1BitPerPixel(QString* text, int format){
 }
 
 
+
 /*
  fuegt eine Bitfolge in das Bild ein
 

@@ -28,86 +28,123 @@ Intermediary::Intermediary(QString imagePath) {
 }
 
 void Intermediary::setText(QString* text, int format) {
+    this->type = 1;
     this->format = format;
     this->textToHide = text;
-}
-
-void Intermediary::addImage(QString imagePath) {
-    QImage image = QImage(imagePath);
-    if (availableChar(image) > 0) {
-        images->insert(imagePath, QImage(imagePath));
+    if (format == 0) {
+        this->intsToHide = bitChanger->textToBitsInIntList_8Bit(this->textToHide);
+    } else {
+        this->intsToHide = bitChanger->textToBitsInIntList_16Bit(this->textToHide);
     }
 }
 
-long Intermediary::availableChar() {
+void Intermediary::setImage(QString imagePath) {
+    this->type = 0;
+    this->imageToHide = QImage(imagePath);
+    this->intsToHide = bitChanger->pictureToBitstreamAsIntList(&(this->imageToHide));
+}
+
+bool Intermediary::addImage(QString imagePath) {
+    std::cout<<endl<<LINE<<endl;
+    bool result = false;
+    QImage image = QImage(imagePath);
+    if (availableInts_1Bit(image) > 0) {
+        images->insert(imagePath, image);
+        result = true;
+        std::cout<<"image added"<<endl;
+    } else {
+        std::cout<<"image not added, because the image is to small"<<endl;
+    }
+    std::cout<<LINE<<endl;
+    return result;
+}
+
+long Intermediary::availableInts_1Bit() {
     long result = 0;
     foreach (const QImage &image, images->values()) {
-        result += availableChar(image);
+        result += availableInts_1Bit(image);
     }
     return result;
 }
 
-long Intermediary::availableChar(QImage image) {
+long Intermediary::availableInts_1Bit(QImage image) {
     long result = 0;
     if (image.width() >= HEADER_SIZE && image.height() > 1) {
-        long totalPixel = (image.width() * (image.height() - 1));
-        totalPixel -= totalPixel % INT_SIZE; // totalPixel muss ein vielfaches von INT sein
-        result = totalPixel / bitsPerChar();
+        result = (image.width() * (image.height() - 1)) / INT_SIZE;
     }
     return result;
 }
 
 void Intermediary::hide_1Bit(QString savePath) {
-    std::cout<<endl;
-    std::cout<<LINE<<endl;
-    std::cout<<"is ready? ";
+    std::cout<<endl<<LINE<<endl<<"is ready? ";
     if (!isReady_1Bit()) {
         std::cout<<"no"<<endl;
     } else {
         std::cout<<"yes"<<endl;
 
         int sequenceNo = 1;
-        long totalChar = 0;
+        int realSize = 0;
+        long totalInts = 0;
         long start = 0;
         long range = 0;
-        long charRate = (availableChar() / textToHide->size());
+        long intRate = (availableInts_1Bit() / intsToHide->size());
 
-        std::cout<<"availableChar: "<<availableChar()<<endl;
-        std::cout<<"neededChar: "<<textToHide->size()<<endl;
-        std::cout<<"charRate: "<<charRate<<endl;
+        std::cout<<"textToHide: "<<textToHide->toStdString()<<endl;
+        std::cout<<"type: "<<type<<endl;
+        std::cout<<"format: "<<format<<endl;
+        std::cout<<"availableInts (1Bit): "<<availableInts_1Bit()<<endl;
+        std::cout<<"neededInts: "<<intsToHide->size()<<endl;
+        std::cout<<"textSize: "<<textToHide->size()<<endl;
+        std::cout<<"intRate: "<<intRate<<endl;
 
         QMap<QString, QImage>::const_iterator it = images->constBegin();
-        while (it != images->constEnd() && (start + range) < textToHide->count()) {
+        while (it != images->constEnd() && range != -1) {
             QImage image = it.value();
-            totalChar = availableChar(image);
+            totalInts = availableInts_1Bit(image);
             start = start + range;
-            range = (totalChar / charRate) - 1;
-            if (range == 0 || totalChar % charRate != 0) range++;
+            range = (totalInts / intRate);
+
+            // falls noch ein int passt, dann nimm den auch noch
+            // um der Rundung bei der Division entgegen zu wirken
+            if (totalInts % intRate != 0) range++;
+
+            // beim letzten Bild setze die Range auf -1 damit bei
+            // der list.mid Methode alle restlichen ints gegriffen werden
+            if (start + range >= intsToHide->size()) {
+                range = -1;
+            }
 
             std::cout<<LINE<<endl;
-            std::cout<<"totalChar: "<<totalChar<<endl;
+            std::cout<<"totalInts: "<<totalInts<<endl;
             std::cout<<"start: "<<start<<endl;
             std::cout<<"range: "<<range<<endl;
 
-            QString currentText = textToHide->mid(start, range);
-            std::cout<<"text: "<<currentText.toStdString()<<endl;
-
-            // bits to hide
-            QList<uint>* bits = new QList<uint>();
-            if (format == 0)
-                bits = bitChanger->textToBitsInIntList_8Bit(&currentText);
-            else
-                bits = bitChanger->textToBitsInIntList_16Bit(&currentText);
-
+            QList<uint> currentInts = intsToHide->mid(start, range);
             Steganography* stego = new Steganography(it.key());
-            stego->insertSizeInHeader(bits->size() * 32);
-            stego->insertTBFieldInHeader(1);
-            stego->insertFirstAttribute(format);
-            stego->insertSecondAttribute(0);
+            stego->insertSizeInHeader(currentInts.size() * INT_SIZE);
+            stego->insertTBFieldInHeader(type);
+            if (type == 0) {
+                stego->insertFirstAttribute(format);
+                stego->insertSecondAttribute(0);
+                realSize = (currentInts.size() * INT_SIZE) / bitsPerChar();
+                if (range == -1) {
+                    int sub1 = (format == 0 ? 4 : 2);           // bei ASCII passen 4 Char in einen Int, bei UNICODE nur 2
+                    int sub2 = textToHide->size() % sub1;       // ermittle wie viele Char im letzten Int stecken müssen
+                    int sub3 = (sub2 != 0 ? sub1 - sub2 : 0);   // ziehe die Char ab die nicht mehr verwendet werden
+                    realSize -= sub3;
+                }
+                stego->insertRealSizeInHeader(realSize);
+            } else {
+                stego->insertFirstAttribute(imageToHide.height());
+                stego->insertSecondAttribute(imageToHide.width());
+            }
             stego->insertBitsPerPixelInHeader(1);
             stego->insertSequenceNoInHeader(sequenceNo);
-            stego->insertRealSizeInHeader(currentText.size());
-            int result = stego->insertBitstream(bits);
+
+            std::cout<<"sequenceNo: "<<sequenceNo<<endl;
+            std::cout<<"size: "<<currentInts.size() * INT_SIZE<<endl;
+            std::cout<<"realSize: "<<(currentInts.size() * INT_SIZE) / bitsPerChar()<<endl;
+            int result = stego->insertBitstream(&currentInts);
             std::cout<<"result: "<<result<<endl;
 
             QString fileName = savePath;
@@ -125,34 +162,181 @@ void Intermediary::hide_1Bit(QString savePath) {
 }
 
 void Intermediary::hide_3Bit(QString savePath) {
-    std::cout<<endl;
-    std::cout<<LINE<<endl;
-    std::cout<<"is ready? ";
+    std::cout<<endl<<LINE<<endl<<"is ready? ";
     if (!isReady_3Bit()) {
         std::cout<<"no"<<endl;
     } else {
         std::cout<<"yes"<<endl;
 
-        // ToDo
+        int sequenceNo = 1;
+        int realSize = 0;
+        long totalInts = 0;
+        long start = 0;
+        long range = 0;
+        long intRate = (availableInts_3Bit() / intsToHide->size());
+
+        std::cout<<"textToHide: "<<textToHide->toStdString()<<endl;
+        std::cout<<"type: "<<type<<endl;
+        std::cout<<"format: "<<format<<endl;
+        std::cout<<"availableInts (3Bit): "<<availableInts_3Bit()<<endl;
+        std::cout<<"neededInts: "<<intsToHide->size()<<endl;
+        std::cout<<"textSize: "<<textToHide->size()<<endl;
+        std::cout<<"intRate: "<<intRate<<endl;
+
+        QMap<QString, QImage>::const_iterator it = images->constBegin();
+        while (it != images->constEnd() && range != -1) {
+            QImage image = it.value();
+            totalInts = availableInts_3Bit(image);
+            start = start + range;
+            range = (totalInts / intRate);
+
+            // falls noch ein int passt, dann nimm den auch noch
+            // um der Rundung bei der Division entgegen zu wirken
+            if (totalInts % intRate != 0) range++;
+
+            // beim letzten Bild setze die Range auf -1 damit bei
+            // der list.mid Methode alle restlichen ints gegriffen werden
+            if (start + range >= intsToHide->size()) {
+                range = -1;
+            }
+
+            std::cout<<LINE<<endl;
+            std::cout<<"totalInts: "<<totalInts<<endl;
+            std::cout<<"start: "<<start<<endl;
+            std::cout<<"range: "<<range<<endl;
+
+            QList<uint> currentInts = intsToHide->mid(start, range);
+            Steganography* stego = new Steganography(it.key());
+            stego->insertSizeInHeader(currentInts.size() * INT_SIZE);
+            stego->insertTBFieldInHeader(type);
+            if (type == 0) {
+                stego->insertFirstAttribute(format);
+                stego->insertSecondAttribute(0);
+                realSize = (currentInts.size() * INT_SIZE) / bitsPerChar();
+                if (range == -1) {
+                    int sub1 = (format == 0 ? 4 : 2);           // bei ASCII passen 4 Char in einen Int, bei UNICODE nur 2
+                    int sub2 = textToHide->size() % sub1;       // ermittle wie viele Char im letzten Int stecken müssen
+                    int sub3 = (sub2 != 0 ? sub1 - sub2 : 0);   // ziehe die Char ab die nicht mehr verwendet werden
+                    realSize -= sub3;
+                }
+                stego->insertRealSizeInHeader(realSize);
+            } else {
+                stego->insertFirstAttribute(imageToHide.height());
+                stego->insertSecondAttribute(imageToHide.width());
+            }
+            stego->insertBitsPerPixelInHeader(3);
+            stego->insertSequenceNoInHeader(sequenceNo);
+
+            std::cout<<"sequenceNo: "<<sequenceNo<<endl;
+            std::cout<<"size: "<<currentInts.size() * INT_SIZE<<endl;
+            std::cout<<"realSize: "<<(currentInts.size() * INT_SIZE) / bitsPerChar()<<endl;
+            int result = stego->insertBitstream_3BitsPerPixel(&currentInts);
+            std::cout<<"result: "<<result<<endl;
+
+            QString fileName = savePath;
+            if (images->size() > 1){
+                fileName.insert(fileName.size()-4, QString().setNum(sequenceNo));
+            }
+            std::cout<<fileName.toStdString()<<endl;
+            stego->saveImage(fileName);
+
+            it++;
+            sequenceNo++;
+        }
     }
     std::cout<<LINE<<endl<<endl;
 }
 
 void Intermediary::hide_6Bit(QString savePath) {
-    std::cout<<endl;
-    std::cout<<LINE<<endl;
-    std::cout<<"is ready? ";
+    std::cout<<endl<<LINE<<endl<<"is ready? ";
     if (!isReady_6Bit()) {
         std::cout<<"no"<<endl;
     } else {
         std::cout<<"yes"<<endl;
 
-        // ToDo
+        int sequenceNo = 1;
+        int realSize = 0;
+        long totalInts = 0;
+        long start = 0;
+        long range = 0;
+        long intRate = (availableInts_6Bit() / intsToHide->size());
+
+        std::cout<<"textToHide: "<<textToHide->toStdString()<<endl;
+        std::cout<<"type: "<<type<<endl;
+        std::cout<<"format: "<<format<<endl;
+        std::cout<<"availableInts (6Bit): "<<availableInts_6Bit()<<endl;
+        std::cout<<"neededInts: "<<intsToHide->size()<<endl;
+        std::cout<<"textSize: "<<textToHide->size()<<endl;
+        std::cout<<"intRate: "<<intRate<<endl;
+
+        QMap<QString, QImage>::const_iterator it = images->constBegin();
+        while (it != images->constEnd() && range != -1) {
+            QImage image = it.value();
+            totalInts = availableInts_6Bit(image);
+            start = start + range;
+            range = (totalInts / intRate);
+
+            // falls noch ein int passt, dann nimm den auch noch
+            // um der Rundung bei der Division entgegen zu wirken
+            if (totalInts % intRate != 0) range++;
+
+            // beim letzten Bild setze die Range auf -1 damit bei
+            // der list.mid Methode alle restlichen ints gegriffen werden
+            if (start + range >= intsToHide->size()) {
+                range = -1;
+            }
+
+            std::cout<<LINE<<endl;
+            std::cout<<"totalInts: "<<totalInts<<endl;
+            std::cout<<"start: "<<start<<endl;
+            std::cout<<"range: "<<range<<endl;
+
+            QList<uint> currentInts = intsToHide->mid(start, range);
+            Steganography* stego = new Steganography(it.key());
+            stego->insertSizeInHeader(currentInts.size() * INT_SIZE);
+            stego->insertTBFieldInHeader(type);
+            if (type == 0) {
+                stego->insertFirstAttribute(format);
+                stego->insertSecondAttribute(0);
+                realSize = (currentInts.size() * INT_SIZE) / bitsPerChar();
+                if (range == -1) {
+                    int sub1 = (format == 0 ? 4 : 2);           // bei ASCII passen 4 Char in einen Int, bei UNICODE nur 2
+                    int sub2 = textToHide->size() % sub1;       // ermittle wie viele Char im letzten Int stecken müssen
+                    int sub3 = (sub2 != 0 ? sub1 - sub2 : 0);   // ziehe die Char ab die nicht mehr verwendet werden
+                    realSize -= sub3;
+                }
+                stego->insertRealSizeInHeader(realSize);
+            } else {
+                stego->insertFirstAttribute(imageToHide.height());
+                stego->insertSecondAttribute(imageToHide.width());
+            }
+            stego->insertBitsPerPixelInHeader(6);
+            stego->insertSequenceNoInHeader(sequenceNo);
+
+            std::cout<<"sequenceNo: "<<sequenceNo<<endl;
+            std::cout<<"size: "<<currentInts.size() * INT_SIZE<<endl;
+            std::cout<<"realSize: "<<(currentInts.size() * INT_SIZE) / bitsPerChar()<<endl;
+            int result = stego->insertBitstream_6BitsPerPixel(&currentInts);
+            std::cout<<"result: "<<result<<endl;
+
+            QString fileName = savePath;
+            if (images->size() > 1){
+                fileName.insert(fileName.size()-4, QString().setNum(sequenceNo));
+            }
+            std::cout<<fileName.toStdString()<<endl;
+            stego->saveImage(fileName);
+
+            it++;
+            sequenceNo++;
+        }
     }
     std::cout<<LINE<<endl<<endl;
 }
 
 QString* Intermediary::getHiddenText() {
+    std::cout<<endl<<LINE<<endl;
+    std::cout<<"images: "<<images->size()<<endl;
+
     // With QMap, the items are always sorted by key!
     QMap<int, QString*>* textMap = new QMap<int, QString*>();
 
@@ -160,14 +344,20 @@ QString* Intermediary::getHiddenText() {
     QMap<QString, QImage>::const_iterator it = images->constBegin();
     while (it != images->constEnd()) {
         Steganography* stego = new Steganography(it.key());
+        int realSize = stego->getRealSizeFromHeader();
+
+        std::cout<<"realSize: "<<realSize<<endl;
+
         QString* currentText = new QString();
         QList<uint>* bits = stego->getBitStreamAsIntList();
-        int realSize = stego->getRealSizeFromHeader();
         if (stego->getFirstAttributeFromHeader() == 0) {
             currentText = bitChanger->bitStreamToText_8Bit(bits, realSize);
         } else {
             currentText = bitChanger->bitStreamToText_16Bit(bits, realSize);
         }
+
+        std::cout<<"currentText: "<<currentText->toStdString()<<endl;
+
         textMap->insert(stego->getSequenceNoFromHeader(), currentText);
         it++;
     }
@@ -179,19 +369,18 @@ QString* Intermediary::getHiddenText() {
         result->append(it2.value());
         it2++;
     }
-    std::cout<<endl;
-    std::cout<<LINE<<endl;
-    std::cout<<"hidden text: "<<result->toStdString()<<endl;
+    std::cout<<"result: "<<result->toStdString()<<endl;
     std::cout<<LINE<<endl;
     return result;
 }
+
 QImage* Intermediary::getHiddenImage()
 {
     //TODO
     //QImage fromData(const uchar * data, int size, const char * format = 0)
     //QImage fromData(const QByteArray & data, const char * format = 0)
+    return new QImage();
 }
-
 
 int Intermediary::imageOrTextHidden() {
     Steganography* stego = new Steganography(images->constBegin().key());
