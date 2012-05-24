@@ -44,6 +44,7 @@ private:
     long remainingPixel_3Bit() { return (intsToHide->size() - availableInts_3Bit()) * 32; }
     long remainingPixel_6Bit() { return (intsToHide->size() - availableInts_6Bit()) * 32; }
     long bitsPerChar() { return format == 0? 8 : 16; }
+    void hide(bool isReady, long availableBits, int bitsPerPixel, QString savePath);
 
     // private fields
     int format;                 // ASCII = 0 / UNICODE = 1
