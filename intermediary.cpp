@@ -208,7 +208,16 @@ QString* Intermediary::getHiddenText() {
         std::cout<<"realSize: "<<realSize<<endl;
 
         QString* currentText = new QString();
-        QList<uint>* bits = stego->getBitStreamAsIntList();
+        QList<uint>* bits;
+        int bitsPerPixel = stego->getBitsPerPixelFromHeader();
+        if (bitsPerPixel == 1) {
+            bits = stego->getBitStreamAsIntList();
+        } else if (bitsPerPixel == 3) {
+            bits = stego->getBitstreamAsIntList_3BitsPerPixel();
+        } else {
+            bits = stego->getBitstreamAsIntList_6BitsPerPixel();
+        }
+        
         if (stego->getFirstAttributeFromHeader() == 0) {
             currentText = bitChanger->bitStreamToText_8Bit(bits, realSize);
         } else {
