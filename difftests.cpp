@@ -119,7 +119,7 @@ void DiffTests::chosePicture_2()
                 "Choose a file",
                 QDir::homePath(),
                 "PNG Files(*.png)");
-    if((ui->picPathTextField_2->findItems(path,Qt::MatchExactly)).isEmpty()) ui->picPathTextField_2->addItem(path);
+    ui->picPathTextField_2->addItem(path);
     showFindButton();
 }
 
@@ -143,7 +143,7 @@ void DiffTests::choseText()
                 this,
                 "Choose a file",
                 QDir::homePath(),
-                "Text Files(*.txt)"); //"Text Files(*.txt *.png)");
+                "Text Files(*.txt);; JPEG Files (*.png)");
     if(path.endsWith(".png")){
         ui->encryptCheckBox->setEnabled(false);
     }
@@ -411,16 +411,12 @@ void DiffTests::hide()
     ui->picPathTextField_2->addItem(savePath);
 }
 
-//TODO: Text wird abgeschnitten!
-
 void DiffTests::find()
 {
     QString path = ui->picPathTextField_2->item(0)->text();
     im = new Intermediary(path);
-
-    if(ui->SeveralPicsCheckBox->isChecked()){
-        for(int index = 1; index < (ui->picPathTextField_2->count());index++){
-            im->addImage(ui->picPathTextField_2->item(index)->text());}
+    for(int index = 1; index < (ui->picPathTextField_2->count());index++){
+        im->addImage(ui->picPathTextField_2->item(index)->text());
     }
 
     if(im->imageOrTextHidden() == 1) //1 = Text, 0 = Bild
@@ -454,7 +450,7 @@ void DiffTests::find()
     }else if(im->imageOrTextHidden() == 0){
         qDebug("Hidden image found.");
         QImage* image;
-        image = im->getHiddenImage(); //muss noch implementiert werden
+        image = im->getHiddenImage();
         if(ui->textToFieldRadio->isChecked()){
             ui->textEdit_2->clear();
             ui->picField->setPixmap(QPixmap::fromImage(*image));

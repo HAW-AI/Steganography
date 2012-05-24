@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="hideTab">
      <attribute name="title">
@@ -506,19 +506,6 @@
        </property>
        <property name="text">
         <string>Add</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="SeveralPicsCheckBox">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>81</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Several</string>
        </property>
       </widget>
       <widget class="QListWidget" name="picPathTextField_2">
