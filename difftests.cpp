@@ -143,7 +143,7 @@ void DiffTests::choseText()
                 this,
                 "Choose a file",
                 QDir::homePath(),
-                "Text Files(*.txt *.png)");
+                "Text Files(*.txt)"); //"Text Files(*.txt *.png)");
     if(path.endsWith(".png")){
         ui->encryptCheckBox->setEnabled(false);
     }
