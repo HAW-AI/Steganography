@@ -58,7 +58,8 @@ DiffTests::DiffTests(QWidget *parent) :
     ui->picRemoveButton->setEnabled(false);
     ui->findButton->setEnabled(false);
     ui->decryptFrame->hide();
-    ui->textEdit_2->setEnabled(false);
+    ui->textEdit_2->setReadOnly(true);
+   // ui->textEdit_2->setEnabled(false);
     connect( ui->decryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showDecryptFrame(bool)) );
     connect( ui->textToDocRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
     connect( ui->textToFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
