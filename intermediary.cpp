@@ -235,10 +235,33 @@ QString* Intermediary::getHiddenText() {
 
 QImage* Intermediary::getHiddenImage()
 {
-    //TODO
     //QImage fromData(const uchar * data, int size, const char * format = 0)
     //QImage fromData(const QByteArray & data, const char * format = 0)
-    return new QImage();
+
+    std::cout<<endl<<LINE<<endl;
+    std::cout<<"images: "<<images->size()<<endl;
+
+    QList<uint>* bits = new QList<uint>();
+
+    QMap<QString, QImage>::const_iterator it = images->constBegin();
+
+    //get height and width of the picture
+    Steganography* stego = new Steganography(it.key());
+    int height = stego->getFirstAttributeFromHeader();
+    int width = stego ->getSecondAttributeFromHeader();
+    std::cout<<"imageSize: "<<width<<" x "<< height<<endl;
+
+    // get all bits of the picture
+    while (it != images->constEnd()) {
+        Steganography* stego = new Steganography(it.key());
+        QList<uint>* stream = stego->getBitStreamAsIntList();
+        bits->append(*stream);
+        it++;
+    }
+
+    QImage* result = bitChanger->bitStreamToPicture(bits, height, width);
+    std::cout<<LINE<<endl;
+    return result;
 }
 
 int Intermediary::imageOrTextHidden() {
