@@ -24,6 +24,7 @@
 
 int format;
 QString ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n";
+QDir actDir = QDir::homePath();
 
 
 DiffTests::DiffTests(QWidget *parent) :
@@ -107,8 +108,9 @@ void DiffTests::chosePicture()
     path = QFileDialog::getOpenFileName(
                 this,
                 "Choose a file",
-                QDir::homePath(),
+                actDir.absolutePath(),
                 "PNG Files(*.png)");  //JPEG files (*.jpg *.png);; Gif files (*.gif)
+    actDir.setPath(path);
     ui->picPathTextField->setText( path );
 }
 
@@ -118,8 +120,9 @@ void DiffTests::chosePicture_2()
     path = QFileDialog::getOpenFileName(
                 this,
                 "Choose a file",
-                QDir::homePath(),
+                actDir.absolutePath(),
                 "PNG Files(*.png)");
+    actDir.setPath(path);
     ui->picPathTextField_2->addItem(path);
     showFindButton();
 }
@@ -143,27 +146,33 @@ void DiffTests::choseText()
     path = QFileDialog::getOpenFileName(
                 this,
                 "Choose a file",
-                QDir::homePath(),
+                actDir.absolutePath(),
                 "Text Files(*.txt);; JPEG Files (*.png)");
-    if(path.endsWith(".png")){
-        ui->encryptCheckBox->setEnabled(false);
-    }
+    actDir.setPath(path);
     ui->textPathTextField->setText( path );
+    showHideButton();
 }
 
 void DiffTests::showHideButton()
 {
     if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText())){
             ui->hideButton->setEnabled(true);
-            QFile file(ui->textPathTextField->toPlainText());
-            file.open(QIODevice::ReadOnly | QIODevice::Text);
-            QTextStream in(&file);
-            QString plain = in.readAll();
-          format = getFormat(plain);
-            file.close();
-            if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
-            else ui->asciiUnicodeLabel->setText("Ascii format");
+            if(ui->textPathTextField->toPlainText().endsWith(".png")){
+                ui->encryptCheckBox->setEnabled(false);
+                ui->asciiUnicodeLabel->setText("picture");
+            }else{
+                ui->encryptCheckBox->setEnabled(true);
+                QFile file(ui->textPathTextField->toPlainText());
+                file.open(QIODevice::ReadOnly | QIODevice::Text);
+                QTextStream in(&file);
+                QString plain = in.readAll();
+              format = getFormat(plain);
+                file.close();
+                if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
+                else ui->asciiUnicodeLabel->setText("Ascii format");
+            }
     }else if(ui->textFromFieldRadio->isChecked() && !(ui->textEdit->toPlainText().isEmpty())&& isPath(ui->picPathTextField->toPlainText())){
+            ui->encryptCheckBox->setEnabled(true);
             ui->hideButton->setEnabled(true);
             format = getFormat(ui->textEdit->toPlainText());
             if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
@@ -285,8 +294,9 @@ void DiffTests::browseOneTimePad()
     path = QFileDialog::getOpenFileName(
                 this,
                 "Choose a file",
-                QDir::homePath(),
+                actDir.absolutePath(),
                 "Text Files(*.txt)");
+    actDir.setPath(path);
     ui->keyTextField->setText( path );
     ui->keyTextField_2->setText( path );
 }
@@ -347,6 +357,7 @@ void DiffTests::notEnough()
 
 void DiffTests::hide()
 {
+    ui->saveLabel->clear();
     //TODO plain to QString*
     //-> problem bei im->hide_1Bit
     QString plain;
@@ -365,11 +376,17 @@ void DiffTests::hide()
     }
 
     QString oldPath = ui->picPathTextField->toPlainText();
-    im = new Intermediary(&plain, format, oldPath);
+    //im = new Intermediary(&plain, format, oldPath);
+    im = new Intermediary(oldPath);
+    if(ui->textPathTextField->toPlainText().endsWith(".png")){
+        im->setImage(ui->textPathTextField->toPlainText());
+    }else{
+        im->setText(&plain,format);
+    }
     QString savePath;
 
     if(im->isReady_1Bit()){
-        savePath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+        savePath = QFileDialog::getSaveFileName(this, tr("Save File"), actDir.absolutePath(), tr("*.png *.jpg"));
         im->hide_1Bit(savePath);
     }else{
         int action = popupProblemDialog();
@@ -378,7 +395,7 @@ void DiffTests::hide()
             if( action == DENSITY){
                 int w = noiseWarningDialog();
                 if(im->isReady_3Bit() && w == 1){
-                    savePath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                    savePath = QFileDialog::getSaveFileName(this, tr("Save File"), actDir.absolutePath(), tr("*.png *.jpg"));
                     im->hide_3Bit(savePath);
                     action = CANCEL;
                 }else{
@@ -386,7 +403,7 @@ void DiffTests::hide()
                     if( action == DENSITY){
                         w = noiseWarningDialog();
                         if(im->isReady_3Bit() && w == 1){
-                            savePath = QFileDialog::getSaveFileName(this, tr("Save File"), ui->picPathTextField->toPlainText(), tr("*.png *.jpg"));
+                            savePath = QFileDialog::getSaveFileName(this, tr("Save File"), actDir.absolutePath(), tr("*.png *.jpg"));
                             im->hide_6Bit(savePath);
                             action = CANCEL;
                         }else{
@@ -408,8 +425,12 @@ void DiffTests::hide()
         }
     }
 
-    ui->picPathTextField_2->clear();
-    ui->picPathTextField_2->addItem(savePath);
+    if(!savePath.isEmpty()){
+        actDir.setPath(savePath);
+        ui->saveLabel->setText("Saved: "+savePath);
+        ui->picPathTextField_2->clear();
+        ui->picPathTextField_2->addItem(savePath);
+    }
 }
 
 void DiffTests::find()
@@ -435,8 +456,9 @@ void DiffTests::find()
             QString newPath = QFileDialog::getSaveFileName(
                         this,
                         "Save Textfile",
-                        QDir::homePath(),
+                        actDir.absolutePath(),
                         "Text Files(*.txt)");
+            actDir.setPath(newPath);
             QFile fileOut(newPath);
             if (fileOut.open(QIODevice::WriteOnly | QIODevice::Text))
             {
@@ -459,8 +481,9 @@ void DiffTests::find()
             QString newPath = QFileDialog::getSaveFileName(
                         this,
                         "Save Image",
-                        QDir::homePath(),
+                        actDir.absolutePath(),
                         "Image Files(*.png)");
+            actDir.setPath(newPath);
             image->save(newPath,"PNG",100);
         }
     }

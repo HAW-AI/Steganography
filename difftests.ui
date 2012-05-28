@@ -24,11 +24,11 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="hideTab">
      <attribute name="title">
-      <string>Hide</string>
+      <string>Hide Text</string>
      </attribute>
      <widget class="QFrame" name="picFrame">
       <property name="geometry">
@@ -164,13 +164,22 @@
        </property>
       </widget>
       <widget class="QTextEdit" name="textEdit">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>80</y>
+         <y>70</y>
          <width>441</width>
          <height>131</height>
         </rect>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
        </property>
       </widget>
       <widget class="Line" name="line">
@@ -206,7 +215,7 @@
         <x>0</x>
         <y>460</y>
         <width>501</width>
-        <height>51</height>
+        <height>71</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -225,7 +234,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Hide</string>
+        <string>Hide Text</string>
        </property>
       </widget>
       <widget class="Line" name="line_4">
@@ -239,6 +248,19 @@
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="saveLabel">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>481</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </widget>
@@ -387,7 +409,7 @@
     </widget>
     <widget class="QWidget" name="findTab">
      <attribute name="title">
-      <string>Find</string>
+      <string>Find Text</string>
      </attribute>
      <widget class="QFrame" name="textFrame_2">
       <property name="geometry">
@@ -438,6 +460,9 @@
          <width>441</width>
          <height>171</height>
         </rect>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
       </widget>
       <widget class="Line" name="line_2">
@@ -608,7 +633,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Find</string>
+        <string>Find Text</string>
        </property>
       </widget>
       <widget class="Line" name="line_3">
