@@ -17,8 +17,7 @@ void Crypt::caesar(int mode)
     int k;
     if (mode == ENCRYPT)k = key->at(0).toAscii();
     else k = (key->at(0).toAscii())*-1; //DECRYPT
-    qDebug()<<format;
-    qDebug()<<text->toUtf8();
+    //qDebug()<<text->toUtf8();
     if(format == UNICODE){
         QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
         for(int i = 0; i<text->size();i++)
@@ -42,7 +41,7 @@ void Crypt::caesar(int mode)
             text->replace(i,1, QChar(l).toAscii());
         }
     }
-    qDebug()<<text->toUtf8();
+    //qDebug()<<text->toUtf8();
 }
 
 void Crypt::vigenere(int mode)
