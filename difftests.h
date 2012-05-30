@@ -25,6 +25,7 @@ private slots:
     void chosePicture_2();
     void removePicture_2();
     void choseText();
+    void clickRadio();
     void hide();
     void find();
     int getFormat(QString text);

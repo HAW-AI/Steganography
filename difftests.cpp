@@ -44,7 +44,7 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->encryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showEncryptFrame(bool)) );
     connect( ui->picPathTextField, SIGNAL(textChanged()), this, SLOT(showHideButton()) );
     connect( ui->textPathTextField, SIGNAL(textChanged()), this, SLOT(showHideButton()) );
-    connect( ui->textEdit, SIGNAL(textChanged()), this, SLOT(showHideButton()) );
+    connect( ui->textEdit, SIGNAL(textChanged()), this, SLOT(clickRadio()) );
     connect( ui->textFromDocRadio, SIGNAL(toggled(bool)), this, SLOT(showHideButton()) );
     connect( ui->textFromFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showHideButton()) );
     connect( ui->keyTextField, SIGNAL(textChanged()), this, SLOT(showHideButton()) );
@@ -72,6 +72,11 @@ DiffTests::DiffTests(QWidget *parent) :
 DiffTests::~DiffTests()
 {
     delete ui;
+}
+
+void DiffTests::clickRadio(){
+    if(!ui->textEdit->toPlainText().isEmpty())ui->textFromFieldRadio->click();
+    showHideButton();
 }
 
 int DiffTests::getFormat(QString text)
@@ -109,7 +114,7 @@ void DiffTests::chosePicture()
                 this,
                 "Choose a file",
                 actDir.absolutePath(),
-                "PNG Files(*.png)");  //JPEG files (*.jpg *.png);; Gif files (*.gif)
+                "PNG Files(*.png)");
     actDir.setPath(path);
     ui->picPathTextField->setText( path );
 }
@@ -150,6 +155,7 @@ void DiffTests::choseText()
                 "Text Files(*.txt);; JPEG Files (*.png)");
     actDir.setPath(path);
     ui->textPathTextField->setText( path );
+    if(!path.isEmpty()) ui->textFromDocRadio->click();
     showHideButton();
 }
 
