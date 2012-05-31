@@ -5,6 +5,7 @@
 #define CANCEL 0
 #define DENSITY 1
 #define PICS 2
+#define NEWPIC 3
 
 ProblemDialog::ProblemDialog(QWidget *parent) :
     QDialog(parent),
@@ -26,7 +27,7 @@ ProblemDialog::~ProblemDialog()
 void ProblemDialog::choseNewPic()
 {
     close();
-    setResult(CANCEL);
+    setResult(NEWPIC);
 }
 
 void ProblemDialog::moreDensity()

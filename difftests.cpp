@@ -21,6 +21,7 @@
 #define CANCEL 0
 #define DENSITY 1
 #define PICS 2
+#define NEWPIC 3
 
 int format;
 QString ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n";
@@ -286,6 +287,11 @@ void DiffTests::hide()
                 }else{
                     action = 3;
                 }
+            }
+            else if(action == NEWPIC){
+                chosePicture();
+                hide();
+                action = CANCEL;
             }else{action=CANCEL;}
         }
     }
