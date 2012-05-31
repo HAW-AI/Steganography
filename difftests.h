@@ -20,25 +20,6 @@ public:
     explicit DiffTests(QWidget *parent = 0);
     ~DiffTests();
     
-private slots:
-    void chosePicture();
-    void chosePicture_2();
-    void removePicture_2();
-    void choseText();
-    void clickRadio();
-    void hide();
-    void find();
-    int getFormat(QString text);
-    void browseOneTimePad();
-    void showRemove();
-
-    void showEncryptFrame(bool);
-    void showDecryptFrame(bool);
-    void showHideButton();
-    void showFindButton();
-
-    bool isPath(QString);
-
 public slots:
     QString *decrypt(QString *);
     QString *encrypt(QString *);
@@ -54,6 +35,25 @@ private:
     Intermediary *im;
     AddPicDialog *apd;
     NotEnoughInfo *ne;
+
+private slots:
+    int getFormat(QString text);
+    bool isPath(QString);
+
+    void chosePicture();
+    void choseText();
+    void clickRadio();
+    void browseOneTimePad();
+    void showEncryptFrame(bool);
+    void showHideButton();
+    void hide();
+
+    void chosePicture_2();
+    void showRemove();
+    void removePicture_2();
+    void showDecryptFrame(bool);
+    void showFindButton();
+    void find();
 };
 
 #endif // DIFFTESTS_H
