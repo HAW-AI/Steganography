@@ -22,137 +22,15 @@ Steganography::Steganography(QString filename)
 
 
 
- /*
-  fuegt den Text in das Image ein.
-  Um den Text gleichmaessig einzufuegen wird berechnet in welchen Abstaenden ein Bit des Textes in einen Pixel einzufuegen ist:
-  
-  Variable: inkrement
-  
-  Um den Text schwerer auslesbar zu machen, wird zudem noch zwischen den Rot, Blau und Gruen Werten des Pixels rotiert.
-  
-  Eingabe: QString* text -> zu versteckender Text
-            int format -> 0 bedeutet ASCII, 1 bedeutet Unicode
-  Ausgabe: Integer
-            1 -> alles ok
-            -1 -> es wurde ein unbekanntes Texformat angegeben
-            -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
-            -3 -> Laenge des Texts kann nicht im Header abgespeichert werden
-
- */
-int Steganography::insertText_1BitPerPixel(QString* text, int format){
-    QString* bitsToInsert;
-    if(format == ASCII){
-        bitsToInsert = BitChanger::textToBits_8Bit(text);
-    }else if(format == UNICODE){
-        bitsToInsert = BitChanger::textToBits_16Bit(text);
-    }else{
-        return -1; //unbekanntes Textformat uebergeben
-    }
- /*   if(bitsToInsert->size() > std::numeric_limits<qint32>::max()){
-        return -3; // TextGroesse zu gross, um in den Header eingetragen zu werden
-    }
-*/
-    insertTextHeader(bitsToInsert->size(), format);
-
-    int width = image.width();
-    int height = image.height();
-
-    int inkrement = (width * (height-1)) / bitsToInsert->size();
-
-    if(inkrement >=1){
-
-        int errorCode = insertBitstream(bitsToInsert);
-        if(errorCode != 1){
-            return errorCode;
-        }
-
-        return 1; //ok
-    }else{
-        return -2; //text zu lang
-   }
-}
-
-
-
 /*
- fuegt eine Bitfolge in das Bild ein
+ fuegt eine Bitfolge in das Bild ein. Es wird pro Pixel ein Bit versteckt
 
- Eingabe: QString* text -> zu versteckender Text (muss eine Bitfolge sein)
- Ausgabe: Integer
-           1 -> alles ok
-           -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
-           -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
-
-
-*/
-int Steganography::insertBitstream(QString* s){
-    int width = image.width();
-    int height = image.height();
-
-    int inkrement = calcInkrement(width * (height-1),s->size(),1);
-
-    if(inkrement >= 1){
-
-
-        QString::const_iterator bitIterator = s->begin();    //iteriert ueber die uebergebenen Bits
-
-        int currentColor = RED;
-        int line = -1;
-
-
-
-        for(int pixelindex = inkrement-1; pixelindex < s->size()* inkrement; pixelindex += inkrement){
-            if((pixelindex / width) + 1 != line){
-                line = (pixelindex / width) +1;
-            }
-            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
-
-            int pos = (pixelindex % width);
-
-
-            if(bitIterator != s->end()){
-                int red = qRed(pixel[pos]);
-                int green = qGreen(pixel[pos]);
-                int blue = qBlue(pixel[pos]);
-
-                if(currentColor == RED){
-                    red = BitChanger::changeLastBit(red,(*bitIterator));
-                    currentColor = GREEN;
-                }else if(currentColor == GREEN){
-                    green = BitChanger::changeLastBit(green,(*bitIterator));
-                    currentColor = BLUE;
-                }else if(currentColor == BLUE){
-                    blue = BitChanger::changeLastBit(blue,(*bitIterator));
-                    currentColor = RED;
-                }else{
-                    return -1;   //Fehler bei der Farbauswahl
-                }
-
-                pixel[pos] = qRgb(red, green, blue);
-            }else{
-                return -2; // Fehler bei der Laenge; inkrement falsch berechnet
-            }
-            bitIterator++;
-
-        }
-
-        return 1; //Alles ok
-    }else{
-        return -2; //Text zu lang
-   }
-}
-
-/*
- fuegt eine Bitfolge in das Bild ein
-
- Eingabe: QString* text -> zu versteckender Text (muss eine Bitfolge sein)
+ Eingabe: QList<uint>* text -> zu versteckender Text (konvertiert in Bitfolge, die als Liste von uint gespeichert ist)
  Ausgabe: Integer
            1 -> alles ok
            -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
            -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
 */
-
-
 int Steganography::insertBitstream(QList<uint>* list){
     int width = image.width();
     int height = image.height();
@@ -213,69 +91,6 @@ int Steganography::insertBitstream(QList<uint>* list){
    }
 }
 
-
-
-/*
- fuegt eine Bitfolge in das Bild ein und nutzt dabei 3 Bit pro Pixel
-
- Eingabe: QString* text -> zu versteckender Text (muss eine Bitfolge sein)
- Ausgabe: Integer
-           1 -> alles ok
-           -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
-           -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
-
-
-*/
-int Steganography::insertBitstream_3BitsPerPixel(QString* s){
-    int width = image.width();
-    int height = image.height();
-    int bitsPerPixel = 3;
-
-    int inkrement = calcInkrement(width * (height-1),s->size(),bitsPerPixel);
-
-    if(inkrement >= 1){
-
-        QString::const_iterator bitIterator = s->begin();    //iteriert ueber die uebergebenen Bits
-
-        int line = -1;
-
-        for(int pixelindex = inkrement-1; pixelindex < s->size()* inkrement; pixelindex += inkrement){
-            if((pixelindex / width) + 1 != line){
-                line = (pixelindex / width) +1;
-            }
-            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
-
-            int pos = (pixelindex % width);
-
-
-            if(bitIterator != s->end()){
-                int red = qRed(pixel[pos]);
-                int green = qGreen(pixel[pos]);
-                int blue = qBlue(pixel[pos]);
-
-                red = BitChanger::changeLastBit(red,(*bitIterator));
-                bitIterator++;
-
-                if(bitIterator != s->end()){
-                    green = BitChanger::changeLastBit(green,(*bitIterator));
-                    bitIterator++;
-                }
-
-                if(bitIterator != s->end()){
-                    blue = BitChanger::changeLastBit(blue,(*bitIterator));
-                    bitIterator++;
-                }
-
-                pixel[pos] = qRgb(red, green, blue);
-            }else{
-                return -2; // Fehler bei der Laenge; inkrement falsch berechnet
-            }
-        }
-        return 1; //Alles ok
-    }else{
-        return -2; //Text zu lang
-   }
-}
 
 /*
  fuegt eine Bitfolge in das Bild ein und nutzt dabei 3 Bit pro Pixel
@@ -355,71 +170,17 @@ int Steganography::insertBitstream_3BitsPerPixel(QList<uint>* l){
    }
 }
 
-int Steganography::insertBitstream_6BitsPerPixel(QString* s){
-    int width = image.width();
-    int height = image.height();
-    int bitsPerPixel = 6;
+/*
+ fuegt eine Bitfolge in das Bild ein und nutzt dabei 6 Bit pro Pixel
 
-    int inkrement = calcInkrement(width * (height-1),s->size(),bitsPerPixel);
-
-    if(inkrement >= 1){
-
-        QString::const_iterator bitIterator = s->begin();    //iteriert ueber die uebergebenen Bits
-        QString temp = "";
-
-        int line = -1;
-
-        for(int pixelindex = inkrement-1; pixelindex < s->size()* inkrement; pixelindex += inkrement){
-            if((pixelindex / width) + 1 != line){
-                line = (pixelindex / width) +1;
-            }
-            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
-
-            int pos = (pixelindex % width);
+ Eingabe: QList<uint>* l -> zu versteckende Bitfolge
+ Ausgabe: Integer
+           1 -> alles ok
+           -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
+           -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
 
 
-            if(bitIterator != s->end()){
-                int red = qRed(pixel[pos]);
-                int green = qGreen(pixel[pos]);
-                int blue = qBlue(pixel[pos]);
-
-                temp.clear();
-                temp.append(*bitIterator);
-                bitIterator++;
-                temp.append(*bitIterator);
-
-                red = BitChanger::changeLastBits(red, &temp);
-                bitIterator++;
-
-                if(bitIterator != s->end()){
-                    temp.clear();
-                    temp.append(*bitIterator);
-                    bitIterator++;
-                    temp.append(*bitIterator);
-                    green = BitChanger::changeLastBits(green, &temp);
-                    bitIterator++;
-                }
-
-                if(bitIterator != s->end()){
-                    temp.clear();
-                    temp.append(*bitIterator);
-                    bitIterator++;
-                    temp.append(*bitIterator);
-                    blue = BitChanger::changeLastBits(blue, &temp);
-                    bitIterator++;
-                }
-
-                pixel[pos] = qRgb(red, green, blue);
-            }else{
-                return -2; // Fehler bei der Laenge; inkrement falsch berechnet
-            }
-        }
-        return 1; //Alles ok
-    }else{
-        return -2; //Text zu lang
-   }
-}
-
+*/
 int Steganography::insertBitstream_6BitsPerPixel(QList<uint>* l){
 
     int width = image.width();
@@ -478,9 +239,7 @@ int Steganography::insertBitstream_6BitsPerPixel(QList<uint>* l){
                 }
 
                 pixel[pos] = qRgb(red, green, blue);
-            }//else{
-               // return -3; // Fehler bei der Laenge; inkrement falsch berechnet
-           // }
+            }
         }
         return 1; //Alles ok
     }else{
@@ -507,75 +266,13 @@ int Steganography::calcInkrement(int pixels, int bits, int bitsPerPixel){
     return inkrement;
 }
 
-/*
- fuegt eine Bitfolge in das Bild ein und nutzt dabei 3 Bit pro Pixel
 
- Eingabe: QString* text -> zu versteckender Text (muss eine Bitfolge sein)
- Ausgabe: Integer
-           1 -> alles ok
-           -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
-           -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
-
-
-*/
-QString* Steganography::getBitstream_3BitsPerPixel(){
-    int width = image.width();
-    int height = image.height();
-    int bitsPerPixel = 3;
-    QString* result = new QString();
-    int hiddenLetters = getSizeFromHeader();
-    int extractedLetters = 0;
-
-    int inkrement = calcInkrement(width*(height-1), hiddenLetters, bitsPerPixel);
-    qDebug("Inkrement auslesen = %i", inkrement);
-
-    if(inkrement >= 1){
-
-        int line = -1;
-
-        for(int pixelindex = inkrement-1; pixelindex < hiddenLetters* inkrement; pixelindex += inkrement){
-            if((pixelindex / width) + 1 != line){
-                line = (pixelindex / width) +1;
-            }
-
-            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
-
-            int pos = (pixelindex % width);
-
-            int red = qRed(pixel[pos]);
-            int green = qGreen(pixel[pos]);
-            int blue = qBlue(pixel[pos]);
-
-            if(extractedLetters < hiddenLetters){
-                result->append(lastBit(red));
-                extractedLetters++;
-            }
-            if(extractedLetters < hiddenLetters){
-                result->append(lastBit(green));
-                extractedLetters++;
-            }
-            if(extractedLetters < hiddenLetters){
-                result->append(lastBit(blue));
-                extractedLetters++;
-            }else{
-                return result;
-            }
-
-        }
-        return result;
-
-    }
-}
 
 /*
- fuegt eine Bitfolge in das Bild ein und nutzt dabei 3 Bit pro Pixel
+ extrahiert eine Bitfolge aus einem Bild. Dabei werden pro Pixel 3 Bit extrahiert
 
- Eingabe: QString* text -> zu versteckender Text (muss eine Bitfolge sein)
- Ausgabe: Integer
-           1 -> alles ok
-           -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
-           -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
-
+ Eingabe: /
+ Ausgabe: QList<uint> -> die extrahierte Bitfolge
 
 */
 QList<uint>* Steganography::getBitstreamAsIntList_3BitsPerPixel(){
@@ -643,57 +340,19 @@ QList<uint>* Steganography::getBitstreamAsIntList_3BitsPerPixel(){
     }
 }
 
-QString* Steganography::getBitstream_6BitsPerPixel(){
-    int width = image.width();
-    int height = image.height();
-    int bitsPerPixel = 6;
-    QString* result = new QString();
-    int hiddenLetters = getSizeFromHeader();
-    int extractedLetters = 0;
-
-    int inkrement = calcInkrement(width*(height-1), hiddenLetters, bitsPerPixel);
-    qDebug("Inkrement auslesen = %i", inkrement);
-
-    if(inkrement >= 1){
-
-        int line = -1;
-
-        for(int pixelindex = inkrement-1; pixelindex < hiddenLetters* inkrement; pixelindex += inkrement){
-            if((pixelindex / width) + 1 != line){
-                line = (pixelindex / width) +1;
-            }
-
-            QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
-
-            int pos = (pixelindex % width);
-
-            int red = qRed(pixel[pos]);
-            int green = qGreen(pixel[pos]);
-            int blue = qBlue(pixel[pos]);
-
-            if(extractedLetters < hiddenLetters){
-                result->append(BitChanger::getLastBits(red, 2));
-                extractedLetters+=2;
-            }
-            if(extractedLetters < hiddenLetters){
-                result->append(BitChanger::getLastBits(green, 2));
-                extractedLetters+=2;
-            }
-            if(extractedLetters < hiddenLetters){
-                result->append(BitChanger::getLastBits(blue, 2));
-                extractedLetters+=2;
-            }else{
-                return result;
-            }
-
-        }
-
-        return result;
-
-    }
-}
 
 
+/*
+ extrahiert eine Bitfolge aus einem Bild. Dabei werden pro Pixel 6 Bit extrahiert
+
+ Eingabe: /
+ Ausgabe: Integer
+           1 -> alles ok
+           -1 -> bei der Farbauswahl ist ein Fehler aufgetreten
+           -2 -> der text ist zu lang fuer das Bild und die Versteck_methode
+
+
+*/
 QList<uint>* Steganography::getBitstreamAsIntList_6BitsPerPixel(){
     int width = image.width();
     int height = image.height();
@@ -777,59 +436,10 @@ QChar Steganography::lastBit(int i){
 
 
 
-/*
-  extrahiert die enthaltene Bitfolge aus dem Bild
-  Eingabe: /
-  Ausgabe: QString* -> die extrahierte Bitfolge
-  */
-QString* Steganography::getBitStream(){
-    int width = image.width();
-    int height = image.height();
 
-    int inkrement = calcInkrement(width * (height-1), getIntFromHeader(0),1);
-
-    int currentColor = RED;
-    int color;
-    int line = -1;
-    QString* lastBits = new QString();
-
-    for(int pixelindex = inkrement-1; pixelindex < getIntFromHeader(0) * inkrement; pixelindex += inkrement){
-        if((pixelindex / width) + 1 != line){
-            line = (pixelindex / width) +1;
-        }
-        QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(line));
-
-        int pos = (pixelindex % width);
-                if(currentColor == RED){
-                    color = qRed(pixel[pos]) % 2;
-                    currentColor = GREEN;
-                }else if(currentColor == GREEN){
-                    color = qGreen(pixel[pos]) % 2;
-                    currentColor = BLUE;
-                }else if(currentColor == BLUE){
-                    color = qBlue(pixel[pos]) % 2;
-                    currentColor = RED;
-                }else{
-                    delete lastBits;
-                    (*lastBits) = "Error";
-                    return lastBits;
-                }
-                if(color == 0){
-                    lastBits->append("0");
-                }
-                else if(color == 1){
-                    lastBits->append("1");
-                }
-                else{
-                    (*lastBits) = "Error";
-                    return lastBits;
-                }
-    }
-    return lastBits;
-}
 
 /*
-  extrahiert die enthaltene Bitfolge aus dem Bild
+  extrahiert die enthaltene Bitfolge aus dem Bild. Dabei wird aus einem Pixel ein Bit extrahiert
   Eingabe: /
   Ausgabe: QString* -> die extrahierte Bitfolge
   */
@@ -897,10 +507,19 @@ int Steganography::getFirstAttributeFromHeader(){
     return getIntFromHeader(33);
 }
 
+/*
+  fuegt den uebergebenen Wert in das RealSize-Feld des Headers ein
+  Eingabe: int realSize -> der einzutragende Wert
+  */
 int Steganography::insertRealSizeInHeader(int realSize){
     return insertIntInHeader(realSize, 161);
 }
 
+/*
+  liest den Wert, der im RealSize-Feld des Headers steht, aus
+  Eingabe: /
+  Ausabe: int -> Wert, der im RealSize-Feld des Headers steht
+  */
 int Steganography::getRealSizeFromHeader(){
     if(image.width() < 182) return -1;
     return getIntFromHeader(161);
@@ -952,23 +571,7 @@ int Steganography::getSecondAttributeFromHeader(){
 }
 
 
-/*
-  extrahiert den versteckten Text aus dem Bild. In der Methode wird der Header ausgelesen und erkannt, ob es sich um ASCII oder
-  Unicode Zeichen handelt. Es darf aber kein Bild uebergeben, in dem ein Bild versteckt ist
-  Eingabe: /
-  Ausgabe: QString* -> der extrahierte Text
-            im Fehlerfall den leeren String;
-  */
-QString* Steganography::getHiddenText(){
-    QString* bitStream = getBitStream();
-    if(getFirstAttributeFromHeader() == ASCII){
-        return BitChanger::bitStreamToText_8Bit(bitStream);
-    }else if(getFirstAttributeFromHeader() == UNICODE ){
-        return BitChanger::bitStreamToText_16Bit(bitStream);
-    }else{
-        return new QString();
-    }
-}
+
 
 /*
   fuegt den uebergebenen Wert in das T/B Pixel des Headers ein
@@ -994,50 +597,6 @@ int Steganography::insertTBFieldInHeader(int size){
 }
 
 
-
-/*
-  fuegt einen Header in das Bild ein, wobei das Bit, das angibt, ob es sich bei der versteckten Datei um ein Bild oder einen Text handelt,
-  auf "Text" gesetzt wird
-  Eingabe: int bits -> die Anzahl der zu versteckenden Bits; int format -> 1 == unicode, 0 == ASCII
-  Ausgabe: irrelevant
-  */
-int Steganography::insertTextHeader(int bits, int format){
-    if(image.width() < 160) return -1; //Bild zu klein
-
-    insertSizeInHeader(bits); //Anzahl_Bits-Feld
-
-    //in pixel 32 eintragen, dass Text versteckt
-    QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(0));
-    int red = qRed(pixel[32]);
-    red = BitChanger::changeLastBit(red,'1');
-    pixel[32] = qRgb(red,qGreen(pixel[32]),qBlue(pixel[32]));
-
-    insertFirstAttribute(format); //ASCII oder Unicode eintragen
-
-
-    return 1; //alles gut
-}
-
-
-/*
-  fuegt einen Header in das Bild ein, wobei das Bit, das angibt, ob es sich bei der versteckten Datei um ein Bild oder einen Text handelt,
-  auf "Bild" gesetzt wird
-  Eingabe: int bits -> die Anzahl der zu versteckenden Bits; int height -> die Hoehe des versteckten Bildes
-            int width -> die Breite des versteckten Bildes
-  Ausgabe: -1 -> Fehler
-            1 -> ok
-  */
-int Steganography::insertPictureHeader(int bits, int height, int width){
-    if(insertSizeInHeader(bits) != 1) return -1; //Fehler
-    //in pixel 32 eintragen, dass Bild versteckt
-    QRgb* pixel = reinterpret_cast<QRgb*>(image.scanLine(0));
-    int red = qRed(pixel[32]);
-    red = BitChanger::changeLastBit(red,'0');
-    pixel[32] = qRgb(red,qGreen(pixel[32]),qBlue(pixel[32]));
-    if(insertFirstAttribute(height)!= 1) return -1; //Fehler
-    if(insertSecondAttribute(width)!= 1) return -1;
-    return 1;
-}
 
 /*
   fuegt den uebergebenen Wert in Attributfeld_1 des Headers ein
