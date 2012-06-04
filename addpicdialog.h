@@ -2,6 +2,7 @@
 #define ADDPICDIALOG_H
 
 #include <QDialog>
+#include <QDir>
 #include "intermediary.h"
 
 namespace Ui {
@@ -16,6 +17,9 @@ public:
     explicit AddPicDialog(Intermediary *im, QWidget *parent = 0);
     ~AddPicDialog();
     
+public slots:
+    void setActDir(QString dir);
+
 private:
     Ui::AddPicDialog *ui;
     Intermediary *im;

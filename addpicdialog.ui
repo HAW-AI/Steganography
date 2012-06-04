@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>447</width>
-    <height>245</height>
+    <height>237</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -76,19 +76,6 @@
    </property>
    <property name="text">
     <string>Cancel</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="xPixLabel">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>220</y>
-     <width>281</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>x Pixel of y Pixel</string>
    </property>
   </widget>
   <widget class="QComboBox" name="bpPComboBox">

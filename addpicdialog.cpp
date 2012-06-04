@@ -5,6 +5,8 @@
 
 #include <QtGui>
 
+QDir actDir2 = QDir::homePath();
+
 AddPicDialog::AddPicDialog(Intermediary *im,QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddPicDialog),
@@ -29,6 +31,10 @@ AddPicDialog::~AddPicDialog()
     delete ui;
 }
 
+void AddPicDialog::setActDir(QString dir){
+    actDir2.setPath(dir);
+}
+
 void AddPicDialog::actualizeList()
 {
     ui->picList->clear();
@@ -41,8 +47,9 @@ void AddPicDialog::actualizeList()
 
 void AddPicDialog::add()
 {
-    QString newPath = QFileDialog::getOpenFileName(this, tr("Add picture"), QDir::homePath(), tr("*.png"));
+    QString newPath = QFileDialog::getOpenFileName(this, tr("Add picture"), actDir2.absolutePath(), tr("*.png"));
     im->addImage(newPath);
+    actDir2.setPath(newPath);
     ui->picList->addItem(new QListWidgetItem(newPath));
     actualizeList();
     showOK();
@@ -59,7 +66,8 @@ void AddPicDialog::del()
 
 void AddPicDialog::ok()
 {
-    QString newPath = QFileDialog::getSaveFileName(this, tr("Save as"), QDir::homePath(), tr("*.png"));
+    QString newPath = QFileDialog::getSaveFileName(this, tr("Save as"), actDir2.absolutePath(), tr("*.png"));
+    actDir2.setPath(newPath);
     switch(ui->bpPComboBox->currentIndex())
     {
     case 0: im->hide_1Bit(newPath);

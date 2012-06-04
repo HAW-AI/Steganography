@@ -239,7 +239,9 @@ void DiffTests::hide()
 
     //encrypt
     if(ui->encryptCheckBox->isChecked()){
+        ui->saveLabel->setText("Encrypting...");
         plain = *(encrypt(&plain));
+        ui->saveLabel->clear();
     }
 
     QString oldPath = ui->picPathTextField->toPlainText();
@@ -251,11 +253,13 @@ void DiffTests::hide()
     }
     QString savePath;
 
+    ui->saveLabel->setText("Hiding...");
     if(im->isReady_1Bit()){
         savePath = QFileDialog::getSaveFileName(this, tr("Save File"), actDir.absolutePath(), tr("*.png *.jpg"));
         im->hide_1Bit(savePath);
     }else{
         int action = popupProblemDialog();
+        qDebug()<<action;
         while(action != CANCEL){
 
             if( action == DENSITY){
@@ -281,20 +285,26 @@ void DiffTests::hide()
             }
             else if(action == PICS){
                 apd = new AddPicDialog(im);
+                apd->setActDir(actDir.absolutePath());
                 apd->exec();
                 if(apd->result() == 1){
                     action = CANCEL;
-                }else{
-                    action = 3;
                 }
-            }
-            else if(action == NEWPIC){
+            }else if(action == NEWPIC){
+                im->images->remove(savePath);
                 chosePicture();
-                hide();
-                action = CANCEL;
+                im->addImage(ui->picPathTextField->toPlainText());
+                if(im->isReady_1Bit()){
+                    savePath = QFileDialog::getSaveFileName(this, tr("Save File"), actDir.absolutePath(), tr("*.png *.jpg"));
+                    im->hide_1Bit(savePath);
+                    action = CANCEL;
+                }else{
+                    action = popupProblemDialog();
+                }
             }else{action=CANCEL;}
         }
     }
+    ui->saveLabel->clear();
     if(!savePath.isEmpty()){
         actDir.setPath(savePath);
         ui->saveLabel->setText("Saved: "+savePath);
