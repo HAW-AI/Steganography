@@ -39,7 +39,6 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
     connect( ui->textBrowseButton, SIGNAL( clicked() ), this, SLOT( choseText() ) );
     connect( ui->hideButton, SIGNAL( clicked() ), this, SLOT( hide() ) );
-    connect( ui->keyBrowseButton, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
     ui->hideButton->setEnabled(false);
     ui->encryptFrame->hide();
     connect( ui->encryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showEncryptFrame(bool)) );
@@ -145,9 +144,11 @@ void DiffTests::showEncryptFrame(bool show){
 
 void DiffTests::showHideButton()
 {
+    //TODO ascii/unicode label auch setzten, wenn wirtbild noch nicht gewaehlt
     if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText())){
             ui->hideButton->setEnabled(true);
             if(ui->textPathTextField->toPlainText().endsWith(".png")){
+                ui->encryptCheckBox->setChecked(false);
                 ui->encryptCheckBox->setEnabled(false);
                 ui->asciiUnicodeLabel->setText("picture");
             }else{
@@ -287,9 +288,7 @@ void DiffTests::hide()
                 apd = new AddPicDialog(im);
                 apd->setActDir(actDir.absolutePath());
                 apd->exec();
-                if(apd->result() == 1){
-                    action = CANCEL;
-                }
+                action = CANCEL;
             }else if(action == NEWPIC){
                 im->images->remove(savePath);
                 chosePicture();
