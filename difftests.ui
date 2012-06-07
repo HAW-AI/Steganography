@@ -7,11 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>509</width>
-    <height>741</height>
+    <height>739</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>BildProgramm</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>stego.ico</normaloff>stego.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QTabWidget" name="tabWidget">
@@ -66,6 +70,12 @@
          <width>261</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="sizeIncrement">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
        <property name="font">
         <font>
@@ -694,22 +704,6 @@
          <string>Vigenère</string>
         </property>
        </item>
-      </widget>
-      <widget class="QPushButton" name="keyBrowseButton_2">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>380</x>
-         <y>50</y>
-         <width>93</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Browse</string>
-       </property>
       </widget>
       <widget class="QTextEdit" name="keyTextField_2">
        <property name="geometry">

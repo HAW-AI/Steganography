@@ -111,7 +111,7 @@ void DiffTests::choseText()
                 this,
                 "Choose a file",
                 actDir.absolutePath(),
-                "Text Files(*.txt);; PNG Files (*.png)");
+                "Text Files(*.txt), PNG Files (*.png)");
     actDir.setPath(path);
     ui->textPathTextField->setText( path );
     if(!path.isEmpty()) ui->textFromDocRadio->click();
@@ -304,10 +304,10 @@ void DiffTests::hide()
         }
     }
     ui->saveLabel->clear();
+    ui->picPathTextField_2->clear();
     if(!savePath.isEmpty()){
         actDir.setPath(savePath);
         ui->saveLabel->setText("Saved: "+savePath);
-        ui->picPathTextField_2->clear();
         ui->picPathTextField_2->addItem(savePath);
     }
 }
@@ -457,6 +457,7 @@ void DiffTests::find()
             image->save(newPath,"PNG",100);
         }
     }
+    ui->saveLabel->clear();
 }
 
 

@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Chose new picture</string>
+    <string>Chose other picture</string>
    </property>
   </widget>
   <widget class="QPushButton" name="moreDensityButton">
