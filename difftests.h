@@ -7,6 +7,7 @@
 #include "noisewarning.h"
 #include "addpicdialog.h"
 #include "notenoughinfo.h"
+#include "succesfulhiding.h"
 
 namespace Ui {
 class DiffTests;
@@ -27,6 +28,7 @@ private:
     Intermediary *im;
     AddPicDialog *apd;
     NotEnoughInfo *ne;
+    SuccesfulHiding *sh;
 
 private slots:
     int getFormat(QString text);
@@ -53,6 +55,7 @@ private slots:
     int popupProblemDialog();
     int noiseWarningDialog();
     void notEnough();
+    void showSuccessfulHiding(QString);
 };
 
 #endif // DIFFTESTS_H

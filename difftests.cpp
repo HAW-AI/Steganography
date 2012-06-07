@@ -11,6 +11,7 @@
 #include "intermediary.h"
 #include "noisewarning.h"
 #include "addpicdialog.h"
+#include "succesfulhiding.h"
 
 #include <QtGui>
 #define UNICODE 1
@@ -309,8 +310,8 @@ void DiffTests::hide()
     if(!savePath.isEmpty())
     {
         actDir.setPath(savePath);
-        ui->saveLabel->setText("Saved: "+savePath);
         ui->picPathTextField_2->addItem(savePath);
+        showSuccessfulHiding(savePath);
     }
 }
 
@@ -535,4 +536,10 @@ void DiffTests::notEnough()
 {
     ne = new NotEnoughInfo();
     ne->exec();
+}
+
+void DiffTests::showSuccessfulHiding(QString savePath)
+{
+    sh = new SuccesfulHiding(savePath);
+    sh->exec();
 }
