@@ -9,9 +9,6 @@
 #include "crypt.h"
 #include "problemdialog.h"
 #include "intermediary.h"
-#include "noisewarning.h"
-#include "addpicdialog.h"
-#include "succesfulhiding.h"
 
 #include <QtGui>
 #define UNICODE 1
@@ -27,7 +24,7 @@
 int format;
 QString ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n";
 QDir actDir = QDir::homePath();
-
+int headerSize = 194;
 
 DiffTests::DiffTests(QWidget *parent) :
     QMainWindow(parent),
@@ -103,7 +100,13 @@ void DiffTests::chosePicture()
                 actDir.absolutePath(),
                 "PNG Files(*.png)");
     actDir.setPath(path);
-    ui->picPathTextField->setText( path );
+    QImage* im = new QImage(path);
+    if(im->width() > headerSize)
+    {
+        ui->picPathTextField->setText( path );
+    }else{
+        picToSmall();
+    }
 }
 
 void DiffTests::choseText()
@@ -542,4 +545,10 @@ void DiffTests::showSuccessfulHiding(QString savePath)
 {
     sh = new SuccesfulHiding(savePath);
     sh->exec();
+}
+
+void DiffTests::picToSmall()
+{
+    ts = new PictureTooSmall();
+    ts->exec();
 }

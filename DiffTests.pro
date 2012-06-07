@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     noisewarning.cpp \
     addpicdialog.cpp \
     notenoughinfo.cpp \
-    succesfulhiding.cpp
+    succesfulhiding.cpp \
+    picturetoosmall.cpp
 
 
 HEADERS  += difftests.h \
@@ -36,11 +37,13 @@ HEADERS  += difftests.h \
     noisewarning.h \
     addpicdialog.h \
     notenoughinfo.h \
-    succesfulhiding.h
+    succesfulhiding.h \
+    picturetoosmall.h
 
 FORMS    += difftests.ui \
     problemdialog.ui \
     noisewarning.ui \
     addpicdialog.ui \
     notenoughinfo.ui \
-    succesfulhiding.ui
+    succesfulhiding.ui \
+    picturetoosmall.ui
