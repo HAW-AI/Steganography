@@ -40,12 +40,12 @@ DiffTests::DiffTests(QWidget *parent) :
     ui->hideButton->setEnabled(false);
     ui->encryptFrame->hide();
     connect( ui->encryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showEncryptFrame(bool)) );
-    connect( ui->picPathTextField, SIGNAL(textChanged()), this, SLOT(showHideButton()) );
-    connect( ui->textPathTextField, SIGNAL(textChanged()), this, SLOT(showHideButton()) );
+    connect( ui->picPathTextField, SIGNAL(textChanged(QString)), this, SLOT(showHideButton()) );
+    connect( ui->textPathTextField, SIGNAL(textChanged(QString)), this, SLOT(showHideButton()) );
     connect( ui->textEdit, SIGNAL(textChanged()), this, SLOT(clickRadio()) );
     connect( ui->textFromDocRadio, SIGNAL(toggled(bool)), this, SLOT(showHideButton()) );
     connect( ui->textFromFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showHideButton()) );
-    connect( ui->keyTextField, SIGNAL(textChanged()), this, SLOT(showHideButton()) );
+    connect( ui->keyTextField, SIGNAL(textChanged(QString)), this, SLOT(showHideButton()) );
     connect( ui->techniqueComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showHideButton()));
 
     //find
@@ -60,9 +60,9 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->decryptCheckBox, SIGNAL(toggled(bool)), this, SLOT(showDecryptFrame(bool)) );
     connect( ui->textToDocRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
     connect( ui->textToFieldRadio, SIGNAL(toggled(bool)), this, SLOT(showFindButton()) );
-    connect( ui->keyTextField_2, SIGNAL(textChanged()), this, SLOT(showFindButton()) );
+    connect( ui->keyTextField_2, SIGNAL(textChanged(QString)), this, SLOT(showFindButton()) );
     connect( ui->techniqueComboBox_2, SIGNAL(currentIndexChanged(int)), this, SLOT(showFindButton()));
-
+    ui->picPathTextField->text();
 }
 
 DiffTests::~DiffTests()
@@ -104,7 +104,7 @@ void DiffTests::chosePicture()
     if(im->width() > headerSize)
     {
         ui->picPathTextField->setText( path );
-    }else{
+    }else if(!im->isNull()){
         picToSmall();
     }
 }
@@ -139,17 +139,17 @@ void DiffTests::showEncryptFrame(bool show)
 void DiffTests::showHideButton()
 {
     //TODO ascii/unicode label auch setzten, wenn wirtbild noch nicht gewaehlt
-    if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText()))
+    if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->text()) && isPath(ui->picPathTextField->text()))
     {
             ui->hideButton->setEnabled(true);
-            if(ui->textPathTextField->toPlainText().endsWith(".png"))
+            if(ui->textPathTextField->text().endsWith(".png"))
             {
                 ui->encryptCheckBox->setChecked(false);
                 ui->encryptCheckBox->setEnabled(false);
                 ui->asciiUnicodeLabel->setText("picture");
             }else{
                 ui->encryptCheckBox->setEnabled(true);
-                QFile file(ui->textPathTextField->toPlainText());
+                QFile file(ui->textPathTextField->text());
                 file.open(QIODevice::ReadOnly | QIODevice::Text);
                 QTextStream in(&file);
                 QString plain = in.readAll();
@@ -164,7 +164,7 @@ void DiffTests::showHideButton()
         format = getFormat(ui->textEdit->toPlainText());
         if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
         else ui->asciiUnicodeLabel->setText("Ascii format");
-        if(isPath(ui->picPathTextField->toPlainText()))
+        if(isPath(ui->picPathTextField->text()))
         {
             ui->hideButton->setEnabled(true);
         }
@@ -177,9 +177,9 @@ void DiffTests::showHideButton()
 
     if(ui->encryptCheckBox->isChecked())
     {
-        int keyLength = ui->keyTextField->toPlainText().size();
+        int keyLength = ui->keyTextField->text().size();
         int oldFormat = format;
-        if(getFormat(ui->keyTextField->toPlainText()) == ASCII)
+        if(getFormat(ui->keyTextField->text()) == ASCII)
         {
             switch (ui->techniqueComboBox->currentIndex())
             {
@@ -226,7 +226,7 @@ void DiffTests::hide()
     QString plain;
     if(ui->textFromDocRadio->isChecked())
     {
-        QString plainPath = ui->textPathTextField->toPlainText();
+        QString plainPath = ui->textPathTextField->text();
         QFile file(plainPath);
         file.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&file);
@@ -242,11 +242,11 @@ void DiffTests::hide()
         ui->saveLabel->clear();
     }
 
-    QString oldPath = ui->picPathTextField->toPlainText();
+    QString oldPath = ui->picPathTextField->text();
     im = new Intermediary(oldPath);
-    if(ui->textFromDocRadio->isChecked() && ui->textPathTextField->toPlainText().endsWith(".png"))
+    if(ui->textFromDocRadio->isChecked() && ui->textPathTextField->text().endsWith(".png"))
     {
-        im->setImage(ui->textPathTextField->toPlainText());
+        im->setImage(ui->textPathTextField->text());
     }else{
         im->setText(&plain,format);
     }
@@ -297,7 +297,7 @@ void DiffTests::hide()
             {
                 im->images->remove(savePath);
                 chosePicture();
-                im->addImage(ui->picPathTextField->toPlainText());
+                im->addImage(ui->picPathTextField->text());
                 if(im->isReady_1Bit()){
                     savePath = QFileDialog::getSaveFileName(this, tr("Save File"), actDir.absolutePath(), tr("*.png *.jpg"));
                     im->hide_1Bit(savePath);
@@ -364,9 +364,9 @@ void DiffTests::showFindButton()
     bool show = ui->findButton->isEnabled();
     if(ui->decryptCheckBox->isChecked())
     {
-        int keyLength = ui->keyTextField_2->toPlainText().size();
+        int keyLength = ui->keyTextField_2->text().size();
         int oldFormat = format;
-        if(getFormat(ui->keyTextField_2->toPlainText()) == ASCII)
+        if(getFormat(ui->keyTextField_2->text()) == ASCII)
         {
             switch (ui->techniqueComboBox_2->currentIndex())
             {
@@ -494,7 +494,7 @@ void DiffTests::find()
 
 QString* DiffTests::decrypt(QString* cipher)
 {
-    Crypt c (cipher,&(ui->keyTextField_2->toPlainText()),format);
+    Crypt c (cipher,&(ui->keyTextField_2->text()),format);
     switch (ui->techniqueComboBox_2->currentIndex())
     {
         case 0: //Caesar
@@ -511,7 +511,7 @@ QString* DiffTests::decrypt(QString* cipher)
 
 QString* DiffTests::encrypt(QString* plain)
 {
-    Crypt c (plain,&(ui->keyTextField->toPlainText()),format);
+    Crypt c (plain,&(ui->keyTextField->text()),format);
     switch (ui->techniqueComboBox->currentIndex())
     {
         case 0: //Caesar
