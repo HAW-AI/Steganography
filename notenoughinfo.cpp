@@ -8,6 +8,7 @@ NotEnoughInfo::NotEnoughInfo(QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle("Stegosaur");
     setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(close()) );
 }
 

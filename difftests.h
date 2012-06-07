@@ -9,6 +9,7 @@
 #include "notenoughinfo.h"
 #include "succesfulhiding.h"
 #include "picturetoosmall.h"
+#include "foundnothing.h"
 
 namespace Ui {
 class DiffTests;
@@ -31,6 +32,7 @@ private:
     NotEnoughInfo *ne;
     SuccesfulHiding *sh;
     PictureTooSmall *ts;
+    FoundNothing *fn;
 
 private slots:
     int getFormat(QString text);
@@ -59,6 +61,7 @@ private slots:
     void notEnough();
     void showSuccessfulHiding(QString);
     void picToSmall();
+    void foundNothing();
 };
 
 #endif // DIFFTESTS_H

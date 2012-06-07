@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     addpicdialog.cpp \
     notenoughinfo.cpp \
     succesfulhiding.cpp \
-    picturetoosmall.cpp
+    picturetoosmall.cpp \
+    foundnothing.cpp
 
 
 HEADERS  += difftests.h \
@@ -38,7 +39,8 @@ HEADERS  += difftests.h \
     addpicdialog.h \
     notenoughinfo.h \
     succesfulhiding.h \
-    picturetoosmall.h
+    picturetoosmall.h \
+    foundnothing.h
 
 FORMS    += difftests.ui \
     problemdialog.ui \
@@ -46,4 +48,5 @@ FORMS    += difftests.ui \
     addpicdialog.ui \
     notenoughinfo.ui \
     succesfulhiding.ui \
-    picturetoosmall.ui
+    picturetoosmall.ui \
+    foundnothing.ui

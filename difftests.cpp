@@ -417,7 +417,7 @@ void DiffTests::find()
     }
 
     if(im->imageOrTextHidden() == 1) //1 => text, 0 => picture
-    {
+    { //gibt bei fehler (nix drin) 1 zurück
         qDebug("Hidden text found.");
         QString* plain = im->getHiddenText();
         //decrypt
@@ -448,7 +448,8 @@ void DiffTests::find()
                 fileOut.close();
             }
         }
-    }else if(im->imageOrTextHidden() == 0)
+    }
+    else if(im->imageOrTextHidden() == 0)
     {
         qDebug("Hidden image found.");
         QImage* image;
@@ -464,12 +465,14 @@ void DiffTests::find()
             else if(img.height() > ui->picField->height())
             {
                 img = img.scaledToHeight(ui->picField->height());
-            }else if(img.width() > ui->picField->width())
+            }
+            else if(img.width() > ui->picField->width())
             {
                 img = img.scaledToWidth(ui->picField->width());
             }
             ui->picField->setPixmap(img);
-        }else{
+        }
+        else{
             QString newPath = QFileDialog::getSaveFileName(
                         this,
                         "Save Image",
@@ -478,6 +481,9 @@ void DiffTests::find()
             actDir.setPath(newPath);
             image->save(newPath,"PNG",100);
         }
+    }
+    else{
+        foundNothing();
     }
     ui->saveLabel->clear();
 }
@@ -551,4 +557,10 @@ void DiffTests::picToSmall()
 {
     ts = new PictureTooSmall();
     ts->exec();
+}
+
+void DiffTests::foundNothing()
+{
+    fn = new FoundNothing();
+    fn->exec();
 }
