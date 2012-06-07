@@ -19,14 +19,6 @@ class DiffTests : public QMainWindow
 public:
     explicit DiffTests(QWidget *parent = 0);
     ~DiffTests();
-    
-public slots:
-    QString *decrypt(QString *);
-    QString *encrypt(QString *);
-
-    int popupProblemDialog();
-    int noiseWarningDialog();
-    void notEnough();
 
 private:
     Ui::DiffTests *ui;
@@ -43,7 +35,6 @@ private slots:
     void chosePicture();
     void choseText();
     void clickRadio();
-    void browseOneTimePad();
     void showEncryptFrame(bool);
     void showHideButton();
     void hide();
@@ -54,6 +45,14 @@ private slots:
     void showDecryptFrame(bool);
     void showFindButton();
     void find();
+
+
+    QString *decrypt(QString *);
+    QString *encrypt(QString *);
+
+    int popupProblemDialog();
+    int noiseWarningDialog();
+    void notEnough();
 };
 
 #endif // DIFFTESTS_H

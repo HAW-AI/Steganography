@@ -122,19 +122,6 @@ void DiffTests::clickRadio(){
     showHideButton();
 }
 
-void DiffTests::browseOneTimePad()
-{
-    QString path;
-    path = QFileDialog::getOpenFileName(
-                this,
-                "Choose a file",
-                actDir.absolutePath(),
-                "Text Files(*.txt)");
-    actDir.setPath(path);
-    ui->keyTextField->setText( path );
-    ui->keyTextField_2->setText( path );
-}
-
 void DiffTests::showEncryptFrame(bool show){
     if(show)ui->encryptFrame->show();
     else ui->encryptFrame->hide();
@@ -445,7 +432,19 @@ void DiffTests::find()
         image = im->getHiddenImage();
         if(ui->textToFieldRadio->isChecked()){
             ui->textEdit_2->clear();
-            ui->picField->setPixmap(QPixmap::fromImage(*image));
+            QPixmap img = QPixmap::fromImage(*image);
+            if (img.height() > ui->picField->height() && img.width() > ui->picField->width())
+            {
+                img = img.scaled(ui->picField->width(), ui->picField->height());
+            }
+            else if(img.height() > ui->picField->height())
+            {
+                img = img.scaledToHeight(ui->picField->height());
+            }else if(img.width() > ui->picField->width())
+            {
+                img = img.scaledToWidth(ui->picField->width());
+            }
+            ui->picField->setPixmap(img);
         }else{
             QString newPath = QFileDialog::getSaveFileName(
                         this,
@@ -461,23 +460,7 @@ void DiffTests::find()
 
 
 
-//public slots --------------------------------------------------------------------------------------
-QString* DiffTests::encrypt(QString* plain)
-{
-    Crypt c (plain,&(ui->keyTextField->toPlainText()),format);
-    switch (ui->techniqueComboBox->currentIndex())
-    {
-        case 0: //Caesar
-            c.caesar(ENCRYPT);
-            break;
-        case 1: //Vigenère
-            c.vigenere(ENCRYPT);
-            break;
-        default:
-            ui->keyTipLabel->setText("Encryption failed");
-    }
-    return plain;
-}
+//others --------------------------------------------------------------------------------------
 
 QString* DiffTests::decrypt(QString* cipher)
 {
@@ -494,6 +477,23 @@ QString* DiffTests::decrypt(QString* cipher)
             ui->keyTipLabel_2->setText("Decryption failed");
     }
     return cipher;
+}
+
+QString* DiffTests::encrypt(QString* plain)
+{
+    Crypt c (plain,&(ui->keyTextField->toPlainText()),format);
+    switch (ui->techniqueComboBox->currentIndex())
+    {
+        case 0: //Caesar
+            c.caesar(ENCRYPT);
+            break;
+        case 1: //Vigenère
+            c.vigenere(ENCRYPT);
+            break;
+        default:
+            ui->keyTipLabel->setText("Encryption failed");
+    }
+    return plain;
 }
 
 

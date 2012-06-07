@@ -28,7 +28,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="hideTab">
      <attribute name="title">
@@ -475,10 +475,10 @@
       <widget class="QLabel" name="picField">
        <property name="geometry">
         <rect>
-         <x>70</x>
+         <x>30</x>
          <y>60</y>
-         <width>351</width>
-         <height>181</height>
+         <width>441</width>
+         <height>171</height>
         </rect>
        </property>
        <property name="text">
