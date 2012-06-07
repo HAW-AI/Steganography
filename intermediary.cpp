@@ -258,12 +258,20 @@ QImage* Intermediary::getHiddenImage()
     Steganography* stego = new Steganography(it.key());
     int height = stego->getFirstAttributeFromHeader();
     int width = stego ->getSecondAttributeFromHeader();
-    std::cout<<"imageSize: "<<width<<" x "<< height<<endl;
+    int bitsPerPixel = stego->getBitsPerPixelFromHeader();
+    std::cout<<"imageSize: "<<width<<" x "<<height<<endl;
 
     // get all bits of the picture
     while (it != images->constEnd()) {
         Steganography* stego = new Steganography(it.key());
-        QList<uint>* stream = stego->getBitStreamAsIntList();
+        QList<uint>* stream;
+        if (bitsPerPixel == 1) {
+            stream = stego->getBitStreamAsIntList();
+        } else if (bitsPerPixel == 3) {
+            stream = stego->getBitstreamAsIntList_3BitsPerPixel();
+        } else {
+            stream = stego->getBitstreamAsIntList_6BitsPerPixel();
+        }
         bits->append(*stream);
         it++;
     }

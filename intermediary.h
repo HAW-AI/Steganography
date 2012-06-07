@@ -48,7 +48,7 @@ private:
 
     // private fields
     int format;                 // ASCII = 0 / UNICODE = 1
-    int type;                   // TEXT = 0 / PICTURE = 1
+    int type;                   // PICTURE = 0 / TEXT = 1
     QImage imageToHide;
     QString* textToHide;
     QList<uint>* intsToHide;
