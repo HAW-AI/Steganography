@@ -13,7 +13,7 @@ AddPicDialog::AddPicDialog(Intermediary *im,QWidget *parent) :
     im(im)
 {
     ui->setupUi(this);
-    setWindowTitle("Add pictures");
+    setWindowTitle("Stegosaur");
 
     ui->okButton->setEnabled(false);
     ui->delButton->setEnabled(false);

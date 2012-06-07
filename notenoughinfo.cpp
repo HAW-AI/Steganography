@@ -6,7 +6,7 @@ NotEnoughInfo::NotEnoughInfo(QWidget *parent) :
     ui(new Ui::NotEnoughInfo)
 {
     ui->setupUi(this);
-    setWindowTitle("Hiding failed");
+    setWindowTitle("Stegosaur");
     setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(close()) );
 }

@@ -6,7 +6,7 @@ NoiseWarning::NoiseWarning(QWidget *parent) :
     ui(new Ui::NoiseWarning)
 {
     ui->setupUi(this);
-    setWindowTitle("Noise warning");
+    setWindowTitle("Stegosaur");
     setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 }
 

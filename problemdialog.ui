@@ -75,7 +75,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Text does not fit into picture</string>
+    <string>File does not fit into picture</string>
    </property>
   </widget>
   <widget class="Line" name="line">

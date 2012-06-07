@@ -33,7 +33,7 @@ DiffTests::DiffTests(QWidget *parent) :
     ui(new Ui::DiffTests)
 {
     ui->setupUi(this);
-    setWindowTitle("Stego-saur");
+    setWindowTitle("Stegosaur");
 
     //hide
     connect( ui->picBrowseButton, SIGNAL( clicked() ), this, SLOT( chosePicture() ) );
@@ -77,14 +77,16 @@ int DiffTests::getFormat(QString text)
 {
     for(int i = 0; i<text.size();i++)
     {
-        if(!(ascii.contains(text.at(i)))){
+        if(!(ascii.contains(text.at(i))))
+        {
             return UNICODE;
         }
     }
     return ASCII;
 }
 
-bool DiffTests::isPath(QString path){
+bool DiffTests::isPath(QString path)
+{
     QFileInfo file= path;
     return file.exists();
 }
@@ -117,12 +119,14 @@ void DiffTests::choseText()
     showHideButton();
 }
 
-void DiffTests::clickRadio(){
+void DiffTests::clickRadio()
+{
     if(!ui->textEdit->toPlainText().isEmpty())ui->textFromFieldRadio->click();
     showHideButton();
 }
 
-void DiffTests::showEncryptFrame(bool show){
+void DiffTests::showEncryptFrame(bool show)
+{
     if(show)ui->encryptFrame->show();
     else ui->encryptFrame->hide();
     showHideButton();
@@ -131,9 +135,11 @@ void DiffTests::showEncryptFrame(bool show){
 void DiffTests::showHideButton()
 {
     //TODO ascii/unicode label auch setzten, wenn wirtbild noch nicht gewaehlt
-    if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText())){
+    if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->toPlainText()) && isPath(ui->picPathTextField->toPlainText()))
+    {
             ui->hideButton->setEnabled(true);
-            if(ui->textPathTextField->toPlainText().endsWith(".png")){
+            if(ui->textPathTextField->toPlainText().endsWith(".png"))
+            {
                 ui->encryptCheckBox->setChecked(false);
                 ui->encryptCheckBox->setEnabled(false);
                 ui->asciiUnicodeLabel->setText("picture");
@@ -148,12 +154,16 @@ void DiffTests::showHideButton()
                 if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
                 else ui->asciiUnicodeLabel->setText("Ascii format");
             }
-    }else if(ui->textFromFieldRadio->isChecked() && !(ui->textEdit->toPlainText().isEmpty())&& isPath(ui->picPathTextField->toPlainText())){
-            ui->encryptCheckBox->setEnabled(true);
+    }else if(ui->textFromFieldRadio->isChecked() && !(ui->textEdit->toPlainText().isEmpty()))
+    {
+        ui->encryptCheckBox->setEnabled(true);
+        format = getFormat(ui->textEdit->toPlainText());
+        if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
+        else ui->asciiUnicodeLabel->setText("Ascii format");
+        if(isPath(ui->picPathTextField->toPlainText()))
+        {
             ui->hideButton->setEnabled(true);
-            format = getFormat(ui->textEdit->toPlainText());
-            if(format == UNICODE) ui->asciiUnicodeLabel->setText("Unicode format");
-            else ui->asciiUnicodeLabel->setText("Ascii format");
+        }
     }else{
             ui->hideButton->setEnabled(false);
             ui->asciiUnicodeLabel->setText("");
@@ -161,7 +171,8 @@ void DiffTests::showHideButton()
 
     bool show = ui->hideButton->isEnabled();
 
-    if(ui->encryptCheckBox->isChecked()){
+    if(ui->encryptCheckBox->isChecked())
+    {
         int keyLength = ui->keyTextField->toPlainText().size();
         int oldFormat = format;
         if(getFormat(ui->keyTextField->toPlainText()) == ASCII)
@@ -170,29 +181,23 @@ void DiffTests::showHideButton()
             {
                 case 0:
                     //Caesar
-                    if(keyLength == 1){
+                    if(keyLength == 1)
+                    {
                         ui->hideButton->setEnabled(true);
                         ui->keyTipLabel->setText("ok");
                     }else{
                         ui->hideButton->setEnabled(false);
                         ui->keyTipLabel->setText("only one letter key");
-                    };
+                    }
                     break;
                 case 1:
                     //Vigenère
-                    if(keyLength > 0){
+                    if(keyLength > 0)
+                    {
                         ui->keyTipLabel->setText("ok");
                         ui->hideButton->setEnabled(true);
                     }else{
                         ui->keyTipLabel->setText("one letter minimum");
-                        ui->hideButton->setEnabled(false);
-                    }
-                    break;
-                case 2:
-                    //AES
-                    if(keyLength <= 32 && keyLength >= 16){
-                        ui->hideButton->setEnabled(true);
-                    }else{
                         ui->hideButton->setEnabled(false);
                     }
                     break;
@@ -215,7 +220,8 @@ void DiffTests::hide()
     //TODO plain to QString*
     //-> problem bei im->hide_1Bit
     QString plain;
-    if(ui->textFromDocRadio->isChecked()){
+    if(ui->textFromDocRadio->isChecked())
+    {
         QString plainPath = ui->textPathTextField->toPlainText();
         QFile file(plainPath);
         file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -225,7 +231,8 @@ void DiffTests::hide()
     }else if(ui->textFromFieldRadio->isChecked()) plain = ui->textEdit->toPlainText(); //if(textFromFieldRadio)
 
     //encrypt
-    if(ui->encryptCheckBox->isChecked()){
+    if(ui->encryptCheckBox->isChecked())
+    {
         ui->saveLabel->setText("Encrypting...");
         plain = *(encrypt(&plain));
         ui->saveLabel->clear();
@@ -233,7 +240,8 @@ void DiffTests::hide()
 
     QString oldPath = ui->picPathTextField->toPlainText();
     im = new Intermediary(oldPath);
-    if(ui->textFromDocRadio->isChecked() && ui->textPathTextField->toPlainText().endsWith(".png")){
+    if(ui->textFromDocRadio->isChecked() && ui->textPathTextField->toPlainText().endsWith(".png"))
+    {
         im->setImage(ui->textPathTextField->toPlainText());
     }else{
         im->setText(&plain,format);
@@ -241,25 +249,30 @@ void DiffTests::hide()
     QString savePath;
 
     ui->saveLabel->setText("Hiding...");
-    if(im->isReady_1Bit()){
+    if(im->isReady_1Bit())
+    {
         savePath = QFileDialog::getSaveFileName(this, tr("Save File"), actDir.absolutePath(), tr("*.png *.jpg"));
         im->hide_1Bit(savePath);
     }else{
         int action = popupProblemDialog();
         qDebug()<<action;
-        while(action != CANCEL){
+        while(action != CANCEL)
+        {
 
             if( action == DENSITY){
                 int w = noiseWarningDialog();
-                if(im->isReady_3Bit() && w == 1){
+                if(im->isReady_3Bit() && w == 1)
+                {
                     savePath = QFileDialog::getSaveFileName(this, tr("Save File"), actDir.absolutePath(), tr("*.png *.jpg"));
                     im->hide_3Bit(savePath);
                     action = CANCEL;
                 }else{
                     action = popupProblemDialog();
-                    if( action == DENSITY){
+                    if( action == DENSITY)
+                    {
                         w = noiseWarningDialog();
-                        if(im->isReady_3Bit() && w == 1){
+                        if(im->isReady_3Bit() && w == 1)
+                        {
                             savePath = QFileDialog::getSaveFileName(this, tr("Save File"), actDir.absolutePath(), tr("*.png *.jpg"));
                             im->hide_6Bit(savePath);
                             action = CANCEL;
@@ -270,12 +283,14 @@ void DiffTests::hide()
                     }
                 }
             }
-            else if(action == PICS){
+            else if(action == PICS)
+            {
                 apd = new AddPicDialog(im);
                 apd->setActDir(actDir.absolutePath());
                 apd->exec();
                 action = CANCEL;
-            }else if(action == NEWPIC){
+            }else if(action == NEWPIC)
+            {
                 im->images->remove(savePath);
                 chosePicture();
                 im->addImage(ui->picPathTextField->toPlainText());
@@ -291,7 +306,8 @@ void DiffTests::hide()
     }
     ui->saveLabel->clear();
     ui->picPathTextField_2->clear();
-    if(!savePath.isEmpty()){
+    if(!savePath.isEmpty())
+    {
         actDir.setPath(savePath);
         ui->saveLabel->setText("Saved: "+savePath);
         ui->picPathTextField_2->addItem(savePath);
@@ -326,7 +342,8 @@ void DiffTests::removePicture_2()
     showFindButton();
 }
 
-void DiffTests::showDecryptFrame(bool show){
+void DiffTests::showDecryptFrame(bool show)
+{
     if(show)ui->decryptFrame->show();
     else ui->decryptFrame->hide();
     showFindButton();
@@ -334,13 +351,15 @@ void DiffTests::showDecryptFrame(bool show){
 
 void DiffTests::showFindButton()
 {
-    if((ui->textToDocRadio->isChecked() || ui->textToFieldRadio->isChecked())&& (ui->picPathTextField_2->count() != 0)){
+    if((ui->textToDocRadio->isChecked() || ui->textToFieldRadio->isChecked())&& (ui->picPathTextField_2->count() != 0))
+    {
         ui->findButton->setEnabled(true);
     }else{
         ui->findButton->setEnabled(false);
     }
     bool show = ui->findButton->isEnabled();
-    if(ui->decryptCheckBox->isChecked()){
+    if(ui->decryptCheckBox->isChecked())
+    {
         int keyLength = ui->keyTextField_2->toPlainText().size();
         int oldFormat = format;
         if(getFormat(ui->keyTextField_2->toPlainText()) == ASCII)
@@ -349,17 +368,19 @@ void DiffTests::showFindButton()
             {
                 case 0:
                     //Caesar
-                    if(keyLength == 1){
+                    if(keyLength == 1)
+                    {
                         ui->findButton->setEnabled(true);
                         ui->keyTipLabel_2->setText("ok");
                     }else{
                         ui->findButton->setEnabled(false);
                         ui->keyTipLabel_2->setText("only one letter key");
-                    };
+                    }
                     break;
                 case 1:
                     //Vigenère
-                    if(keyLength > 0){
+                    if(keyLength > 0)
+                    {
                         ui->keyTipLabel_2->setText("ok");
                         ui->findButton->setEnabled(true);
                     }else{
@@ -367,14 +388,7 @@ void DiffTests::showFindButton()
                         ui->findButton->setEnabled(false);
                     }
                     break;
-                case 2:
-                    //AES
-                    if(keyLength <= 32 && keyLength >= 16){
-                        ui->findButton->setEnabled(true);
-                    }else{
-                        ui->findButton->setEnabled(false);
-                    }
-                    break;
+
                 default:
                     ui->findButton->setEnabled(false);
                     ui->keyTipLabel->setText("");
@@ -393,22 +407,26 @@ void DiffTests::find()
 {
     QString path = ui->picPathTextField_2->item(0)->text();
     im = new Intermediary(path);
-    for(int index = 1; index < (ui->picPathTextField_2->count());index++){
+    for(int index = 1; index < (ui->picPathTextField_2->count());index++)
+    {
         im->addImage(ui->picPathTextField_2->item(index)->text());
     }
 
-    if(im->imageOrTextHidden() == 1) //1 = Text, 0 = Bild
+    if(im->imageOrTextHidden() == 1) //1 => text, 0 => picture
     {
         qDebug("Hidden text found.");
         QString* plain = im->getHiddenText();
         //decrypt
-        if(ui->decryptCheckBox->isChecked()){
+        if(ui->decryptCheckBox->isChecked())
+        {
             plain = decrypt(plain);
         }
-        if(ui->textToFieldRadio->isChecked()){
+        if(ui->textToFieldRadio->isChecked())
+        {
             ui->picField->clear();
             ui->textEdit_2->setText(*plain);
-        }else if(ui->textToDocRadio->isChecked()){
+        }else if(ui->textToDocRadio->isChecked())
+        {
             QString newPath = QFileDialog::getSaveFileName(
                         this,
                         "Save Textfile",
@@ -426,11 +444,13 @@ void DiffTests::find()
                 fileOut.close();
             }
         }
-    }else if(im->imageOrTextHidden() == 0){
+    }else if(im->imageOrTextHidden() == 0)
+    {
         qDebug("Hidden image found.");
         QImage* image;
         image = im->getHiddenImage();
-        if(ui->textToFieldRadio->isChecked()){
+        if(ui->textToFieldRadio->isChecked())
+        {
             ui->textEdit_2->clear();
             QPixmap img = QPixmap::fromImage(*image);
             if (img.height() > ui->picField->height() && img.width() > ui->picField->width())

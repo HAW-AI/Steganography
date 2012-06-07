@@ -28,11 +28,11 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="hideTab">
      <attribute name="title">
-      <string>Hide Text</string>
+      <string>Hide</string>
      </attribute>
      <widget class="QFrame" name="picFrame">
       <property name="geometry">
@@ -128,7 +128,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Insert text from document</string>
+        <string>Insert from document</string>
        </property>
       </widget>
       <widget class="QRadioButton" name="textFromFieldRadio">
@@ -141,7 +141,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Insert text from Field</string>
+        <string>Insert from Field</string>
        </property>
       </widget>
       <widget class="QTextEdit" name="textPathTextField">
@@ -244,7 +244,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Hide Text</string>
+        <string>Hide</string>
        </property>
       </widget>
       <widget class="Line" name="line_4">
@@ -403,7 +403,7 @@
     </widget>
     <widget class="QWidget" name="findTab">
      <attribute name="title">
-      <string>Find Text</string>
+      <string>Find</string>
      </attribute>
      <widget class="QFrame" name="textFrame_2">
       <property name="geometry">
@@ -430,7 +430,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Write text to document</string>
+        <string>Write to document</string>
        </property>
       </widget>
       <widget class="QRadioButton" name="textToFieldRadio">
@@ -443,7 +443,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Write text to field</string>
+        <string>Write to field</string>
        </property>
       </widget>
       <widget class="QTextEdit" name="textEdit_2">
@@ -627,7 +627,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Find Text</string>
+        <string>Find</string>
        </property>
       </widget>
       <widget class="Line" name="line_3">

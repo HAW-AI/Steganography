@@ -12,11 +12,12 @@ ProblemDialog::ProblemDialog(QWidget *parent) :
     ui(new Ui::ProblemDialog)
 {
     ui->setupUi(this);
+    setWindowTitle("Stegosaur");
     setWindowFlags(Qt::Dialog);
+
     connect(ui->newPicButton, SIGNAL(clicked()), this, SLOT(choseNewPic()) );
     connect(ui->moreDensityButton, SIGNAL(clicked()), this, SLOT(moreDensity()) );
     connect(ui->morePicsButton, SIGNAL(clicked()), this, SLOT(choseMorePics()) );
-    //TODO: help-button belegen
 }
 
 ProblemDialog::~ProblemDialog()
