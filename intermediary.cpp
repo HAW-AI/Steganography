@@ -8,7 +8,7 @@
 #include "QMap"
 
 #define LINE "==============================="
-#define HEADER_SIZE 193
+#define HEADER_SIZE 194
 #define INT_SIZE 32
 
 using namespace std;
