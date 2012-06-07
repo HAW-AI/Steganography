@@ -55,7 +55,6 @@ DiffTests::DiffTests(QWidget *parent) :
     connect( ui->picRemoveButton, SIGNAL(clicked()), this, SLOT( removePicture_2() ) );
     connect( ui->picPathTextField_2, SIGNAL(clicked(QModelIndex)), this, SLOT(showRemove()));
     connect( ui->findButton, SIGNAL( clicked() ), this, SLOT( find() ) );
-    connect( ui->keyBrowseButton_2, SIGNAL( clicked() ), this, SLOT( browseOneTimePad() ) );
     ui->picRemoveButton->setEnabled(false);
     ui->findButton->setEnabled(false);
     ui->decryptFrame->hide();
@@ -247,7 +246,7 @@ void DiffTests::hide()
 
     QString oldPath = ui->picPathTextField->toPlainText();
     im = new Intermediary(oldPath);
-    if(ui->textPathTextField->toPlainText().endsWith(".png")){
+    if(ui->textFromDocRadio->isChecked() && ui->textPathTextField->toPlainText().endsWith(".png")){
         im->setImage(ui->textPathTextField->toPlainText());
     }else{
         im->setText(&plain,format);
