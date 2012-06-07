@@ -110,7 +110,7 @@ void DiffTests::choseText()
                 this,
                 "Choose a file",
                 actDir.absolutePath(),
-                "Text Files(*.txt), PNG Files (*.png)");
+                "Text or PNG Files(*.txt *.png)");
     actDir.setPath(path);
     ui->textPathTextField->setText( path );
     if(!path.isEmpty()) ui->textFromDocRadio->click();
