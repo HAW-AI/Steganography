@@ -1,5 +1,5 @@
-#include "difftests.h"
-#include "ui_difftests.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 #include "QTime"
 #include "bitChanger.h"
 #include "steganography.h"
@@ -26,9 +26,9 @@ QString ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\
 QDir actDir = QDir::homePath();
 int headerSize = 194;
 
-DiffTests::DiffTests(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::DiffTests)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     setWindowTitle("Stegosaur");
@@ -65,13 +65,13 @@ DiffTests::DiffTests(QWidget *parent) :
     ui->picPathTextField->text();
 }
 
-DiffTests::~DiffTests()
+MainWindow::~MainWindow()
 {
     delete ui;
 }
 
 // private slots ------------------------------------------------------------------------------------
-int DiffTests::getFormat(QString text)
+int MainWindow::getFormat(QString text)
 {
     for(int i = 0; i<text.size();i++)
     {
@@ -83,7 +83,7 @@ int DiffTests::getFormat(QString text)
     return ASCII;
 }
 
-bool DiffTests::isPath(QString path)
+bool MainWindow::isPath(QString path)
 {
     QFileInfo file= path;
     return file.exists();
@@ -91,7 +91,7 @@ bool DiffTests::isPath(QString path)
 
 
 //HideTab.........................................................................
-void DiffTests::chosePicture()
+void MainWindow::chosePicture()
 {
     QString path;
     path = QFileDialog::getOpenFileName(
@@ -109,7 +109,7 @@ void DiffTests::chosePicture()
     }
 }
 
-void DiffTests::choseText()
+void MainWindow::choseText()
 {
     QString path;
     path = QFileDialog::getOpenFileName(
@@ -123,20 +123,20 @@ void DiffTests::choseText()
     showHideButton();
 }
 
-void DiffTests::clickRadio()
+void MainWindow::clickRadio()
 {
     if(!ui->textEdit->toPlainText().isEmpty())ui->textFromFieldRadio->click();
     showHideButton();
 }
 
-void DiffTests::showEncryptFrame(bool show)
+void MainWindow::showEncryptFrame(bool show)
 {
     if(show)ui->encryptFrame->show();
     else ui->encryptFrame->hide();
     showHideButton();
 }
 
-void DiffTests::showHideButton()
+void MainWindow::showHideButton()
 {
     //TODO ascii/unicode label auch setzten, wenn wirtbild noch nicht gewaehlt
     if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->text()) && isPath(ui->picPathTextField->text()))
@@ -218,7 +218,7 @@ void DiffTests::showHideButton()
     }
 }
 
-void DiffTests::hide()
+void MainWindow::hide()
 {
     ui->saveLabel->clear();
     //TODO plain to QString*
@@ -320,7 +320,7 @@ void DiffTests::hide()
 
 
 //FindTab.............................................................
-void DiffTests::chosePicture_2()
+void MainWindow::chosePicture_2()
 {
     QString path;
     path = QFileDialog::getOpenFileName(
@@ -333,27 +333,27 @@ void DiffTests::chosePicture_2()
     showFindButton();
 }
 
-void DiffTests::showRemove()
+void MainWindow::showRemove()
 {
     ui->picRemoveButton->setEnabled(true);
     showFindButton();
 }
 
-void DiffTests::removePicture_2()
+void MainWindow::removePicture_2()
 {
     delete ui->picPathTextField_2->item(ui->picPathTextField_2->currentRow());
     ui->picRemoveButton->setEnabled(false);
     showFindButton();
 }
 
-void DiffTests::showDecryptFrame(bool show)
+void MainWindow::showDecryptFrame(bool show)
 {
     if(show)ui->decryptFrame->show();
     else ui->decryptFrame->hide();
     showFindButton();
 }
 
-void DiffTests::showFindButton()
+void MainWindow::showFindButton()
 {
     if((ui->textToDocRadio->isChecked() || ui->textToFieldRadio->isChecked())&& (ui->picPathTextField_2->count() != 0))
     {
@@ -407,7 +407,7 @@ void DiffTests::showFindButton()
 }
 
 
-void DiffTests::find()
+void MainWindow::find()
 {
     QString path = ui->picPathTextField_2->item(0)->text();
     im = new Intermediary(path);
@@ -492,7 +492,7 @@ void DiffTests::find()
 
 //others --------------------------------------------------------------------------------------
 
-QString* DiffTests::decrypt(QString* cipher)
+QString* MainWindow::decrypt(QString* cipher)
 {
     Crypt c (cipher,&(ui->keyTextField_2->text()),format);
     switch (ui->techniqueComboBox_2->currentIndex())
@@ -509,7 +509,7 @@ QString* DiffTests::decrypt(QString* cipher)
     return cipher;
 }
 
-QString* DiffTests::encrypt(QString* plain)
+QString* MainWindow::encrypt(QString* plain)
 {
     Crypt c (plain,&(ui->keyTextField->text()),format);
     switch (ui->techniqueComboBox->currentIndex())
@@ -527,39 +527,39 @@ QString* DiffTests::encrypt(QString* plain)
 }
 
 
-int DiffTests::popupProblemDialog()
+int MainWindow::popupProblemDialog()
 {
     pd = new ProblemDialog();
     pd->exec();
     return pd->result();
 }
 
-int DiffTests::noiseWarningDialog()
+int MainWindow::noiseWarningDialog()
 {
     nw = new NoiseWarning();
     nw->exec();
     return nw->result();
 }
 
-void DiffTests::notEnough()
+void MainWindow::notEnough()
 {
     ne = new NotEnoughInfo();
     ne->exec();
 }
 
-void DiffTests::showSuccessfulHiding(QString savePath)
+void MainWindow::showSuccessfulHiding(QString savePath)
 {
     sh = new SuccesfulHiding(savePath);
     sh->exec();
 }
 
-void DiffTests::picToSmall()
+void MainWindow::picToSmall()
 {
     ts = new PictureTooSmall();
     ts->exec();
 }
 
-void DiffTests::foundNothing()
+void MainWindow::foundNothing()
 {
     fn = new FoundNothing();
     fn->exec();

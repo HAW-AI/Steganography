@@ -1,6 +1,6 @@
 #include "addpicdialog.h"
 #include "ui_addpicdialog.h"
-#include "difftests.h"
+//#include "mainwindow.h"
 #include "intermediary.h"
 
 #include <QtGui>

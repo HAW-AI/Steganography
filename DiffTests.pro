@@ -11,7 +11,6 @@ TEMPLATE = app
 RC_FILE = ic.rc
 
 SOURCES += main.cpp\
-        difftests.cpp \
     tests.cpp \
     bitChanger.cpp \
     stringiterator.cpp\
@@ -24,10 +23,11 @@ SOURCES += main.cpp\
     notenoughinfo.cpp \
     succesfulhiding.cpp \
     picturetoosmall.cpp \
-    foundnothing.cpp
+    foundnothing.cpp \
+    mainwindow.cpp
 
 
-HEADERS  += difftests.h \
+HEADERS  += \
     tests.h \
     bitChanger.h \
     stringiterator.h \
@@ -40,13 +40,15 @@ HEADERS  += difftests.h \
     notenoughinfo.h \
     succesfulhiding.h \
     picturetoosmall.h \
-    foundnothing.h
+    foundnothing.h \
+    mainwindow.h
 
-FORMS    += difftests.ui \
+FORMS    += \
     problemdialog.ui \
     noisewarning.ui \
     addpicdialog.ui \
     notenoughinfo.ui \
     succesfulhiding.ui \
     picturetoosmall.ui \
-    foundnothing.ui
+    foundnothing.ui \
+    mainwindow.ui

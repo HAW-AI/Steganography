@@ -1,5 +1,5 @@
-#ifndef DIFFTESTS_H
-#define DIFFTESTS_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QMainWindow>
 #include "problemdialog.h"
@@ -12,19 +12,19 @@
 #include "foundnothing.h"
 
 namespace Ui {
-class DiffTests;
+class MainWindow;
 }
 
-class DiffTests : public QMainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
     
 public:
-    explicit DiffTests(QWidget *parent = 0);
-    ~DiffTests();
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
 
 private:
-    Ui::DiffTests *ui;
+    Ui::MainWindow *ui;
     ProblemDialog *pd;
     NoiseWarning *nw;
     Intermediary *im;
@@ -64,4 +64,4 @@ private slots:
     void foundNothing();
 };
 
-#endif // DIFFTESTS_H
+#endif // MAINWINDOW_H
