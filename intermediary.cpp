@@ -13,13 +13,6 @@
 
 using namespace std;
 
-Intermediary::Intermediary(QString* text, int format, QString imagePath) {
-    bitChanger = new BitChanger();
-    images = new QMap<QString, QImage>();
-    addImage(imagePath);
-    setText(text, format);
-}
-
 Intermediary::Intermediary(QString imagePath) {
     bitChanger = new BitChanger();
     images = new QMap<QString, QImage>();
