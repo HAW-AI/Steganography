@@ -196,46 +196,50 @@ QString* Intermediary::getHiddenText() {
     std::cout<<endl<<LINE<<endl;
     std::cout<<"images: "<<images->size()<<endl;
 
-    // With QMap, the items are always sorted by key!
-    QMap<int, QString*>* textMap = new QMap<int, QString*>();
-
-    // get all parts of the text
-    QMap<QString, QImage>::const_iterator it = images->constBegin();
-    while (it != images->constEnd()) {
-        Steganography* stego = new Steganography(it.key());
-        int realSize = stego->getRealSizeFromHeader();
-
-        std::cout<<"realSize: "<<realSize<<endl;
-
-        QString* currentText = new QString();
-        QList<uint>* bits;
-        int bitsPerPixel = stego->getBitsPerPixelFromHeader();
-        if (bitsPerPixel == 1) {
-            bits = stego->getBitStreamAsIntList();
-        } else if (bitsPerPixel == 3) {
-            bits = stego->getBitstreamAsIntList_3BitsPerPixel();
-        } else {
-            bits = stego->getBitstreamAsIntList_6BitsPerPixel();
-        }
-        
-        if (stego->getFirstAttributeFromHeader() == 0) {
-            currentText = bitChanger->bitStreamToText_8Bit(bits, realSize);
-        } else {
-            currentText = bitChanger->bitStreamToText_16Bit(bits, realSize);
-        }
-
-        std::cout<<"currentText: "<<currentText->toStdString()<<endl;
-
-        textMap->insert(stego->getSequenceNoFromHeader(), currentText);
-        it++;
-    }
-
-    // put all parts of the text together
     QString* result = new QString();
-    QMap<int, QString*>::const_iterator it2 = textMap->constBegin();
-    while (it2 != textMap->constEnd()) {
-        result->append(it2.value());
-        it2++;
+    if (images->size() > 0) {
+        // With QMap, the items are always sorted by key!
+        QMap<int, QString*>* textMap = new QMap<int, QString*>();
+
+        // get all parts of the text
+        QMap<QString, QImage>::const_iterator it = images->constBegin();
+        while (it != images->constEnd()) {
+            Steganography* stego = new Steganography(it.key());
+            int realSize = stego->getRealSizeFromHeader();
+
+            std::cout<<"realSize: "<<realSize<<endl;
+
+            QString* currentText = new QString();
+            QList<uint>* bits;
+            int bitsPerPixel = stego->getBitsPerPixelFromHeader();
+            if (bitsPerPixel == 1) {
+                bits = stego->getBitStreamAsIntList();
+            } else if (bitsPerPixel == 3) {
+                bits = stego->getBitstreamAsIntList_3BitsPerPixel();
+            } else {
+                bits = stego->getBitstreamAsIntList_6BitsPerPixel();
+            }
+
+            if (stego->getFirstAttributeFromHeader() == 0) {
+                currentText = bitChanger->bitStreamToText_8Bit(bits, realSize);
+            } else {
+                currentText = bitChanger->bitStreamToText_16Bit(bits, realSize);
+            }
+
+            std::cout<<"currentText: "<<currentText->toStdString()<<endl;
+
+            textMap->insert(stego->getSequenceNoFromHeader(), currentText);
+            it++;
+        }
+
+        // put all parts of the text together
+        QMap<int, QString*>::const_iterator it2 = textMap->constBegin();
+        while (it2 != textMap->constEnd()) {
+            result->append(it2.value());
+            it2++;
+        }
+    } else {
+        std::cout<<"no images available"<<endl;
     }
     std::cout<<"result: "<<result->toStdString()<<endl;
     std::cout<<LINE<<endl;
@@ -247,42 +251,50 @@ QImage* Intermediary::getHiddenImage()
     std::cout<<endl<<LINE<<endl;
     std::cout<<"images: "<<images->size()<<endl;
 
-    QList<uint>* bits = new QList<uint>();
+    QImage* result = new QImage();
+    if (images->size() > 0) {
+        QList<uint>* bits = new QList<uint>();
+        QMap<QString, QImage>::const_iterator it = images->constBegin();
 
-    QMap<QString, QImage>::const_iterator it = images->constBegin();
-
-    //get height and width of the picture
-    Steganography* stego = new Steganography(it.key());
-    int height = stego->getFirstAttributeFromHeader();
-    int width = stego->getSecondAttributeFromHeader();
-    int bitsPerPixel = stego->getBitsPerPixelFromHeader();
-    std::cout<<"imageSize: "<<width<<" x "<<height<<endl;
-
-    // get all bits of the picture
-    while (it != images->constEnd()) {
+        //get height and width of the picture
         Steganography* stego = new Steganography(it.key());
-        QList<uint>* stream;
-        if (bitsPerPixel == 1) {
-            stream = stego->getBitStreamAsIntList();
-        } else if (bitsPerPixel == 3) {
-            stream = stego->getBitstreamAsIntList_3BitsPerPixel();
-        } else {
-            stream = stego->getBitstreamAsIntList_6BitsPerPixel();
-        }
-        bits->append(*stream);
-        it++;
-    }
+        int height = stego->getFirstAttributeFromHeader();
+        int width = stego->getSecondAttributeFromHeader();
+        int bitsPerPixel = stego->getBitsPerPixelFromHeader();
+        std::cout<<"imageSize: "<<width<<" x "<<height<<endl;
 
-    QImage* result = bitChanger->bitStreamToPicture(bits, height, width);
+        // get all bits of the picture
+        while (it != images->constEnd()) {
+            Steganography* stego = new Steganography(it.key());
+            QList<uint>* stream;
+            if (bitsPerPixel == 1) {
+                stream = stego->getBitStreamAsIntList();
+            } else if (bitsPerPixel == 3) {
+                stream = stego->getBitstreamAsIntList_3BitsPerPixel();
+            } else {
+                stream = stego->getBitstreamAsIntList_6BitsPerPixel();
+            }
+            bits->append(*stream);
+            it++;
+        }
+        result = bitChanger->bitStreamToPicture(bits, height, width);
+    } else {
+        std::cout<<"no images available"<<endl;
+    }
     std::cout<<LINE<<endl;
     return result;
 }
 
 int Intermediary::imageOrTextHidden() {
+    std::cout<<LINE<<endl;
     int result = -1;
     if (images->size() > 0) {
         Steganography* stego = new Steganography(images->constBegin().key());
         result = stego->getFormatFromHeader();
+        std::cout<<"format: "<<result<<endl;
+    } else {
+        std::cout<<"no images available"<<endl;
     }
+    std::cout<<LINE<<endl;
     return result;
 }
