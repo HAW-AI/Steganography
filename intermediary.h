@@ -10,7 +10,6 @@
 class Intermediary
 {
 public:
-    Intermediary(QString* text, int format, QString imagePath); //konstruktor unbenutzt
     Intermediary(QString imagePath);
 
     void setText(QString* text, int format);
