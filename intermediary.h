@@ -45,6 +45,8 @@ private:
     long remainingPixel_6Bit() { return (intsToHide->size() - availableInts_6Bit()) * 32; }
     long bitsPerChar() { return format == 0? 8 : 16; }
     void hide(bool isReady, long availableBits, int bitsPerPixel, QString savePath);
+    bool isTextHidden();
+    bool isImageHidden();
 
     // private fields
     int format;                 // ASCII = 0 / UNICODE = 1
