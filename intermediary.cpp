@@ -200,36 +200,37 @@ QString* Intermediary::getHiddenText() {
     if (images->size() > 0) {
         // With QMap, the items are always sorted by key!
         QMap<int, QString*>* textMap = new QMap<int, QString*>();
+        if(isTextHidden()) {
+            // get all parts of the text
+            QMap<QString, QImage>::const_iterator it = images->constBegin();
+            while (it != images->constEnd()) {
+                Steganography* stego = new Steganography(it.key());
+                int realSize = stego->getRealSizeFromHeader();
 
-        // get all parts of the text
-        QMap<QString, QImage>::const_iterator it = images->constBegin();
-        while (it != images->constEnd()) {
-            Steganography* stego = new Steganography(it.key());
-            int realSize = stego->getRealSizeFromHeader();
+                std::cout<<"realSize: "<<realSize<<endl;
 
-            std::cout<<"realSize: "<<realSize<<endl;
+                QString* currentText = new QString();
+                QList<uint>* bits;
+                int bitsPerPixel = stego->getBitsPerPixelFromHeader();
+                if (bitsPerPixel == 1) {
+                    bits = stego->getBitStreamAsIntList();
+                } else if (bitsPerPixel == 3) {
+                    bits = stego->getBitstreamAsIntList_3BitsPerPixel();
+                } else {
+                    bits = stego->getBitstreamAsIntList_6BitsPerPixel();
+                }
 
-            QString* currentText = new QString();
-            QList<uint>* bits;
-            int bitsPerPixel = stego->getBitsPerPixelFromHeader();
-            if (bitsPerPixel == 1) {
-                bits = stego->getBitStreamAsIntList();
-            } else if (bitsPerPixel == 3) {
-                bits = stego->getBitstreamAsIntList_3BitsPerPixel();
-            } else {
-                bits = stego->getBitstreamAsIntList_6BitsPerPixel();
+                if (stego->getFirstAttributeFromHeader() == 0) {
+                    currentText = bitChanger->bitStreamToText_8Bit(bits, realSize);
+                } else {
+                    currentText = bitChanger->bitStreamToText_16Bit(bits, realSize);
+                }
+
+                std::cout<<"currentText: "<<currentText->toStdString()<<endl;
+
+                textMap->insert(stego->getSequenceNoFromHeader(), currentText);
+                it++;
             }
-
-            if (stego->getFirstAttributeFromHeader() == 0) {
-                currentText = bitChanger->bitStreamToText_8Bit(bits, realSize);
-            } else {
-                currentText = bitChanger->bitStreamToText_16Bit(bits, realSize);
-            }
-
-            std::cout<<"currentText: "<<currentText->toStdString()<<endl;
-
-            textMap->insert(stego->getSequenceNoFromHeader(), currentText);
-            it++;
         }
 
         // put all parts of the text together
@@ -252,7 +253,7 @@ QImage* Intermediary::getHiddenImage()
     std::cout<<"images: "<<images->size()<<endl;
 
     QImage* result = new QImage();
-    if (images->size() > 0) {
+    if (images->size() > 0 && isImageHidden()) {
         QList<uint>* bits = new QList<uint>();
         QMap<QString, QImage>::const_iterator it = images->constBegin();
 
@@ -296,5 +297,68 @@ int Intermediary::imageOrTextHidden() {
         std::cout<<"no images available"<<endl;
     }
     std::cout<<LINE<<endl;
+    return result;
+}
+
+bool Intermediary::isTextHidden() {
+    bool result = true;
+    QMap<QString, QImage>::const_iterator it = images->constBegin();
+    while (it != images->constEnd()) {
+        QImage image = it.value();
+        Steganography* stego = new Steganography(it.key());
+        int bitsPerPixel = stego->getBitsPerPixelFromHeader();
+        int maxBits = (image.width()*(image.height()-1)*bitsPerPixel);
+        if (stego->getFormatFromHeader() != 1) {
+            result = false;
+            std::cout<<"no text hidden, T/B-Field != 1"<<endl;
+        } else if (bitsPerPixel != 1 && bitsPerPixel != 3 && bitsPerPixel != 6) {
+            result = false;
+            std::cout<<"no text hidden, bitsPerPixel = "<<bitsPerPixel<<endl;
+        } else if (stego->getSizeFromHeader() > maxBits){
+            result = false;
+            std::cout<<"no text hidden, expected number of hidden bits don't fit into image"<<endl;
+        } else {
+            int realSize = stego->getRealSizeFromHeader();
+            int maxRealSize = (maxBits/INT_SIZE) * (stego->getFirstAttributeFromHeader() == 0 ? 4 : 2);
+            result = realSize <= maxRealSize;
+            std::cout<<"realSize = "<<realSize<<", maxRealSize = "<<maxRealSize<<endl;
+        }
+        it++;
+    }
+    std::cout<<"text Hidden? "<<result<<endl;
+    return result;
+}
+
+bool Intermediary::isImageHidden() {
+    bool result = true;
+    QMap<QString, QImage>::const_iterator it = images->constBegin();
+    int totalBits = 0;
+    int totalMaxBits = 0;
+    Steganography* stego = new Steganography(it.key());
+    while (it != images->constEnd()) {
+        QImage image = it.value();
+        stego = new Steganography(it.key());
+        int bitsPerPixel = stego->getBitsPerPixelFromHeader();
+        if (stego->getFormatFromHeader() != 0) {
+            result = false;
+            std::cout<<"no image hidden, T/B-Field != 0"<<endl;
+        } else if (bitsPerPixel != 1 && bitsPerPixel != 3 && bitsPerPixel != 6) {
+            result = false;
+            std::cout<<"no image hidden, bitsPerPixel = "<<bitsPerPixel<<endl;
+        }
+        totalMaxBits += (image.width()*(image.height()-1)*bitsPerPixel);
+        totalBits += stego->getSizeFromHeader();
+        it++;
+    }
+    if (totalBits > totalMaxBits) {
+        result = false;
+        std::cout<<"no image hidden, totalBits = "<<totalBits<<", maxBits = "<<totalMaxBits<<endl;
+    } else if (totalBits != (stego->getFirstAttributeFromHeader()*stego->getSecondAttributeFromHeader()*24)) {
+        result = false;
+        std::cout<<"no image hidden, totalBits = "<<totalBits<<", expectedBits = "<<(stego->getFirstAttributeFromHeader()*stego->getSecondAttributeFromHeader()*24)<<endl;
+    }
+    std::cout<<"image Hidden? "<<result<<endl;
+
+
     return result;
 }
