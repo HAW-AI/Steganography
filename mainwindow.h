@@ -9,7 +9,6 @@
 #include "notenoughinfo.h"
 #include "succesfulhiding.h"
 #include "picturetoosmall.h"
-#include "foundnothing.h"
 
 namespace Ui {
 class MainWindow;
@@ -18,11 +17,13 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
+//Constructor
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+//Attribute
 private:
     Ui::MainWindow *ui;
     ProblemDialog *pd;
@@ -32,8 +33,8 @@ private:
     NotEnoughInfo *ne;
     SuccesfulHiding *sh;
     PictureTooSmall *ts;
-    FoundNothing *fn;
 
+//Methods
 private slots:
     int getFormat(QString text);
     bool isPath(QString);

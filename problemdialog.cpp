@@ -2,6 +2,17 @@
 #include "ui_problemdialog.h"
 #include <QDialog>
 
+//********************************************************************
+//
+// Class: ProblemDialog
+// Author: Fenja Harbke
+//
+// Purpose: called by MainWindow, when information does not fit into file
+//          give the user choice to react
+//          call choseNewPic, moreDensity, choseMorePics
+//
+//********************************************************************
+
 #define CANCEL 0
 #define DENSITY 1
 #define PICS 2
@@ -42,4 +53,3 @@ void ProblemDialog::choseMorePics()
     close();
     setResult(PICS);
 }
-

@@ -1,9 +1,17 @@
 #include "addpicdialog.h"
 #include "ui_addpicdialog.h"
-//#include "mainwindow.h"
 #include "intermediary.h"
-
 #include <QtGui>
+
+//********************************************************************
+//
+// Class: AddPicDialog
+// Author: Fenja Harbke
+//
+// Purpose: called by ProblemDialog
+//          chose several pictures to split the information
+//
+//********************************************************************
 
 QDir actDir2 = QDir::homePath();
 

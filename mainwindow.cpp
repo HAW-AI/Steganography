@@ -11,6 +11,18 @@
 #include "intermediary.h"
 
 #include <QtGui>
+
+//********************************************************************
+//
+// Class: MainWindow
+// Author: Fenja Harbke
+//
+// Purpose: Graphical User Interface.
+//          Uses Crypt and Intermadiary to practice
+//          Cryptography and Steganography
+//
+//********************************************************************
+
 #define UNICODE 1
 #define ASCII 0
 #define ENCRYPT 1
@@ -26,6 +38,14 @@ QString ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\
 QDir actDir = QDir::homePath();
 int headerSize = 194;
 
+//********************************************************************
+//
+// Method: Constructor
+// Parameter: QWidget *parent
+//
+// Purpose: sets WindowParameters and connects Buttons to methods
+//
+//********************************************************************
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -65,12 +85,27 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->picPathTextField->text();
 }
 
+//********************************************************************
+//
+// Method: Destructor
+//
+// Purpose: destroys the instance of this class
+//
+//********************************************************************
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-// private slots ------------------------------------------------------------------------------------
+//********************************************************************
+//
+// Method: getFormat
+// Parameter: QString, text,
+//            finds out, whether a text includes only ASCII letters or also Unicode
+//
+// Purpose: sets the global variable format to ASCII=0, UNICODE=1
+//
+//********************************************************************
 int MainWindow::getFormat(QString text)
 {
     for(int i = 0; i<text.size();i++)
@@ -83,14 +118,31 @@ int MainWindow::getFormat(QString text)
     return ASCII;
 }
 
+//********************************************************************
+//
+// Method: isPath
+// Parameter: QString path, absolute path to a file
+//
+// Purpose: returns true, if the file exists, else false
+//
+//********************************************************************
 bool MainWindow::isPath(QString path)
 {
     QFileInfo file= path;
     return file.exists();
 }
 
-
-//HideTab.........................................................................
+//********************************************************************
+//
+// Method: chosePicture
+// Parameter: none
+//            open QFileDialog to chose a picture-file (type .png)
+//            checks the pictures size
+//
+// Purpose: write image-path to textfield or call picToSmall,
+//          when the chosen picture is too small
+//
+//********************************************************************
 void MainWindow::chosePicture()
 {
     QString path;
@@ -109,6 +161,15 @@ void MainWindow::chosePicture()
     }
 }
 
+//********************************************************************
+//
+// Method: choseText
+// Parameter: none,
+//          open QFileDialog to chose a text- or picture-file (type .png/ .txt)
+//
+// Purpose: write text-path to textfield an call showHideButton
+//
+//********************************************************************
 void MainWindow::choseText()
 {
     QString path;
@@ -123,12 +184,30 @@ void MainWindow::choseText()
     showHideButton();
 }
 
+//********************************************************************
+//
+// Method: clickRadio
+// Parameter: none,
+//          akts, if textEdit is not empty
+//
+// Purpose: automatically clicks textFromFieldRadio,
+//          call showHideButton
+//
+//********************************************************************
 void MainWindow::clickRadio()
 {
     if(!ui->textEdit->toPlainText().isEmpty())ui->textFromFieldRadio->click();
     showHideButton();
 }
 
+//********************************************************************
+//
+// Method: showEncryptFrame
+// Parameter: bool show, give by connect to encryptCheckBox
+//
+// Purpose: show encryptFrame, call showHideButton
+//
+//********************************************************************
 void MainWindow::showEncryptFrame(bool show)
 {
     if(show)ui->encryptFrame->show();
@@ -136,9 +215,17 @@ void MainWindow::showEncryptFrame(bool show)
     showHideButton();
 }
 
+//********************************************************************
+//
+// Method: showHideButton
+// Parameter: none,
+//          test all inputs
+//
+// Purpose: enable Hide-Button, eventually call ProblemDialog
+//
+//********************************************************************
 void MainWindow::showHideButton()
 {
-    //TODO ascii/unicode label auch setzten, wenn wirtbild noch nicht gewaehlt
     if(ui->textFromDocRadio->isChecked() && isPath(ui->textPathTextField->text()) && isPath(ui->picPathTextField->text()))
     {
             ui->hideButton->setEnabled(true);
@@ -218,6 +305,15 @@ void MainWindow::showHideButton()
     }
 }
 
+//********************************************************************
+//
+// Method: hide
+// Parameter: none, read input
+//          create instance of Intermediary
+//
+// Purpose: use Intermediary to hide
+//
+//********************************************************************
 void MainWindow::hide()
 {
     ui->saveLabel->clear();
@@ -318,8 +414,15 @@ void MainWindow::hide()
     }
 }
 
-
-//FindTab.............................................................
+//********************************************************************
+//
+// Method: chosePicture_2
+// Parameter: none,
+//          open QFileDialog to chose a picture-file (type .png)
+//
+// Purpose: add path to pictureList
+//
+//********************************************************************
 void MainWindow::chosePicture_2()
 {
     QString path;
@@ -333,12 +436,28 @@ void MainWindow::chosePicture_2()
     showFindButton();
 }
 
+//********************************************************************
+//
+// Method: showRemove
+// Parameter: none, pictureList-Element is selected
+//
+// Purpose: enable picRemoveButton, call showFindButton
+//
+//********************************************************************
 void MainWindow::showRemove()
 {
     ui->picRemoveButton->setEnabled(true);
     showFindButton();
 }
 
+//********************************************************************
+//
+// Method: removePicture_2
+// Parameter: none,picture-Element is selected
+//
+// Purpose: remove List-Element, call showFindButton
+//
+//********************************************************************
 void MainWindow::removePicture_2()
 {
     delete ui->picPathTextField_2->item(ui->picPathTextField_2->currentRow());
@@ -346,6 +465,14 @@ void MainWindow::removePicture_2()
     showFindButton();
 }
 
+//********************************************************************
+//
+// Method: showDecryptFrame
+// Parameter: bool show, give by connect to decryptCheckBox
+//
+// Purpose: show decryptFrame, call showFindButton
+//
+//********************************************************************
 void MainWindow::showDecryptFrame(bool show)
 {
     if(show)ui->decryptFrame->show();
@@ -353,6 +480,15 @@ void MainWindow::showDecryptFrame(bool show)
     showFindButton();
 }
 
+//********************************************************************
+//
+// Method: showFindButton
+// Parameter: none,
+//          test all inputs
+//
+// Purpose: enable Find-Button
+//
+//********************************************************************
 void MainWindow::showFindButton()
 {
     if((ui->textToDocRadio->isChecked() || ui->textToFieldRadio->isChecked())&& (ui->picPathTextField_2->count() != 0))
@@ -406,7 +542,15 @@ void MainWindow::showFindButton()
     if(show != ui->findButton->isEnabled()) ui->findButton->setEnabled(false);
 }
 
-
+//********************************************************************
+//
+// Method: find
+// Parameter: none, read input
+//          create instance of Intermediary
+//
+// Purpose: use Intermediary to find, output found text or picture
+//
+//********************************************************************
 void MainWindow::find()
 {
     QString path = ui->picPathTextField_2->item(0)->text();
@@ -417,7 +561,7 @@ void MainWindow::find()
     }
 
     if(im->imageOrTextHidden() == 1) //1 => text, 0 => picture
-    { //gibt bei fehler (nix drin) 1 zurück
+    {
         qDebug("Hidden text found.");
         QString* plain = im->getHiddenText();
         //decrypt
@@ -482,33 +626,17 @@ void MainWindow::find()
             image->save(newPath,"PNG",100);
         }
     }
-    else{
-        foundNothing();
-    }
     ui->saveLabel->clear();
 }
 
-
-
-//others --------------------------------------------------------------------------------------
-
-QString* MainWindow::decrypt(QString* cipher)
-{
-    Crypt c (cipher,&(ui->keyTextField_2->text()),format);
-    switch (ui->techniqueComboBox_2->currentIndex())
-    {
-        case 0: //Caesar
-            c.caesar(DECRYPT);
-            break;
-        case 1: //Vigenère
-            c.vigenere(DECRYPT);
-            break;
-        default:
-            ui->keyTipLabel_2->setText("Decryption failed");
-    }
-    return cipher;
-}
-
+//********************************************************************
+//
+// Method: encrypt
+// Parameter: QString* plain, read input from techniqueComboBox, input key
+//
+// Purpose: use Cyper to encrypt, return ciphertext
+//
+//********************************************************************
 QString* MainWindow::encrypt(QString* plain)
 {
     Crypt c (plain,&(ui->keyTextField->text()),format);
@@ -526,6 +654,30 @@ QString* MainWindow::encrypt(QString* plain)
     return plain;
 }
 
+//********************************************************************
+//
+// Method: decrypt
+// Parameter: QString* cipher, read input from techniqueComboBox_2, input key
+//
+// Purpose: use Cyper to decrypt, return plaintext
+//
+//********************************************************************
+QString* MainWindow::decrypt(QString* cipher)
+{
+    Crypt c (cipher,&(ui->keyTextField_2->text()),format);
+    switch (ui->techniqueComboBox_2->currentIndex())
+    {
+        case 0: //Caesar
+            c.caesar(DECRYPT);
+            break;
+        case 1: //Vigenère
+            c.vigenere(DECRYPT);
+            break;
+        default:
+            ui->keyTipLabel_2->setText("Decryption failed");
+    }
+    return cipher;
+}
 
 int MainWindow::popupProblemDialog()
 {
@@ -557,10 +709,4 @@ void MainWindow::picToSmall()
 {
     ts = new PictureTooSmall();
     ts->exec();
-}
-
-void MainWindow::foundNothing()
-{
-    fn = new FoundNothing();
-    fn->exec();
 }
