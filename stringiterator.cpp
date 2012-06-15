@@ -9,8 +9,7 @@
       int i -> current position (default -1 -> .next() gives char at string[0]
   Out: Stringiterator
   */
-Stringiterator::Stringiterator(QString s, int i )
-{
+Stringiterator::Stringiterator(QString s, int i ){
     if(s.size() != 0 && i >= -1 && i <= s.size()){
         internString = s;
         index = i;
