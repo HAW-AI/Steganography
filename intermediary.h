@@ -9,6 +9,19 @@
 
 class Intermediary
 {
+//Attributes:
+private:
+    int format;                 // ASCII = 0 / UNICODE = 1
+    int type;                   // PICTURE = 0 / TEXT = 1
+    QImage imageToHide;
+    QString* textToHide;
+    QList<uint>* intsToHide;
+    BitChanger* bitChanger;
+
+public:
+    QMap<QString, QImage>* images;
+
+//Operations: 
 public:
     Intermediary(QString imagePath);
 
@@ -28,10 +41,8 @@ public:
     QString* getHiddenText();
     QImage* getHiddenImage();
     int imageOrTextHidden();
-
-    // public fields
-    QMap<QString, QImage>* images;
-
+    
+//Implementation:
 private:
     long availableInts_1Bit();
     long availableInts_3Bit() { return availableInts_1Bit() * 3; }
@@ -46,14 +57,6 @@ private:
     void hide(bool isReady, long availableBits, int bitsPerPixel, QString savePath);
     bool isTextHidden();
     bool isImageHidden();
-
-    // private fields
-    int format;                 // ASCII = 0 / UNICODE = 1
-    int type;                   // PICTURE = 0 / TEXT = 1
-    QImage imageToHide;
-    QString* textToHide;
-    QList<uint>* intsToHide;
-    BitChanger* bitChanger;
 };
 
 #endif // INTERMEDIARY_H
