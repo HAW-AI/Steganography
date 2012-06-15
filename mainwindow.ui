@@ -40,7 +40,7 @@
         <x>0</x>
         <y>0</y>
         <width>501</width>
-        <height>51</height>
+        <height>61</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -65,7 +65,7 @@
       <widget class="QPushButton" name="picBrowseButton">
        <property name="geometry">
         <rect>
-         <x>380</x>
+         <x>400</x>
          <y>10</y>
          <width>93</width>
          <height>28</height>
@@ -78,11 +78,24 @@
       <widget class="QLineEdit" name="picPathTextField">
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>140</x>
          <y>10</y>
-         <width>251</width>
+         <width>241</width>
          <height>31</height>
         </rect>
+       </property>
+      </widget>
+      <widget class="Line" name="line_6">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>35</y>
+         <width>481</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </widget>
