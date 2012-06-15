@@ -10,6 +10,7 @@
 //********************************************************************
 //
 // Class: Intermediary
+// Authors: Raimund Wege, Kathrin Kahlhoefer
 //
 // Purpose: connects GUI, BitChanger and Steganography
 //          tests if text/image to hide fits into chosen picture and 
