@@ -3,15 +3,40 @@
 #include "QTextCodec"
 #include <QDebug>
 
+//********************************************************************
+//
+// Class: Crypt
+// Author: Fenja Harbke
+//
+// Purpose: Encrypt or Decrypt a text, using popular cryptographic algorithms
+//
+//********************************************************************
+
 #define UNICODE 1
 #define ASCII 0
 #define ENCRYPT 1
 #define DECRYPT 0
 
+//********************************************************************
+//
+// Method: Constructor
+// Parameter: QString* text, QString* key, int format,
+//          all needed information, to en- or decrypt a text
+// Purpose: construction
+//
+//********************************************************************
 Crypt::Crypt(QString* text, QString* key, int format)
     :text(text),key(key),format(format)
 {}
 
+//********************************************************************
+//
+// Method: caesar
+// Parameter: int mode,
+//            says, wheather a text should be en- od decrypted
+// Purpose: changes text to a text, en-/decrypted with caesar-chiffre
+//
+//********************************************************************
 void Crypt::caesar(int mode)
 {
     int k;
@@ -33,7 +58,7 @@ void Crypt::caesar(int mode)
             {
                 l -= ' ';
                 l += k;
-                    //ausschluss "komischer zeichen" (z.B. DEL)
+                    //eliminate "strange letters" (DEL, ...)
                 while (l < 0) l += 94;
                 while (l > 94) l -= 94;
                 l += ' ';
@@ -44,6 +69,14 @@ void Crypt::caesar(int mode)
     //qDebug()<<text->toUtf8();
 }
 
+//********************************************************************
+//
+// Method: vigenere
+// Parameter: int mode,
+//            says, wheather a text should be en- od decrypted
+// Purpose: changes text to a text, en-/decrypted with vigenere-chiffre
+//
+//********************************************************************
 void Crypt::vigenere(int mode)
 {
     int k;
