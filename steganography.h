@@ -7,11 +7,7 @@ class Steganography
 public:
     Steganography(QString file);
 
-    int insertText_1BitPerPixel(QString*,int);
-
     bool imageIsNull();
-
-    QString* getHiddenText();
 
     bool saveImage(QString file);
 
@@ -53,7 +49,6 @@ public:
 
 
     int insertPictureHeader(int, int, int); // rausnehmen??
-    int insertTextHeader(int, int);         // rausnehmen??
 
     QChar lastBit(int i);
 
