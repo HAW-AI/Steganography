@@ -567,6 +567,7 @@ void MainWindow::find()
         //decrypt
         if(ui->decryptCheckBox->isChecked())
         {
+            format = getFormat(*plain);
             plain = decrypt(plain);
         }
         if(ui->textToFieldRadio->isChecked())
